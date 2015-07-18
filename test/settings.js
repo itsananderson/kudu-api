@@ -1,7 +1,7 @@
 var assert = require("assert");
 var api = require("../")(process.env.WEBSITE, process.env.USERNAME, process.env.PASSWORD);
 
-describe("scm", function() {
+describe("settings", function() {
     this.timeout(5000);
 
     before(function(done) {

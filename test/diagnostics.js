@@ -15,15 +15,15 @@ describe("diagnostics", function() {
         });
     });
     it("can update diagnotics settings", function(done) {
-        api.settings.set({AzureDriveEnabled: true}, function(err) {
-            api.settings.get("AzureDriveEnabled", function(err, setting) {
-                assert.equal(setting, "True");
+        api.diagnostics.set({AzureDriveEnabled: true}, function(err) {
+            api.diagnostics.get("AzureDriveEnabled", function(err, setting) {
+                assert.equal(setting, true);
                 done();
             });
         });
     });
     it("can delete a setting", function(done) {
-        api.settings.del("AzureDriveEnabled", function(err) {
+        api.diagnostics.del("AzureDriveEnabled", function(err) {
             done();
         });
     });
