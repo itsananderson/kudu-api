@@ -99,7 +99,7 @@ Because the tests integrate against a Azure Kudu api, you'll need to configure t
 For my setup, I have a simple script that I use to set these variables and run the tests:
 
 ```
-WEBSITE=foo USERNAME=$foo PASSWORD=12345fake mocha $1
+WEBSITE=foo USERNAME='$foo' PASSWORD=12345fake npm test -- $1
 ```
 
 You can also just configure these environment variables globally if you wish. Steps for doing this depend on your operating system.
