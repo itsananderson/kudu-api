@@ -1,0 +1,22 @@
+{
+  "name": "kudu-api",
+  "version": "1.0.0",
+  "description": "Node wrapper for the Kudu REST API",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:itsananderson/kudu-api.git"
+  },
+  "keywords": [
+    "kudu"
+  ],
+  "author": "Will Anderson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/itsananderson/kudu-api/issues"
+  },
+  "homepage": "https://github.com/itsananderson/kudu-api#readme"
+}
