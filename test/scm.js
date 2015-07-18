@@ -13,7 +13,4 @@ describe("scm", function() {
             done();
         });
     });
-    it("can delete repo", function(done) {
-        api.scm.del(done);
-    });
 });
