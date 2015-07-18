@@ -18,6 +18,7 @@ describe("zip", function() {
         });
     });
     it("can download a zip", function(done) {
+        this.timeout(30 * 1000);
         fs.unlink(localZipPath, function() {
             api.zip.download("site/wwwroot", localZipPath, function() {
                 done();
