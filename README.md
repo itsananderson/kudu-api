@@ -24,7 +24,7 @@ For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) 
 ```javascript
 var kudu = require("kudu-api")("website", "$username", "password");
 
-console.log(JSON.stringify(kudu, null, 2));
+console.log(kudu);
 
 /*
 { scm: {
