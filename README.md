@@ -52,7 +52,6 @@ console.log(kudu);
     deploy: [Function: deploy],
     redeploy: [Function: redeploy] },
   sshkey: {
-    upload: [Function: upload],
     get: [Function: get] },
   environment: {
     get: [Function: get] },
