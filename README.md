@@ -102,6 +102,6 @@ For my setup, I have a simple script that I use to set these variables and run t
 WEBSITE=foo USERNAME='$foo' PASSWORD=12345fake npm test -- $1
 ```
 
-I have the `$1` so I can run `./test test/scm.js` to only run part of the tests.
+I have the `$1` so I can run `./mocha test/scm.js` to only run part of the tests.
 
 You can also just configure these environment variables globally if you wish. Steps for doing this depend on your operating system.
