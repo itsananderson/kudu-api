@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/itsananderson/kudu-api/issues"
   },
-  "homepage": "https://github.com/itsananderson/kudu-api#readme"
+  "homepage": "https://github.com/itsananderson/kudu-api#readme",
+  "dependencies": {
+    "request": "^2.58.0"
+  }
 }
