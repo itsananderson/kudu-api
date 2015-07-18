@@ -22,7 +22,7 @@ module.exports = function api(website, username, password) {
     });
     return {
         scm: scm(r),
-        command: command(r),
+        /*command: command(r),
         vfs: vfs(r),
         zip: zip(r),
         deployment: deployment(r),
@@ -33,5 +33,6 @@ module.exports = function api(website, username, password) {
         diagnostics: diagnostics(r),
         logs: logs(r),
         extensions: extensions(r)
+        */
     };
 };
