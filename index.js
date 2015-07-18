@@ -30,8 +30,8 @@ module.exports = function api(website, username, password) {
         environment: environment(r),
         settings: settings(r),
         dump: dump(r),
-        /*
         diagnostics: diagnostics(r),
+        /*
         logs: logs(r),
         extensions: extensions(r)
         */
