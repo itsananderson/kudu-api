@@ -93,8 +93,8 @@ The tests are pretty sparse right now, but they should at least attempt to hit a
 Because the tests integrate against a Azure Kudu api, you'll need to configure the following environment variables to point them at a Azure website.
 
 * `WEBSITE`: The name of the Azure website.
-* `USERNAME`: The [Azure Deployment Credentials](https://github.com/projectkudu/kudu/wiki/Deployment-credentials) user. Most likely WEBSITE preceded by a `$` sign.
-* `PASSWORD`: The [Azure Deployment Credentials](https://github.com/projectkudu/kudu/wiki/Deployment-credentials) password. This likely **won't** be the same password you use to log into Azure.
+* `USERNAME`: The [Azure Deployment Credentials](https://github.com/projectkudu/kudu/wiki/Deployment-credentials) user.
+* `PASSWORD`: The [Azure Deployment Credentials](https://github.com/projectkudu/kudu/wiki/Deployment-credentials) password.
 
 For my setup, I have a simple script that I use to set these variables and run the tests:
 
