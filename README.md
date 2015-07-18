@@ -62,21 +62,21 @@ console.log(JSON.stringify(kudu, null, 2));
     del: [Function: del],
     set: [Function: set] },
   dump: {
-    download: [Function: list] },
+    download: [Function: download] },
   diagnostics: {
     list: [Function: list],
     get: [Function: get],
     del: [Function: del],
     set: [Function: set] },
   logs: {
-    recent: [Function: exec] },
+    recent: [Function: recent] },
   extensions: {
     feed: {
       list: [Function: list],
-      get: [Function] },
+      get: [Function: get] },
     site: {
       list: [Function: list],
-      get: [Function],
+      get: [Function: get],
       del: [Function: del],
       set: [Function: set] } } }
 */
