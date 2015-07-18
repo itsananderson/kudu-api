@@ -19,7 +19,7 @@ Usage
 
 Here's some really terrible API docs.
 I plan to update them with more details soon.
-For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) should provide fairly reasonable documentation of expected inputs/outputs.
+For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) should provide fairly reasonable documentation of expected inputs/outputs. The [tests](https://github.com/itsananderson/kudu-api/tree/master/test) are another place to see some usage examples.
 
 ```javascript
 var kudu = require("kudu-api")("website", "$username", "password");
@@ -92,9 +92,9 @@ The tests are pretty sparse right now, but they should at least attempt to hit a
 
 Because the tests integrate against a Azure Kudu api, you'll need to configure the following environment variables to point them at a Azure website.
 
-`WEBSITE`: The name of the Azure website.
-`USERNAME`: The [Azure Deployment Credentials](https://github.com/projectkudu/kudu/wiki/Deployment-credentials) user. Most likely WEBSITE preceded by a `$` sign.
-`PASSWORD`: The [Azure Deployment Credentials](https://github.com/projectkudu/kudu/wiki/Deployment-credentials) password. This likely **won't** be the same password you use to log into Azure.
+* `WEBSITE`: The name of the Azure website.
+* `USERNAME`: The [Azure Deployment Credentials](https://github.com/projectkudu/kudu/wiki/Deployment-credentials) user. Most likely WEBSITE preceded by a `$` sign.
+* `PASSWORD`: The [Azure Deployment Credentials](https://github.com/projectkudu/kudu/wiki/Deployment-credentials) password. This likely **won't** be the same password you use to log into Azure.
 
 For my setup, I have a simple script that I use to set these variables and run the tests:
 
