@@ -31,8 +31,8 @@ module.exports = function api(website, username, password) {
         settings: settings(r),
         dump: dump(r),
         diagnostics: diagnostics(r),
-        /*
         logs: logs(r),
+        /*
         extensions: extensions(r)
         */
     };
