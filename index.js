@@ -27,8 +27,8 @@ module.exports = function api(website, username, password) {
         zip: zip(r),
         deployment: deployment(r),
         sshkey: sshkey(r),
+        environment: environment(r),
         /*
-        environmen: environment(r),
         settings: settings(r),
         dump: dump(r),
         diagnostics: diagnostics(r),
