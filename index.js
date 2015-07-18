@@ -28,8 +28,8 @@ module.exports = function api(website, username, password) {
         deployment: deployment(r),
         sshkey: sshkey(r),
         environment: environment(r),
-        /*
         settings: settings(r),
+        /*
         dump: dump(r),
         diagnostics: diagnostics(r),
         logs: logs(r),
