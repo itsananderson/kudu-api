@@ -123,6 +123,46 @@ kudu.zip.upload("local/zip/path.zip", "remote/folder", function(err) {
 });
 ```
 
+### Deployment `kudu.deployment`
+
+```javascript
+kudu.deployment.list(function(err, deployments) {
+    if (err) throw err;
+    console.log(deployments;
+    // deployments is an array of objects with the following fields:
+    /*
+    { id: '1f19ea3b8e68397b6f7c290378526ef37975105d',
+      status: 4,
+      status_text: '',
+      author_email: 'asdf@example.com',
+      author: 'Author name',
+      deployer: '$website-name',
+      message: 'Git commit message\n',
+      progress: '',
+      received_time: '2015-07-20T07:33:46.2984383Z',
+      start_time: '2015-07-20T07:33:51.3762662Z',
+      end_time: '2015-07-20T07:33:53.3394642Z',
+      last_success_end_time: '2015-07-20T07:33:53.3394642Z',
+      complete: true,
+      active: true,
+      is_temp: false,
+      is_readonly: false,
+      url: 'https://website-name.scm.azurewebsites.net/api/deployments/1f19ea3b8e68397b6f7c290378526ef37975105d',
+      log_url: 'https://website-name.scm.azurewebsites.net/api/deployments/1f19ea3b8e68397b6f7c290378526ef37975105d/log',
+      site_name: 'website-name' }
+    */
+});
+deployment: {
+    list: [Function: list],
+    get: [Function: get],
+    del: [Function: del],
+    log: [Function: log],
+    logDetails: [Function: logDetails],
+    deploy: [Function: deploy],
+    redeploy: [Function: redeploy] },
+  
+```
+
 Here's some really terrible API docs.
 I plan to update them with more details soon.
 For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) should provide fairly reasonable documentation of expected inputs/outputs. The [tests](https://github.com/itsananderson/kudu-api/tree/master/test) are another place to see some usage examples.
@@ -133,15 +173,7 @@ var kudu = require("kudu-api")("website", "$username", "password");
 console.log(kudu);
 
 /*
-{ deployment: {
-    list: [Function: list],
-    get: [Function: get],
-    del: [Function: del],
-    log: [Function: log],
-    logDetails: [Function: logDetails],
-    deploy: [Function: deploy],
-    redeploy: [Function: redeploy] },
-  sshkey: {
+{ sshkey: {
     get: [Function: get] },
   environment: {
     get: [Function: get] },
