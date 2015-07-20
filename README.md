@@ -302,6 +302,22 @@ kudu.diagnostics.set("AzureDriveEnabled", true, function(err) {
 });
 ```
 
+### Diagnostic Logs `kudu.logs`
+
+```javascript
+// Returns most recent 100 logs by default
+kudu.logs.recent(function(err, logs) {
+    if (err) throw err;
+    console.log(logs);
+});
+
+// Can query for up to 1000 most recent logs
+kudu.logs.recent(1000, function(err, logs) {
+    if (err) throw err;
+    console.log(logs);
+});
+```
+
 Here's some really terrible API docs.
 I plan to update them with more details soon.
 For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) should provide fairly reasonable documentation of expected inputs/outputs. The [tests](https://github.com/itsananderson/kudu-api/tree/master/test) are another place to see some usage examples.
@@ -312,9 +328,7 @@ var kudu = require("kudu-api")("website", "$username", "password");
 console.log(kudu);
 
 /*
-{ logs: {
-    recent: [Function: recent] },
-  extensions: {
+{ extensions: {
     feed: {
       list: [Function: list],
       get: [Function: get] },
