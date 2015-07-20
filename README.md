@@ -17,6 +17,35 @@ npm install
 Usage
 ---
 
+### Instantiating
+
+```javascript
+var kudu = require("kudu-api")("website", "$username", "password");
+```
+
+### Source Control (scm)
+
+```javascript
+kudu.scm.info(function(err, info) {
+    if (err) throw err;
+    console.log(info);
+    /*
+    { Type: 1,
+      GitUrl: 'https://website-name.scm.azurewebsites.net/website-name.git' }
+    */
+});
+
+// Runs 'git clean -xdff' on the repository
+kudu.scm.clean(function(err) {
+    if (err) throw err;
+}));
+
+// Deletes the Git repository
+kudu.scm.del(function(err) {
+    if (err) throw err;
+}));
+```
+
 Here's some really terrible API docs.
 I plan to update them with more details soon.
 For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) should provide fairly reasonable documentation of expected inputs/outputs. The [tests](https://github.com/itsananderson/kudu-api/tree/master/test) are another place to see some usage examples.
@@ -27,11 +56,7 @@ var kudu = require("kudu-api")("website", "$username", "password");
 console.log(kudu);
 
 /*
-{ scm: {
-    info: [Function: info],
-    clean: [Function: clean],
-    del: [Function: del] },
-  command: {
+{ command: {
     exec: [Function: exec] },
   vfs: {
     getFile: [Function: getFile],
