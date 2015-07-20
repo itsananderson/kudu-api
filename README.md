@@ -318,27 +318,74 @@ kudu.logs.recent(1000, function(err, logs) {
 });
 ```
 
-Here's some really terrible API docs.
-I plan to update them with more details soon.
-For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) should provide fairly reasonable documentation of expected inputs/outputs. The [tests](https://github.com/itsananderson/kudu-api/tree/master/test) are another place to see some usage examples.
+### Site Extensions `kudu.extensions`
 
 ```javascript
-var kudu = require("kudu-api")("website", "$username", "password");
+kudu.extensions.feed.list(function(err, extensions) {
+    if (err) throw err;
+    console.log(extensions);
+    // extensions is an array of the available extensions like the following:
+    /*
+    { id: 'eventhubpeek',
+        title: 'EventHub Peek',
+        type: 'Gallery',
+        summary: null,
+        description: 'A Site Extension to allow simple peeking into a snapshot of the messages in an Event Hub',
+        version: '0.1.1',
+        extension_url: null,
+        project_url: 'https://github.com/stuartleeks/eventhubpeek',
+        icon_url: 'https://www.siteextensions.net/Content/Images/packageDefaultIcon-50x50.png',
+        license_url: 'https://github.com/stuartleeks/eventhubpeek/blob/master/license.md',
+        feed_url: null,
+        authors: [ 'Stuart Leeks' ],
+        published_date_time: null,
+        download_count: 0,
+        local_is_latest_version: null,
+        local_path: null,
+        installed_date_time: null,
+        provisioningState: null,
+        comment: null }
+    */
+});
 
-console.log(kudu);
+// You can filter the list by passing in a string
+kudu.extensions.feed.list("test", function(err, matchingExtensions) {
+    if (err) throw err;
+    console.log(matchingExtensions);
+});
 
-/*
-{ extensions: {
-    feed: {
-      list: [Function: list],
-      get: [Function: get] },
-    site: {
-      list: [Function: list],
-      get: [Function: get],
-      del: [Function: del],
-      set: [Function: set] } } }
-*/
+// Or retrieve a specific extension by ID
+kudu.extensions.feed.get("extensionId", function(err, extension) {
+    if (err) throw err;
+    console.log(extension);
+});
 
+// You can also list/filter/get currently installed extensions
+kudu.extensions.site.list(function(err, installedExtensions) {
+    if (err) throw err;
+    console.log(installedExtensions);
+});
+kudu.extensions.site.list("test", function(err, installedExtensions) {
+    if (err) throw err;
+    console.log(installedExtensions);
+});
+kudu.extensions.site.get("extensionId", function(err, extension) {
+    if (err) throw err;
+    console.log(extension);
+});
+
+// You can delete an installed extension
+kudu.extensions.site.del("extensionId", function(err) {
+    if (err) throw err;
+});
+
+// Enable or update an extension by passing its full object
+kudu.extensions.feed.get("extensionId", function(err, extension) {
+    if (err) throw err;
+    kudu.extensions.feed.set("extensionId, extension, function(err) {
+        if (err) throw err;
+    });
+});
 ```
 
 Testing
