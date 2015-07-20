@@ -10,19 +10,23 @@ describe("vfs", function() {
     });
 
     it("can get a file", function(done) {
-        api.vfs.getFile("site/wwwroot/hostingstart.html", function() {
+        api.vfs.getFile("site/wwwroot/test.txt", function(err, content) {
+            if (err) done(err);
+
+            assert.equal(content, "test\n", "File content should be 'test\\n'");
             done();
         });
     });
     it("can list files", function(done) {
-        api.vfs.listFiles("site/wwwroot", function() {
+        api.vfs.listFiles("site/wwwroot", function(err, fileList) {
+            if (err) done(err);
+
+            assert.equal(typeof fileList.length, "number", "File list should be an array with valid length");
             done();
         });
     });
     it("can upload file", function(done) {
-        api.vfs.uploadFile(path.join(__dirname, "test.txt"), "site/wwwroot/test.txt", function() {
-            done();
-        });
+        api.vfs.uploadFile(path.join(__dirname, "test.txt"), "site/wwwroot/test.txt", done);
     });
     it("can validate an etag when uploading file", function(done) {
         api.vfs.uploadFile(path.join(__dirname, "test.txt"), "site/wwwroot/test.txt", "foo", function(err) {
@@ -39,18 +43,12 @@ describe("vfs", function() {
         });
     });
     it("can create directories", function(done) {
-        api.vfs.createDirectory("site/wwwroot/test1/test2", function() {
-            done();
-        });
+        api.vfs.createDirectory("site/wwwroot/test1/test2", done);
     });
     it("can delete a file", function(done) {
-        api.vfs.deleteFile("site/wwwroot/test.txt", function() {
-            done();
-        });
+        api.vfs.deleteFile("site/wwwroot/test.txt", done);
     });
     it("can delete a directory", function(done) {
-        api.vfs.deleteDirectory("site/wwwroot/test1/test2", function() {
-            done();
-        });
+        api.vfs.deleteDirectory("site/wwwroot/test1/test2", done);
     });
 });
