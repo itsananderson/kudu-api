@@ -258,6 +258,16 @@ kudu.settings.del("SOME_SETTING", function(err) {
 kudu.settings.set("SOME_SETTING", "value", function(err) {
     if (err) throw err;
 });
+```
+
+### Diagnostics Dump `kudu.dump`
+
+```javascript
+// Downloads all the diagnostic logs as a zip file
+kudu.dump.download("local/path.zip", function(err) {
+    if (err) throw err;
+});
+```
 
 Here's some really terrible API docs.
 I plan to update them with more details soon.
