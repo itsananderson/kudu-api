@@ -252,7 +252,7 @@ Tests can be run with `mocha` or `npm test`
 
 The tests are pretty sparse right now, but they should at least attempt to hit all the endpoints.
 
-Because the tests integrate against a Azure Kudu api, you'll need to configure the following environment variables to point them at a Azure website.
+Because the tests integrate against a Azure Kudu api, you'll need to configure the following environment variables to point them at an Azure website.
 
 * `WEBSITE`: The name of the Azure website.
 * `USERNAME`: The [Azure Deployment Credentials](https://github.com/projectkudu/kudu/wiki/Deployment-credentials) user.
