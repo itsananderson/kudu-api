@@ -222,6 +222,20 @@ kudu.sshkey.get(true, function(err, key) {
 });
 ```
 
+### Kudu Environment `kudu.environment`
+
+```javascript
+// Get some basic information about the Kudu environment
+kudu.environment.get(function(err, environment) {
+    if (err) throw err;
+    console.log(environment);
+    /*
+    { version: '46.40702.1647.0',
+      siteLastModified: '2015-07-20T06:55:03.4330000Z' }
+    */
+});
+```
+
 Here's some really terrible API docs.
 I plan to update them with more details soon.
 For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) should provide fairly reasonable documentation of expected inputs/outputs. The [tests](https://github.com/itsananderson/kudu-api/tree/master/test) are another place to see some usage examples.
