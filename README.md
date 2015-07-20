@@ -236,6 +236,29 @@ kudu.environment.get(function(err, environment) {
 });
 ```
 
+### Settings `kudu.settings`
+
+```javascript
+kudu.settings.list(function(err, settings) {
+    if (err) throw err;
+    console.log(settings);
+    // Settings is an object of key/value pairs
+});
+
+kudu.settings.get("SOME_SETTING", function(err, value) {
+    if (err) throw err;
+    console.log(value);
+});
+
+kudu.settings.del("SOME_SETTING", function(err) {
+    if (err) throw err;
+});
+```
+
+kudu.settings.set("SOME_SETTING", "value", function(err) {
+    if (err) throw err;
+});
+
 Here's some really terrible API docs.
 I plan to update them with more details soon.
 For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) should provide fairly reasonable documentation of expected inputs/outputs. The [tests](https://github.com/itsananderson/kudu-api/tree/master/test) are another place to see some usage examples.
@@ -246,16 +269,7 @@ var kudu = require("kudu-api")("website", "$username", "password");
 console.log(kudu);
 
 /*
-{ sshkey: {
-    get: [Function: get] },
-  environment: {
-    get: [Function: get] },
-  settings: {
-    list: [Function: list],
-    get: [Function: get],
-    del: [Function: del],
-    set: [Function: set] },
-  dump: {
+{ dump: {
     download: [Function: download] },
   diagnostics: {
     list: [Function: list],
