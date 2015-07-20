@@ -269,6 +269,39 @@ kudu.dump.download("local/path.zip", function(err) {
 });
 ```
 
+### Diagnostics Settings `kudu.diagnostics`
+
+```javascript
+kudu.diagnostics.list(function(err, settings) {
+    if (err) throw err;
+    console.log(settings);
+    /*
+    { AzureDriveEnabled: false,
+      AzureDriveTraceLevel: 'Error',
+      AzureTableEnabled: false,
+      AzureTableTraceLevel: 'Error',
+      AzureBlobEnabled: false,
+      AzureBlobTraceLevel: 'Error' }
+    */
+});
+
+kudu.diagnostics.get("AzureDriveEnabled", function(err, value) {
+    if (err) throw err;
+    console.log(value);
+    // false
+});
+
+// This is a no-op on the pre-defined diagnostics settings
+// But if you accidentally define non-standard fields, they can be deleted
+kudu.diagnostics.del("some_setting", function(err) {
+    if (err) throw err;
+});
+
+kudu.diagnostics.set("AzureDriveEnabled", true, function(err) {
+    if (err) throw err;
+});
+```
+
 Here's some really terrible API docs.
 I plan to update them with more details soon.
 For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) should provide fairly reasonable documentation of expected inputs/outputs. The [tests](https://github.com/itsananderson/kudu-api/tree/master/test) are another place to see some usage examples.
@@ -279,14 +312,7 @@ var kudu = require("kudu-api")("website", "$username", "password");
 console.log(kudu);
 
 /*
-{ dump: {
-    download: [Function: download] },
-  diagnostics: {
-    list: [Function: list],
-    get: [Function: get],
-    del: [Function: del],
-    set: [Function: set] },
-  logs: {
+{ logs: {
     recent: [Function: recent] },
   extensions: {
     feed: {
