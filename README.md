@@ -23,7 +23,7 @@ Usage
 var kudu = require("kudu-api")("website", "$username", "password");
 ```
 
-### Source Control (scm)
+### Source Control `kudu.scm`
 
 ```javascript
 kudu.scm.info(function(err, info) {
@@ -46,6 +46,24 @@ kudu.scm.del(function(err) {
 }));
 ```
 
+### Run commands `kudu.command`
+
+```javascript
+
+kudu.command.exec("echo hello world", "site/wwwroot", function(err, result) {
+    if (err) throw err;
+    console.log(result);
+    // { Output: 'hello world\r\n', Error: '', ExitCode: 0 }
+});
+
+// Leaving out the directory will default to D:\home
+kudu.command.exec("echo %CD%", function(err, result) {
+    if (err) throw err;
+    console.log(result);
+    // { Output: 'D:\\home\r\n', Error: '', ExitCode: 0 }
+});
+```
+
 Here's some really terrible API docs.
 I plan to update them with more details soon.
 For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) should provide fairly reasonable documentation of expected inputs/outputs. The [tests](https://github.com/itsananderson/kudu-api/tree/master/test) are another place to see some usage examples.
@@ -56,9 +74,7 @@ var kudu = require("kudu-api")("website", "$username", "password");
 console.log(kudu);
 
 /*
-{ command: {
-    exec: [Function: exec] },
-  vfs: {
+{ vfs: {
     getFile: [Function: getFile],
     listFiles: [Function: listFiles],
     uploadFile: [Function: uploadFile],
