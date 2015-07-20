@@ -79,7 +79,7 @@ kudu.vfs.listFiles("site", function(err, files) {
         size: 0,
         mtime: '2015-07-20T07:06:58.5493241+00:00',
         mime: 'inode/directory',
-        href: 'https://yoursite.scm.azurewebsites.net/api/vfs/site/deployments/',
+        href: 'https://website-name.scm.azurewebsites.net/api/vfs/site/deployments/',
         path: 'D:\\home\\site\\deployments' }
     */
 });
@@ -152,15 +152,56 @@ kudu.deployment.list(function(err, deployments) {
       site_name: 'website-name' }
     */
 });
-deployment: {
-    list: [Function: list],
-    get: [Function: get],
-    del: [Function: del],
-    log: [Function: log],
-    logDetails: [Function: logDetails],
-    deploy: [Function: deploy],
-    redeploy: [Function: redeploy] },
-  
+
+kudu.deployment.get("1f19ea3b8e68397b6f7c290378526ef37975105d", function(err, deployment) {
+    if (err) throw err;
+    // Deployment object has the same fields as described above
+});
+
+kudu.deployment.del("1f19ea3b8e68397b6f7c290378526ef37975105d", function(err) {
+    if (err) throw err;
+});
+
+kudu.deployment.log("1f19ea3b8e68397b6f7c290378526ef37975105d", function(err, logs) {
+    if (err) throw err;
+    console.log(logs);
+    // logs is an array with the following fields
+    /*
+    { log_time: '2015-07-20T07:33:51.0880433Z',
+        id: 'afd758d5-d89b-4908-8ac6-0c5338896495',
+        message: 'Updating branch \'1f19ea3b8e68397b6f7c290378526ef37975105d\'.',
+        type: 0,
+        details_url: null }
+    */
+});
+
+kudu.deployment.logDetails("1f19ea3b8e68397b6f7c290378526ef37975105d", "f198cf1b-8aca-4205-9be3-cd6a6855e4a0", function(err, details) {
+    if (err) throw err;
+    console.log(details);
+    // details is an array of objects with the following fields
+    /*
+    { log_time: '2015-07-20T07:33:51.6940595Z',
+        id: '4c9aa430-c05c-49d5-b29e-8878c6bcda62',
+        message: 'Command: "D:\\home\\site\\deployments\\tools\\deploy.cmd"',
+        type: 0,
+        details_url: null }
+    */
+});
+
+// Deploy from a Git url
+kudu.deployment.deploy("https://github.com/itsananderson/kudu-api-website.git", function(err) {
+    if (err) throw err;
+});
+
+// You can also deploy a specific commit/branch
+kudu.deployment.deploy("https://github.com/itsananderson/kudu-api-website.git#1f19ea3b8e68397b6f7c290378526ef37975105d", function(err) {
+    if (err) throw err;
+});
+
+// You can also redeploy a previous deployment by id
+kudu.deployment.redeploy("1f19ea3b8e68397b6f7c290378526ef37975105d", function(err) {
+    if (err) throw err;
+});
 ```
 
 Here's some really terrible API docs.
