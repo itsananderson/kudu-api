@@ -204,6 +204,24 @@ kudu.deployment.redeploy("1f19ea3b8e68397b6f7c290378526ef37975105d", function(er
 });
 ```
 
+### SSH Key `kudu.sshkey`
+
+```javascript
+// Acquires the public key used for deployments
+kudu.sshkey.get(function(err, key) {
+    if (err) throw err;
+    console.log(key);
+    // If no key has been configured, 'key' will be an empty string
+})
+
+// You can have Kudu generate a key if none exists
+kudu.sshkey.get(true, function(err, key) {
+    if (err) throw err;
+    console.log(key);
+    // 'key' contains the existing, or newly generated (if none existed) key
+});
+```
+
 Here's some really terrible API docs.
 I plan to update them with more details soon.
 For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) should provide fairly reasonable documentation of expected inputs/outputs. The [tests](https://github.com/itsananderson/kudu-api/tree/master/test) are another place to see some usage examples.
