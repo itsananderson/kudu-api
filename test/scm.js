@@ -17,4 +17,8 @@ describe("scm", function() {
         // If successful, returns a 204. If no Git repo exists, returns a 500
         api.scm.clean(done);
     });
+    it("can delete repo", function(done) {
+        // If successful, default config is still returned, so this is hard to test
+        api.scm.del(done);
+    });
 });
