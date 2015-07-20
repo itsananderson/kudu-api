@@ -1,8 +1,13 @@
+var assert = require("assert");
 var path = require("path");
 var api = require("../")(process.env.WEBSITE, process.env.USERNAME, process.env.PASSWORD);
 
 describe("vfs", function() {
     this.timeout(5000);
+
+    before(function(done) {
+        api.vfs.uploadFile(path.join(__dirname, "test.txt"), "site/wwwroot/test.txt", done);
+    });
 
     it("can get a file", function(done) {
         api.vfs.getFile("site/wwwroot/hostingstart.html", function() {
@@ -16,6 +21,12 @@ describe("vfs", function() {
     });
     it("can upload file", function(done) {
         api.vfs.uploadFile(path.join(__dirname, "test.txt"), "site/wwwroot/test.txt", function() {
+            done();
+        });
+    });
+    it("can validate an etag when uploading file", function(done) {
+        api.vfs.uploadFile(path.join(__dirname, "test.txt"), "site/wwwroot/test.txt", "foo", function(err) {
+            assert(err, "Should error with mismatched etag");
             done();
         });
     });
