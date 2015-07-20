@@ -64,6 +64,50 @@ kudu.command.exec("echo %CD%", function(err, result) {
 });
 ```
 
+### Virtual File System `kudu.vfs`
+
+```javascript
+kudu.vfs.getFile("path/to/file", function(err, fileContents) {
+    if (err) throw err;
+    // fileContents is a string
+});
+
+kudu.vfs.listFiles("site", function(err, files) {
+    if (err) throw err;
+    /* files is an array of files with the following fields
+    { name: 'deployments',
+        size: 0,
+        mtime: '2015-07-20T07:06:58.5493241+00:00',
+        mime: 'inode/directory',
+        href: 'https://yoursite.scm.azurewebsites.net/api/vfs/site/deployments/',
+        path: 'D:\\home\\site\\deployments' }
+    */
+});
+
+// By default, uploadFile uploads with `If-Match` set to "*", overwriting any existing file
+kudu.vfs.uploadFile("./local/file/path", "remote/file/path", function(err) {
+    if (err) throw err;
+});
+
+// You can provide an etag so that the file is only uploaded if the old version's etag matches
+// If the version doesn't match, "err" will contain a JSON object containing the error message
+kudu.vfs.uploadFile("./local/file/path.txt", "remote/file/path.txt", "oldfileetag", function(err) {
+    if (err) throw err;
+});
+
+kudu.vfs.createDirectory("remote/directory", function(err) {
+    if (err) throw err;
+});
+
+kudu.vfs.deleteFile("remote/file/path.txt", function(err) {
+    if (err) throw err;
+});
+
+kudu.vfs.deleteDirectory("remote/directory/path", function(err) {
+    if (err) throw err;
+});
+```
+
 Here's some really terrible API docs.
 I plan to update them with more details soon.
 For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) should provide fairly reasonable documentation of expected inputs/outputs. The [tests](https://github.com/itsananderson/kudu-api/tree/master/test) are another place to see some usage examples.
@@ -74,14 +118,7 @@ var kudu = require("kudu-api")("website", "$username", "password");
 console.log(kudu);
 
 /*
-{ vfs: {
-    getFile: [Function: getFile],
-    listFiles: [Function: listFiles],
-    uploadFile: [Function: uploadFile],
-    createDirectory: [Function: createDirectory],
-    deleteFile: [Function: deleteFile],
-    deleteDirectory: [Function: deleteDirectory] },
-  zip: {
+{ zip: {
     download: [Function: download],
     upload: [Function: upload] },
   deployment: {
