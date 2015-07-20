@@ -253,7 +253,6 @@ kudu.settings.get("SOME_SETTING", function(err, value) {
 kudu.settings.del("SOME_SETTING", function(err) {
     if (err) throw err;
 });
-```
 
 kudu.settings.set("SOME_SETTING", "value", function(err) {
     if (err) throw err;
