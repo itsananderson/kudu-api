@@ -30,6 +30,14 @@ describe("vfs", function() {
             done();
         });
     });
+    it("can upload a file with a matching etag", function(done) {
+        api.vfs.getFile("site/wwwroot/test.txt", function(err, file, response) {
+            var etag = response.headers.etag;
+            api.vfs.uploadFile(path.join(__dirname, "test.txt"), "site/wwwroot/test.txt", etag, function(err) {
+                done(err);
+            });
+        });
+    });
     it("can create directories", function(done) {
         api.vfs.createDirectory("site/wwwroot/test1/test2", function() {
             done();
