@@ -108,6 +108,21 @@ kudu.vfs.deleteDirectory("remote/directory/path", function(err) {
 });
 ```
 
+### Zip `kudu.zip`
+
+```javascript
+// Zips a folder on the server and downloads it to the local path
+kudu.zip.download("remote/folder", "local/zip/path.zip", function(err) {
+    if (err) throw err;
+});
+
+// Uploads a zip from the local machine and unzips it into the destination path
+// The destination path must exist
+kudu.zip.upload("local/zip/path.zip", "remote/folder", function(err) {
+    if (err) throw err;
+});
+```
+
 Here's some really terrible API docs.
 I plan to update them with more details soon.
 For now, the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/REST-API) should provide fairly reasonable documentation of expected inputs/outputs. The [tests](https://github.com/itsananderson/kudu-api/tree/master/test) are another place to see some usage examples.
@@ -118,10 +133,7 @@ var kudu = require("kudu-api")("website", "$username", "password");
 console.log(kudu);
 
 /*
-{ zip: {
-    download: [Function: download],
-    upload: [Function: upload] },
-  deployment: {
+{ deployment: {
     list: [Function: list],
     get: [Function: get],
     del: [Function: del],
