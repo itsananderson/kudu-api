@@ -389,7 +389,7 @@ kudu.extensions.feed.get("extensionId", function(err, extension) {
 
 ### Misc Usage Notes
 
-All callbacks receive a response object as their final object.
+All callbacks receive a response object as their final argument.
 You can use it if you need to check a `response.statusCode` from the server, or (in the case of the `vfs` api) get `response.headers.etag`.
 
 Testing
