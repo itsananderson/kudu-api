@@ -1,5 +1,5 @@
 var assert = require("assert");
-var api = require("../")(process.env.WEBSITE, process.env.BASIC);
+var api = require("../")({website: process.env.WEBSITE, basic: process.env.BASIC});
 
 describe("environment", function() {
     this.timeout(5000);

@@ -20,7 +20,7 @@ Usage
 ### Instantiating
 
 ```javascript
-var kudu = require("kudu-api")("website", "$username", "password");
+var kudu = require("kudu-api")({"website": "website", username:"$username", password: "password"});
 ```
 
 ### Source Control `kudu.scm`
