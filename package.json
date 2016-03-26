@@ -1,6 +1,6 @@
 {
   "name": "kudu-api",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Node wrapper for the Kudu REST API",
   "main": "index.js",
   "scripts": {
