@@ -381,7 +381,7 @@ kudu.extensions.site.del("extensionId", function(err) {
 // Enable or update an extension by passing its full object
 kudu.extensions.feed.get("extensionId", function(err, extension) {
     if (err) throw err;
-    kudu.extensions.feed.set("extensionId, extension, function(err) {
+    kudu.extensions.feed.set("extensionId", extension, function(err) {
         if (err) throw err;
     });
 });
