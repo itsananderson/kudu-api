@@ -13,9 +13,19 @@ var logs = require("./lib/logs");
 var extensions = require("./lib/extensions");
 
 module.exports = function api(options) {
+    // Backward compat for old method signature
+    if (typeof options === "string") {
+        options = {
+            website: options,
+            username: arguments[1],
+            password: arguments[2]
+        };
+    }
+
     //options: website, username, password, basic (hashed)
     var website = options.website,
         headers = {};
+
     if(options.username && options.password){
         headers.Authorization =  "Basic " +
             new Buffer(options.username + ":" + options.password)
