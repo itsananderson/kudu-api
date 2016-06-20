@@ -1,5 +1,5 @@
 var assert = require("assert");
-var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
+var api = require("../")({website: process.env.WEBSITE, basic: process.env.BASIC});
 
 describe("environment", function() {
     this.timeout(5000);

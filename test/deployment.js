@@ -2,7 +2,7 @@ var assert = require("assert");
 var fs = require("fs");
 var path = require("path");
 var exec = require("child_process").exec;
-var api = require("../")(process.env.WEBSITE, process.env.USERNAME, process.env.PASSWORD);
+var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
 
 var gitUrl1 = "https://github.com/itsananderson/kudu-api-website.git";
 var gitUrl2 = "https://github.com/itsananderson/kudu-api-website.git#1f19ea3b8e68397b6f7c290378526ef37975105d";
@@ -20,7 +20,7 @@ describe("deployment", function() {
                 if (err) done(err);
                 api.deployment.list(function(err, deployments) {
                     if (err) done(err);
-                    deploymentList = deployments; 
+                    deploymentList = deployments;
                     done();
                 });
             });
@@ -78,7 +78,7 @@ describe("deployment", function() {
         api.deployment.log(deploymentList[0].id, function(err, entries) {
             if (err) done(err);
 
-            assert(Array.isArray(entries), "number", "Deployment log entries should be an array"); 
+            assert(Array.isArray(entries), "number", "Deployment log entries should be an array");
             done();
         });
     });
