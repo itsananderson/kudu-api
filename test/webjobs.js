@@ -17,4 +17,15 @@ describe("webjobs", function () {
             done();
         });
     });
+
+    it("can get triggered webjobs", function (done) {
+        api.webjobs.listTriggered(function (err, data) {
+            if (err) {
+                return done(err);
+            }
+
+            assert.strictEqual(data.length, 0, "Triggered job list should be empty.");
+            done();
+        });
+    });
 });
