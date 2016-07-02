@@ -11,6 +11,7 @@ var dump = require("./lib/dump");
 var diagnostics = require("./lib/diagnostics");
 var logs = require("./lib/logs");
 var extensions = require("./lib/extensions");
+var webjobs = require("./lib/webjobs");
 
 module.exports = function api(options) {
     // Backward compat for old method signature
@@ -52,6 +53,7 @@ module.exports = function api(options) {
         dump: dump(r),
         diagnostics: diagnostics(r),
         logs: logs(r),
-        extensions: extensions(r)
+        extensions: extensions(r),
+        webjobs: webjobs(r)
     };
 };
