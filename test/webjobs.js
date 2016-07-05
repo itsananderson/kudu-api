@@ -12,7 +12,7 @@ function createJobZip(localPath, cb) {
     };
 
     var zip = new JSZip();
-    zip.file("run.cmd", "echo hello world");
+    zip.file("run.cmd", "echo hello world %*");
     zip.generateNodeStream(generateOptions)
         .pipe(fs.createWriteStream(localPath))
         .on("error", cb)
@@ -87,6 +87,41 @@ describe("webjobs", function () {
 
         it("should report error getting unknown triggered webjob", function (done) {
             api.webjobs.getTriggered("unknown-job", function (err) {
+                if (err) {
+                    var statusPattern = /404\ \(Not\ Found\)/;
+                    assert(statusPattern.test(err.message), "Unknown triggered job error should contain status code.");
+
+                    return done();
+                }
+
+                done(new Error("Expected error was not thrown."));
+            });
+        });
+
+        it("can run triggered webjob", function (done) {
+            api.webjobs.runTriggered("triggered-job", function (err, response) {
+                if (err) {
+                    return done(err);
+                }
+
+                assert.strictEqual(response.statusCode, 202);
+                done();
+            });
+        });
+
+        it("can run triggered webjob with arguments", function (done) {
+            api.webjobs.runTriggered("triggered-job", "--message \"Kudu's API\"", function (err, response) {
+                if (err) {
+                    return done(err);
+                }
+
+                assert.strictEqual(response.statusCode, 202);
+                done();
+            });
+        });
+
+        it("should report error running unknown triggered webjob", function (done) {
+            api.webjobs.runTriggered("unknown-job", function (err) {
                 if (err) {
                     var statusPattern = /404\ \(Not\ Found\)/;
                     assert(statusPattern.test(err.message), "Unknown triggered job error should contain status code.");
