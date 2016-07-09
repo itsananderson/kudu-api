@@ -143,6 +143,23 @@ describe("webjobs", function () {
                 done();
             });
         });
+
+        it("can get triggered webjob history item by id", function (done) {
+            api.webjobs.listTriggeredHistory("triggered-job", function (err, list) {
+                if (err) {
+                    return done(err);
+                }
+
+                api.webjobs.getTriggeredHistory("triggered-job", list.runs[0].id, function (err, item) {
+                    if (err) {
+                        return done(err);
+                    }
+
+                    assert.strictEqual(item.output_url.slice(-4), ".txt", "History for triggered job should contain text output URL.");
+                    done();
+                });
+            });
+        });
     });
 
     describe("triggered upload", function () {
