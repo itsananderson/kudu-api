@@ -132,6 +132,17 @@ describe("webjobs", function () {
                 done(new Error("Expected error was not thrown."));
             });
         });
+
+        it("can list triggered webjob history", function (done) {
+            api.webjobs.listTriggeredHistory("triggered-job", function (err, data) {
+                if (err) {
+                    return done(err);
+                }
+
+                assert(Array.isArray(data.runs), "History list for triggered job should contain runs.");
+                done();
+            });
+        });
     });
 
     describe("triggered upload", function () {
