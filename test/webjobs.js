@@ -262,7 +262,13 @@ describe("webjobs", function () {
                 }
 
                 assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
-                done();
+
+                api.webjobs.getTriggered("triggerd-job", function (err, ignore, response) {
+                    assert(err);
+                    assert.strictEqual(response.statusCode, 404, "Deleted triggered job should be not found.");
+
+                    done();
+                });
             });
         });
 
