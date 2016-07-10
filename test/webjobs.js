@@ -3,35 +3,78 @@
 var assert = require("assert");
 var fs = require("fs");
 var JSZip = require("jszip");
+var retry = require("retry");
 var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
 
-function createJobZip(localPath, cb) {
+var triggeredFiles = {
+    "run.cmd": "echo hello world %*"
+};
+
+function createJobZip(localPath, files, cb) {
     var generateOptions = {
         type: "nodebuffer",
         streamFiles: true
     };
 
     var zip = new JSZip();
-    zip.file("run.cmd", "echo hello world %*");
+
+    Object.keys(files).forEach(function (key) {
+        zip.file(key, files[key]);
+    });
+
     zip.generateNodeStream(generateOptions)
         .pipe(fs.createWriteStream(localPath))
         .on("error", cb)
         .on("finish", cb);
 }
 
+function createPollingCallback(cb) {
+    var operation = retry.operation({
+        retries: 5
+    });
+
+    function resolveError(data) {
+        if (data.length) {
+            return;
+        }
+
+        return new Error("Job list is empty.");
+    }
+
+    function ensureResults(err, data) {
+        err = err || resolveError(data);
+
+        if (operation.retry(err)) {
+            return;
+        }
+
+        cb(err && operation.mainError(), data);
+    }
+
+    return function pollingCallback(err) {
+        if (err) {
+            return cb(err);
+        }
+
+        operation.attempt(function () {
+            api.webjobs.listAll(ensureResults);
+        });
+    };
+}
+
 describe("webjobs", function () {
-    this.timeout(5000);
+    this.timeout(10000);
 
     describe("triggered read operations", function () {
         var localPath = "test/artifacts/triggered-job.zip";
 
         before(function (done) {
-            createJobZip(localPath, function (err) {
+            createJobZip(localPath, triggeredFiles, function (err) {
                 if (err) {
                     return done(err);
                 }
 
-                api.webjobs.uploadTriggered("triggered-job", localPath, done);
+                api.webjobs.uploadTriggered("triggered-job", localPath, createPollingCallback(done));
             });
         });
 
@@ -166,7 +209,7 @@ describe("webjobs", function () {
         var localPath = "test/artifacts/triggered-job.zip";
 
         before(function (done) {
-            createJobZip(localPath, done);
+            createJobZip(localPath, triggeredFiles, done);
         });
 
         after(function (done) {
@@ -197,7 +240,7 @@ describe("webjobs", function () {
         var localPath = "test/artifacts/triggered-job.zip";
 
         before(function (done) {
-            createJobZip(localPath, done);
+            createJobZip(localPath, triggeredFiles, done);
         });
 
         after(function (done) {
