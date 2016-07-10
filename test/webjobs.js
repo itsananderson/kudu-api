@@ -9,6 +9,9 @@ var api = require("../")({website: process.env.WEBSITE, username: process.env.US
 var triggeredFiles = {
     "run.cmd": "echo hello world %*"
 };
+var continuousFiles = {
+    "run.js": "console.log(process.argv.join(' ')); setInterval(() => console.log('ping'), 30000);"
+};
 
 function createJobZip(localPath, files, cb) {
     var generateOptions = {
@@ -274,15 +277,117 @@ describe("webjobs", function () {
                 });
             });
         });
+    });
 
-        it("can delete unknown triggered webjob", function (done) {
-            api.webjobs.deleteTriggered("unknown-job", function (err, response) {
+    describe("continuous read operations", function () {
+        var jobName = "continuous-job-1";
+        var localPath = "test/artifacts/continuous-job.zip";
+
+        before(function (done) {
+            createJobZip(localPath, continuousFiles, function (err) {
+                if (err) {
+                    return done(err);
+                }
+
+                api.webjobs.uploadContinuous(jobName, localPath, createPollingCallback(done));
+            });
+        });
+
+        after(function (done) {
+            api.webjobs.deleteContinuous(jobName, function () {
+                fs.unlink(localPath, done);
+            });
+        });
+
+        it("can list continuous webjobs", function (done) {
+            api.webjobs.listContinuous(function (err, data) {
+                if (err) {
+                    return done(err);
+                }
+
+                assert.strictEqual(data.length, 1, "Continuous job list should contain one entry.");
+                done();
+            });
+        });
+
+        it("can get continuous webjob by name", function (done) {
+            api.webjobs.getContinuous(jobName, function (err, data) {
+                if (err) {
+                    return done(err);
+                }
+
+                assert.strictEqual(data.name, jobName, "Continuous job should have correct name.");
+                done();
+            });
+        });
+    });
+
+    describe("continuous upload", function () {
+        var jobName = "continuous-job-2";
+        var localPath = "test/artifacts/continuous-job.zip";
+
+        before(function (done) {
+            createJobZip(localPath, continuousFiles, done);
+        });
+
+        after(function (done) {
+            fs.unlink(localPath, done);
+        });
+
+        afterEach(function (done) {
+            api.webjobs.deleteContinuous(jobName, function () {
+                // Ignore errors.
+                done();
+            });
+        });
+
+        it("can upload continuous webjob", function (done) {
+            api.webjobs.uploadContinuous(jobName, localPath, function (err, data, response) {
                 if (err) {
                     return done(err);
                 }
 
                 assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
+                assert.strictEqual(data.type, "continuous", "Should have correct type.");
                 done();
+            });
+        });
+    });
+
+    describe("continuous delete", function () {
+        var jobName = "continuous-job-3";
+        var localPath = "test/artifacts/continuous-job.zip";
+
+        before(function (done) {
+            createJobZip(localPath, continuousFiles, done);
+        });
+
+        after(function (done) {
+            fs.unlink(localPath, done);
+        });
+
+        beforeEach(function (done) {
+            api.webjobs.uploadContinuous(jobName, localPath, done);
+        });
+
+        afterEach(function (done) {
+            api.webjobs.deleteContinuous(jobName, done);
+        });
+
+        it("can delete continuous webjob", function (done) {
+            api.webjobs.deleteContinuous(jobName, function (err, response) {
+                if (err) {
+                    return done(err);
+                }
+
+                assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
+
+                api.webjobs.getContinuous(jobName, function (err, ignore, response) {
+                    assert(err);
+                    assert.strictEqual(response.statusCode, 404, "Deleted continuous job should be not found.");
+
+                    done();
+                });
             });
         });
     });
