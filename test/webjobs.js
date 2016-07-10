@@ -66,6 +66,7 @@ describe("webjobs", function () {
     this.timeout(10000);
 
     describe("triggered read operations", function () {
+        var jobName = "triggered-job-1";
         var localPath = "test/artifacts/triggered-job.zip";
 
         before(function (done) {
@@ -74,12 +75,12 @@ describe("webjobs", function () {
                     return done(err);
                 }
 
-                api.webjobs.uploadTriggered("triggered-job", localPath, createPollingCallback(done));
+                api.webjobs.uploadTriggered(jobName, localPath, createPollingCallback(done));
             });
         });
 
         after(function (done) {
-            api.webjobs.deleteTriggered("triggered-job", function () {
+            api.webjobs.deleteTriggered(jobName, function () {
                 fs.unlink(localPath, done);
             });
         });
@@ -118,12 +119,12 @@ describe("webjobs", function () {
         });
 
         it("can get triggered webjob by name", function (done) {
-            api.webjobs.getTriggered("triggered-job", function (err, data) {
+            api.webjobs.getTriggered(jobName, function (err, data) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(data.name, "triggered-job", "Triggered job data does not contain correct name.");
+                assert.strictEqual(data.name, jobName, "Triggered job data does not contain correct name.");
                 done();
             });
         });
@@ -142,7 +143,7 @@ describe("webjobs", function () {
         });
 
         it("can run triggered webjob", function (done) {
-            api.webjobs.runTriggered("triggered-job", function (err, response) {
+            api.webjobs.runTriggered(jobName, function (err, response) {
                 if (err) {
                     return done(err);
                 }
@@ -153,7 +154,7 @@ describe("webjobs", function () {
         });
 
         it("can run triggered webjob with arguments", function (done) {
-            api.webjobs.runTriggered("triggered-job", "--message \"Kudu's API\"", function (err, response) {
+            api.webjobs.runTriggered(jobName, "--message \"Kudu's API\"", function (err, response) {
                 if (err) {
                     return done(err);
                 }
@@ -177,7 +178,7 @@ describe("webjobs", function () {
         });
 
         it("can list triggered webjob history", function (done) {
-            api.webjobs.listTriggeredHistory("triggered-job", function (err, data) {
+            api.webjobs.listTriggeredHistory(jobName, function (err, data) {
                 if (err) {
                     return done(err);
                 }
@@ -188,12 +189,12 @@ describe("webjobs", function () {
         });
 
         it("can get triggered webjob history item by id", function (done) {
-            api.webjobs.listTriggeredHistory("triggered-job", function (err, list) {
+            api.webjobs.listTriggeredHistory(jobName, function (err, list) {
                 if (err) {
                     return done(err);
                 }
 
-                api.webjobs.getTriggeredHistory("triggered-job", list.runs[0].id, function (err, item) {
+                api.webjobs.getTriggeredHistory(jobName, list.runs[0].id, function (err, item) {
                     if (err) {
                         return done(err);
                     }
@@ -206,6 +207,7 @@ describe("webjobs", function () {
     });
 
     describe("triggered upload", function () {
+        var jobName = "triggered-job-2";
         var localPath = "test/artifacts/triggered-job.zip";
 
         before(function (done) {
@@ -217,14 +219,14 @@ describe("webjobs", function () {
         });
 
         afterEach(function (done) {
-            api.webjobs.deleteTriggered("triggered-job", function () {
+            api.webjobs.deleteTriggered(jobName, function () {
                 // Ignore errors.
                 done();
             });
         });
 
         it("can upload triggered webjob", function (done) {
-            api.webjobs.uploadTriggered("triggered-job", localPath, function (err, data, response) {
+            api.webjobs.uploadTriggered(jobName, localPath, function (err, data, response) {
                 if (err) {
                     return done(err);
                 }
@@ -237,6 +239,7 @@ describe("webjobs", function () {
     });
 
     describe("triggered delete", function () {
+        var jobName = "triggered-job-3";
         var localPath = "test/artifacts/triggered-job.zip";
 
         before(function (done) {
@@ -248,22 +251,22 @@ describe("webjobs", function () {
         });
 
         beforeEach(function (done) {
-            api.webjobs.uploadTriggered("triggered-job", localPath, done);
+            api.webjobs.uploadTriggered(jobName, localPath, done);
         });
 
         afterEach(function (done) {
-            api.webjobs.deleteTriggered("triggered-job", done);
+            api.webjobs.deleteTriggered(jobName, done);
         });
 
         it("can delete triggered webjob", function (done) {
-            api.webjobs.deleteTriggered("triggered-job", function (err, response) {
+            api.webjobs.deleteTriggered(jobName, function (err, response) {
                 if (err) {
                     return done(err);
                 }
 
                 assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
 
-                api.webjobs.getTriggered("triggerd-job", function (err, ignore, response) {
+                api.webjobs.getTriggered(jobName, function (err, ignore, response) {
                     assert(err);
                     assert.strictEqual(response.statusCode, 404, "Deleted triggered job should be not found.");
 
