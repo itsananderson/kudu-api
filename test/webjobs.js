@@ -320,6 +320,28 @@ describe("webjobs", function () {
                 done();
             });
         });
+
+        it("can stop continuous webjob by name", function (done) {
+            api.webjobs.stopContinuous(jobName, function (err, response) {
+                if (err) {
+                    return done(err);
+                }
+
+                assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
+                done();
+            });
+        });
+
+        it("can start continuous webjob by name", function (done) {
+            api.webjobs.startContinuous(jobName, function (err, response) {
+                if (err) {
+                    return done(err);
+                }
+
+                assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
+                done();
+            });
+        });
     });
 
     describe("continuous upload", function () {
