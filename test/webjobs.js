@@ -352,6 +352,32 @@ describe("webjobs", function () {
                 done();
             });
         });
+
+        it("can get continuous webjob settings", function (done) {
+            api.webjobs.getContinuousSettings(jobName, function (err, data) {
+                if (err) {
+                    return done(err);
+                }
+
+                assert(!data.is_singleton, "Singleton setting should be false.");
+                done();
+            });
+        });
+
+        it("can set continuous webjob settings", function (done) {
+            var settings = {
+                is_singleton: false
+            };
+
+            api.webjobs.setContinuousSettings(jobName, settings, function (err, response) {
+                if (err) {
+                    return done(err);
+                }
+
+                assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
+                done();
+            });
+        });
     });
 
     describe("continuous upload", function () {
