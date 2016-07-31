@@ -20,7 +20,11 @@ Usage
 ### Instantiating
 
 ```javascript
-var kudu = require("kudu-api")({"website": "website", username:"$username", password: "password"});
+var kudu = require("kudu-api")({
+    website: "website",
+    username: "$username",
+    password: "password"
+});
 ```
 
 ### Source Control `kudu.scm`
@@ -385,6 +389,160 @@ kudu.extensions.feed.get("extensionId", function(err, extension) {
         if (err) throw err;
     });
 });
+```
+### WebJobs `kudu.webjobs`
+Wrappers for the [Kudu WebJobs API](https://github.com/projectkudu/kudu/wiki/WebJobs-API).
+
+```javascript
+// List all jobs
+kudu.webjobs.listAll(function (err, jobList) {
+    if (err) {
+        throw err;
+    }
+
+    console.log(jobList);
+});
+
+// List triggered jobs
+kudu.webjobs.listTriggered(function (err, jobList) {
+    if (err) {
+        throw err;
+    }
+
+    console.log(jobList);
+});
+
+// List triggered jobs in Swagger format
+kudu.webjobs.listTriggeredAsSwagger(function (err, swagger) {
+    if (err) {
+        throw err;
+    }
+
+    console.log(swagger);
+});
+
+// Get a triggered job by name
+kudu.webjobs.getTriggered("jobname", function (err, job) {
+    if (err) {
+        throw err;
+    }
+
+    console.log(job);
+});
+
+// Upload a triggered job with the specified name and file
+kudu.webjobs.uploadTriggered("jobname", "/path/to/job.zip", function (err) {
+    if (err) {
+        throw err;
+    }
+});
+
+// Delete a triggered job
+kudu.webjobs.deleteTriggered("jobname", function (err) {
+    if (err) {
+        throw err;
+    }
+});
+
+// Run a triggered job
+kudu.webjobs.runTriggered("jobname", function (err) {
+    if (err) {
+        throw err;
+    }
+});
+
+// Run a triggered job with arguments
+kudu.webjobs.runTriggered("jobname", "--arg 42", function (err) {
+    if (err) {
+        throw err;
+    }
+});
+
+// List the history of a triggered job by name
+kudu.webjobs.listTriggeredHistory("jobname", function (err, historyList) {
+    if (err) {
+        throw err;
+    }
+
+    console.log(historyList);
+});
+
+// Get a single triggered job history item by name and id
+kudu.webjobs.getTriggeredHistory("jobname", "historyId", function (err, history) {
+    if (err) {
+        throw err;
+    }
+
+    console.log(history);
+});
+
+// List continuous jobs
+kudu.webjobs.listContinuous(function (err, jobList) {
+    if (err) {
+        throw err;
+    }
+
+    console.log(jobList);
+});
+
+// Get a continuous job
+kudu.webjobs.getContinuous("jobname", function (err, job) {
+    if (err) {
+        throw err;
+    }
+
+    console.log(job);
+});
+
+// Upload a continuous job with the specified name and file
+kudu.webjobs.uploadContinuous("jobname", "/path/to/job.zip", function (err) {
+    if (err) {
+        throw err;
+    }
+});
+
+// Delete a continuous job by name
+kudu.webjobs.deleteContinuous("jobname", function (err) {
+    if (err) {
+        throw err;
+    }
+});
+
+// Start a continuous job by name
+kudu.webjobs.startContinuous("jobname", function (err) {
+    if (err) {
+        throw err;
+    }
+});
+
+// Stop a continuous job by name
+kudu.webjobs.stopContinuous("jobname", function (err) {
+    if (err) {
+        throw err;
+    }
+});
+
+// Get settings for a continuous job by name
+kudu.webjobs.getContinuousSettings("jobname", function (err, settings) {
+    if (err) {
+        throw err;
+    }
+
+    console.log(settings);
+});
+
+// Set settings for a continuous job by name
+kudu.webjobs.setContinuousSettings(
+    "jobname",
+    {
+        is_singleton: true
+    },
+    function (err) {
+        if (err) {
+            throw err;
+        }
+    }
+);
 ```
 
 ### Misc Usage Notes
