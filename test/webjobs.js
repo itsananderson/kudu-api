@@ -70,7 +70,7 @@ describe("webjobs", function () {
 
     describe("triggered read operations", function () {
         var jobName = "triggered-job-1";
-        var localPath = "test/artifacts/triggered-job.zip";
+        var localPath = "test/artifacts/" + jobName + ".zip";
 
         before(function (done) {
             createJobZip(localPath, triggeredFiles, function (err) {
@@ -211,7 +211,7 @@ describe("webjobs", function () {
 
     describe("triggered upload", function () {
         var jobName = "triggered-job-2";
-        var localPath = "test/artifacts/triggered-job.zip";
+        var localPath = "test/artifacts/" + jobName + ".zip";
 
         before(function (done) {
             createJobZip(localPath, triggeredFiles, done);
@@ -243,7 +243,7 @@ describe("webjobs", function () {
 
     describe("triggered delete", function () {
         var jobName = "triggered-job-3";
-        var localPath = "test/artifacts/triggered-job.zip";
+        var localPath = "test/artifacts/" + jobName + ".zip";
 
         before(function (done) {
             createJobZip(localPath, triggeredFiles, done);
@@ -281,7 +281,7 @@ describe("webjobs", function () {
 
     describe("continuous read operations", function () {
         var jobName = "continuous-job-1";
-        var localPath = "test/artifacts/continuous-job.zip";
+        var localPath = "test/artifacts/" + jobName + ".zip";
 
         before(function (done) {
             createJobZip(localPath, continuousFiles, function (err) {
@@ -346,7 +346,7 @@ describe("webjobs", function () {
 
     describe("continuous upload", function () {
         var jobName = "continuous-job-2";
-        var localPath = "test/artifacts/continuous-job.zip";
+        var localPath = "test/artifacts/" + jobName + ".zip";
 
         before(function (done) {
             createJobZip(localPath, continuousFiles, done);
@@ -378,7 +378,7 @@ describe("webjobs", function () {
 
     describe("continuous delete", function () {
         var jobName = "continuous-job-3";
-        var localPath = "test/artifacts/continuous-job.zip";
+        var localPath = "test/artifacts/" + jobName + ".zip";
 
         before(function (done) {
             createJobZip(localPath, continuousFiles, done);
