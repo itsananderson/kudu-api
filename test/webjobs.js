@@ -68,7 +68,17 @@ function createPollingCallback(cb) {
 describe("webjobs", function () {
     this.timeout(10000);
 
-    describe("triggered read operations", function () {
+    before(function (done) {
+        fs.mkdir("test/artifacts", function (err) {
+            if (err && err.code !== "EEXIST") {
+                return done(err);
+            }
+
+            done();
+        });
+    });
+
+    describe("triggered basic operations", function () {
         var jobName = "triggered-job-1";
         var localPath = "test/artifacts/" + jobName + ".zip";
 
@@ -279,7 +289,7 @@ describe("webjobs", function () {
         });
     });
 
-    describe("continuous read operations", function () {
+    describe("continuous basic operations", function () {
         var jobName = "continuous-job-1";
         var localPath = "test/artifacts/" + jobName + ".zip";
 
