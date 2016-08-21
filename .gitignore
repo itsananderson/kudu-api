@@ -27,6 +27,7 @@ build/Release
 node_modules
 
 # Test artifact(s)
-test/test.zip
+/test/artifacts/
+/test/test.PublishSettings
 /mocha
 /test.js

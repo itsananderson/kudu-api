@@ -2,9 +2,9 @@
 
 var assert = require("assert");
 var fs = require("fs");
-var JSZip = require("jszip");
+var testUtils = require("./test-utils");
 var retry = require("retry");
-var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
+var api;
 
 var triggeredFiles = {
     "run.cmd": "echo hello world %*"
@@ -12,24 +12,6 @@ var triggeredFiles = {
 var continuousFiles = {
     "run.js": "console.log(process.argv.join(' ')); setInterval(() => console.log('ping'), 30000);"
 };
-
-function createJobZip(localPath, files, cb) {
-    var generateOptions = {
-        type: "nodebuffer",
-        streamFiles: true
-    };
-
-    var zip = new JSZip();
-
-    Object.keys(files).forEach(function (key) {
-        zip.file(key, files[key]);
-    });
-
-    zip.generateNodeStream(generateOptions)
-        .pipe(fs.createWriteStream(localPath))
-        .on("error", cb)
-        .on("finish", cb);
-}
 
 function createPollingCallback(cb) {
     var operation = retry.operation({
@@ -68,22 +50,18 @@ function createPollingCallback(cb) {
 describe("webjobs", function () {
     this.timeout(10000);
 
-    before(function (done) {
-        fs.mkdir("test/artifacts", function (err) {
-            if (err && err.code !== "EEXIST") {
-                return done(err);
-            }
+    before(testUtils.setupKudu(function (kuduApi) {
+        api = kuduApi;
+    }));
 
-            done();
-        });
-    });
+    before(testUtils.ensureArtifacts);
 
     describe("triggered basic operations", function () {
         var jobName = "triggered-job-1";
         var localPath = "test/artifacts/" + jobName + ".zip";
 
         before(function (done) {
-            createJobZip(localPath, triggeredFiles, function (err) {
+            testUtils.createZipFile(localPath, triggeredFiles, function (err) {
                 if (err) {
                     return done(err);
                 }
@@ -166,17 +144,6 @@ describe("webjobs", function () {
             });
         });
 
-        it("can run triggered webjob with arguments", function (done) {
-            api.webjobs.runTriggered(jobName, "--message \"Kudu's API\"", function (err, response) {
-                if (err) {
-                    return done(err);
-                }
-
-                assert.strictEqual(response.statusCode, 202);
-                done();
-            });
-        });
-
         it("should report error running unknown triggered webjob", function (done) {
             api.webjobs.runTriggered("unknown-job", function (err) {
                 if (err) {
@@ -187,6 +154,17 @@ describe("webjobs", function () {
                 }
 
                 done(new Error("Expected error was not thrown."));
+            });
+        });
+
+        it("can run triggered webjob with arguments", function (done) {
+            api.webjobs.runTriggered(jobName, "--message \"Kudu's API\"", function (err, response) {
+                if (err) {
+                    return done(err);
+                }
+
+                assert.strictEqual(response.statusCode, 202);
+                done();
             });
         });
 
@@ -224,7 +202,7 @@ describe("webjobs", function () {
         var localPath = "test/artifacts/" + jobName + ".zip";
 
         before(function (done) {
-            createJobZip(localPath, triggeredFiles, done);
+            testUtils.createZipFile(localPath, triggeredFiles, done);
         });
 
         after(function (done) {
@@ -256,7 +234,7 @@ describe("webjobs", function () {
         var localPath = "test/artifacts/" + jobName + ".zip";
 
         before(function (done) {
-            createJobZip(localPath, triggeredFiles, done);
+            testUtils.createZipFile(localPath, triggeredFiles, done);
         });
 
         after(function (done) {
@@ -294,7 +272,7 @@ describe("webjobs", function () {
         var localPath = "test/artifacts/" + jobName + ".zip";
 
         before(function (done) {
-            createJobZip(localPath, continuousFiles, function (err) {
+            testUtils.createZipFile(localPath, continuousFiles, function (err) {
                 if (err) {
                     return done(err);
                 }
@@ -385,7 +363,7 @@ describe("webjobs", function () {
         var localPath = "test/artifacts/" + jobName + ".zip";
 
         before(function (done) {
-            createJobZip(localPath, continuousFiles, done);
+            testUtils.createZipFile(localPath, continuousFiles, done);
         });
 
         after(function (done) {
@@ -417,7 +395,7 @@ describe("webjobs", function () {
         var localPath = "test/artifacts/" + jobName + ".zip";
 
         before(function (done) {
-            createJobZip(localPath, continuousFiles, done);
+            testUtils.createZipFile(localPath, continuousFiles, done);
         });
 
         after(function (done) {
