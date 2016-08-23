@@ -36,7 +36,19 @@ function createZipFile(localPath, files, cb) {
 
 function setupKudu(cb) {
     return function (done) {
-        var settingsPath = process.env.TEST_PUBLISH_SETTINGS || path.join(__dirname, "test.PublishSettings");
+        var env = process.env;
+
+        if (env.WEBSITE) {
+            cb(kuduApi({
+                website: env.WEBSITE,
+                username: env.USERNAME,
+                password: env.PASSWORD
+            }));
+
+            return done();
+        }
+
+        var settingsPath = path.join(__dirname, "test.PublishSettings");
 
         aps.read(settingsPath, function (err, settings) {
             if (err) {
