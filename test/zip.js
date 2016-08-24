@@ -52,7 +52,7 @@ describe("zip", function () {
                 done(err);
             }
 
-            api.zip.upload(localZipPath, "site/wwwroot/illegal-character\"", function (err, body, response) {
+            api.zip.upload(localZipPath, "site/wwwroot/illegal-character\"", function (err) {
                 assert(err, "Error should exist.");
                 assert.strictEqual(err.response.statusCode, 500, "Error status code should be 500.");
                 done();

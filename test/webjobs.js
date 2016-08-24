@@ -257,9 +257,9 @@ describe("webjobs", function () {
 
                 assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
 
-                api.webjobs.getTriggered(jobName, function (err, ignore, response) {
+                api.webjobs.getTriggered(jobName, function (err) {
                     assert(err);
-                    assert.strictEqual(response.statusCode, 404, "Deleted triggered job should be not found.");
+                    assert.strictEqual(err.response.statusCode, 404, "Deleted triggered job should be not found.");
 
                     done();
                 });
@@ -418,9 +418,9 @@ describe("webjobs", function () {
 
                 assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
 
-                api.webjobs.getContinuous(jobName, function (err, ignore, response) {
+                api.webjobs.getContinuous(jobName, function (err) {
                     assert(err);
-                    assert.strictEqual(response.statusCode, 404, "Deleted continuous job should be not found.");
+                    assert.strictEqual(err.response.statusCode, 404, "Deleted continuous job should be not found.");
 
                     done();
                 });
