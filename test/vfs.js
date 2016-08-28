@@ -1,16 +1,38 @@
-var assert = require("assert");
-var path = require("path");
-var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
+"use strict";
 
-describe("vfs", function() {
+var assert = require("assert");
+var testUtils = require("./test-utils");
+var fs = require("fs");
+var api;
+
+describe("vfs", function () {
     this.timeout(5000);
 
-    before(function(done) {
-        api.vfs.uploadFile(path.join(__dirname, "test.txt"), "site/wwwroot/test.txt", done);
+    var localPath = "test/artifacts/test1.txt";
+
+    before(testUtils.setupKudu(function (kuduApi) {
+        api = kuduApi;
+    }));
+
+    before(testUtils.ensureArtifacts);
+
+    before(function (done) {
+        fs.writeFile(localPath, "test\n", done);
     });
 
-    it("can get a file", function(done) {
-        api.vfs.getFile("site/wwwroot/test.txt", function(err, content) {
+    before(function (done) {
+        api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", done);
+    });
+
+    after(function (done) {
+        fs.unlink(localPath, function () {
+            // Ignore errors
+            done();
+        });
+    });
+
+    it("can get a file", function (done) {
+        api.vfs.getFile("site/wwwroot/test.txt", function (err, content) {
             if (err) {
                 done(err);
             }
@@ -19,8 +41,9 @@ describe("vfs", function() {
             done();
         });
     });
-    it("can list files", function(done) {
-        api.vfs.listFiles("site/wwwroot", function(err, fileList) {
+
+    it("can list files", function (done) {
+        api.vfs.listFiles("site/wwwroot", function (err, fileList) {
             if (err) {
                 done(err);
             }
@@ -29,28 +52,35 @@ describe("vfs", function() {
             done();
         });
     });
-    it("can upload file", function(done) {
-        api.vfs.uploadFile(path.join(__dirname, "test.txt"), "site/wwwroot/test.txt", done);
+
+    it("can upload file", function (done) {
+        api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", done);
     });
-    it("can validate an etag when uploading file", function(done) {
-        api.vfs.uploadFile(path.join(__dirname, "test.txt"), "site/wwwroot/test.txt", "foo", function(err) {
+
+    it("can validate an etag when uploading file", function (done) {
+        api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", "foo", function (err) {
             assert(err, "Should error with mismatched etag");
             done();
         });
     });
-    it("can upload a file with a matching etag", function(done) {
-        api.vfs.getFile("site/wwwroot/test.txt", function(err, file, response) {
-            var etag = response.headers.etag;
-            api.vfs.uploadFile(path.join(__dirname, "test.txt"), "site/wwwroot/test.txt", etag, function(err) {
+
+    it("can upload a file with a matching etag", function (done) {
+        api.vfs.getFile("site/wwwroot/test.txt", function (err, ignore, response) {
+            if (err) {
                 done(err);
-            });
+            }
+
+            var etag = response.headers.etag;
+            api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", etag, done);
         });
     });
-    it("can create directories", function(done) {
+
+    it("can create directories", function (done) {
         api.vfs.createDirectory("site/wwwroot/test1/test2", done);
     });
-    it("can delete a file", function(done) {
-        api.vfs.deleteFile("site/wwwroot/test.txt", function (err, ignore, response) {
+
+    it("can delete a file", function (done) {
+        api.vfs.deleteFile("site/wwwroot/test.txt", function (err, response) {
             if (err) {
                 return done(err);
             }
@@ -59,7 +89,8 @@ describe("vfs", function() {
             done();
         });
     });
-    it("can delete a directory", function(done) {
+
+    it("can delete a directory", function (done) {
         api.vfs.deleteDirectory("site/wwwroot/test1/test2", done);
     });
 });
