@@ -46,7 +46,14 @@ describe("vfs", function() {
         api.vfs.createDirectory("site/wwwroot/test1/test2", done);
     });
     it("can delete a file", function(done) {
-        api.vfs.deleteFile("site/wwwroot/test.txt", done);
+        api.vfs.deleteFile("site/wwwroot/test.txt", function (err, ignore, response) {
+            if (err) {
+                return done(err);
+            }
+
+            assert(response.statusCode < 400, "Deletion response status code should not be in the error range.");
+            done();
+        });
     });
     it("can delete a directory", function(done) {
         api.vfs.deleteDirectory("site/wwwroot/test1/test2", done);
