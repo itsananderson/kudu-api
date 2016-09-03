@@ -2,7 +2,7 @@ var assert = require("assert");
 var fs = require("fs");
 var path = require("path");
 var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
-var exec = require("child_process").exec;
+var JSZip = require("jszip");
 
 var localZipPath = path.join(__dirname, "test.zip");
 
@@ -11,12 +11,17 @@ describe("zip", function() {
 
     it("can upload a zip", function(done) {
         fs.unlink(localZipPath, function() {
-            exec("zip -r " + localZipPath + " lib", function(err) {
-                if (err) done(err);
-                api.zip.upload(localZipPath, "site/wwwroot", done);
-            });
+            var zip = new JSZip();
+            zip.file(path.join(__dirname, "..", "package.json"));
+            zip.generateNodeStream({type: "nodebuffer", streamFiles: true})
+                .pipe(fs.createWriteStream(localZipPath))
+                .on("error", done)
+                .on("finish", function() {
+                    api.zip.upload(localZipPath, "site/wwwroot", done);
+                });
         });
     });
+
     it("can download a folder as a zip", function(done) {
         this.timeout(30 * 1000);
         fs.unlink(localZipPath, function() {

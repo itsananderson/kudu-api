@@ -13,7 +13,7 @@ describe("vfs", function() {
         api.vfs.getFile("site/wwwroot/test.txt", function(err, content) {
             if (err) done(err);
 
-            assert.equal(content, "test\n", "File content should be 'test\\n'");
+            assert.equal(content.trim(), "test", "Trimmed file content should be 'test'");
             done();
         });
     });
