@@ -27,7 +27,10 @@ describe("zip", function() {
         fs.unlink(localZipPath, function() {
             assert(!fs.existsSync(localZipPath), "Local zip should not exist before download");
             api.zip.download("site/wwwroot", localZipPath, function(err) {
-                if (err) done(err);
+                if (err) {
+                    done(err);
+                }
+
                 assert(fs.existsSync(localZipPath), "Local zip should exist after download");
                 done();
             });

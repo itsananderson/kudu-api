@@ -5,7 +5,9 @@ describe("command", function() {
     it("can execute a command", function(done) {
         this.timeout(30000);
         api.command.exec("echo hello world", "site", function(err, result) {
-            if (err) done(err);
+            if (err) {
+                done(err);
+            }
 
             assert.equal(result.Error, "", "Error should be empty");
             assert.equal(result.Output, "hello world\r\n", "Output should be 'hello world\\r\\n'");
@@ -17,7 +19,9 @@ describe("command", function() {
     it("can execute a command with a default dir", function(done) {
         this.timeout(30000);
         api.command.exec("echo %CD%", function(err, result) {
-            if (err) done(err);
+            if (err) {
+                done(err);
+            }
 
             assert.equal(result.Error, "", "Error should be empty");
             assert.equal(result.Output, "D:\\home\r\n", "Output should be 'D:\\home\\r\\n'");

@@ -6,7 +6,10 @@ describe("environment", function() {
 
     it("can get the environment", function(done) {
         api.environment.get(function(err, environment) {
-            if (err) done(err);
+            if (err) {
+                done(err);
+            }
+
             assert.notStrictEqual(environment.version, undefined, "version is defined");
             done();
         });
