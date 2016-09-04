@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-eslint": "^3.0.1",
     "gulp-jslint": "^1.0.4",
     "gulp-mocha": "^3.0.1",
     "jszip": "^3.0.0",
