@@ -6,22 +6,15 @@ var eslint = require("gulp-eslint");
 
 var libSources = ["gulpfile.js", "lib/**/*.js"];
 var testSources = ["test/**/*.js"];
+var allSources = libSources.concat(testSources);
 
-gulp.task("lint-lib", function () {
-    return gulp.src(libSources)
+gulp.task("lint", function () {
+    return gulp.src(allSources)
         .pipe(eslint())
         .pipe(eslint.format());
 });
 
-gulp.task("lint-test", function () {
-    return gulp.src(testSources)
-        .pipe(eslint())
-        .pipe(eslint.format());
-});
-
-gulp.task("lint", ["lint-lib", "lint-test"]);
-
-gulp.task("lint-watch", ["lint"], function () {
+gulp.task("watch-lint", ["lint"], function () {
     return gulp.watch(libSources.concat(testSources), ["lint"]);
 });
 
@@ -30,7 +23,7 @@ gulp.task("test", function () {
         .pipe(mocha());
 });
 
-gulp.task("test-watch", ["test"], function () {
+gulp.task("watch-test", ["test"], function () {
     return gulp.watch(libSources.concat(testSources), ["test"]);
 });
 
