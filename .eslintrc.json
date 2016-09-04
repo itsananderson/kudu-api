@@ -16,6 +16,10 @@
         "semi": [
             "error",
             "always"
+        ],
+        "curly": [
+            "error",
+            "all"
         ]
     }
 }
