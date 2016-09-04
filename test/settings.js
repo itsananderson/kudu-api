@@ -43,6 +43,7 @@ describe("settings", function() {
             api.settings.list(function(err, oldSettings) {
                 if (err) done(err);
                 api.settings.del("test_setting", function(err) {
+                    if (err) done(err);
                     api.settings.list(function(err, newSettings) {
                         var oldKeys = Object.keys(oldSettings);
                         var newKeys = Object.keys(newSettings);

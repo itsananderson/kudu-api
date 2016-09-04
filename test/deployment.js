@@ -1,7 +1,4 @@
 var assert = require("assert");
-var fs = require("fs");
-var path = require("path");
-var exec = require("child_process").exec;
 var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
 
 var gitUrl1 = "https://github.com/itsananderson/kudu-api-website.git";
@@ -16,8 +13,12 @@ describe("deployment", function() {
         this.timeout(30 * 1000);
         api.deployment.deploy(gitUrl1, function(err, result) {
             if (err) done(err);
+            assert.notNull(result);
+
             api.deployment.deploy(gitUrl2, function(err, result) {
                 if (err) done(err);
+                assert.notNull(result);
+
                 api.deployment.list(function(err, deployments) {
                     if (err) done(err);
                     deploymentList = deployments;
@@ -47,6 +48,8 @@ describe("deployment", function() {
         this.timeout(30 * 1000);
         api.deployment.redeploy(deploymentList[0].id, function(err, result) {
             if (err) done(err);
+            assert.notNull(result);
+
             api.deployment.get(deploymentList[0].id, function(err, deployment) {
                 if (err) done(err);
 
@@ -66,6 +69,8 @@ describe("deployment", function() {
 
             api.deployment.del(deploymentId, function(err, result) {
                 if (err) done(err);
+                assert.notNull(result);
+
                 api.deployment.list(function(err, newDeployments) {
                     if (err) done(err);
                     assert.equal(newDeployments.length, oldDeployments.length-1, "Deployment count should be one less after deletion");
@@ -89,6 +94,9 @@ describe("deployment", function() {
                 return !!entry.details_url;
             })[0];
             api.deployment.logDetails(deploymentId, entry.id, function(err, details) {
+                if (err) done(err);
+                assert.notNull(details);
+
                 done();
             });
         });

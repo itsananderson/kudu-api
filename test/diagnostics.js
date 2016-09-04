@@ -17,7 +17,7 @@ describe("diagnostics", function() {
             if (err) done(err);
             assert.notStrictEqual(setting, undefined, "AzureDriveEnabled setting is not undefined");
             assert.notStrictEqual(setting, null, "AzureDriveEnabled setting is not null");
-            assert.notStrictEqual(setting, '', "AzureDriveEnabled setting is not an empty string");
+            assert.notStrictEqual(setting, "", "AzureDriveEnabled setting is not an empty string");
             done();
         });
     });
@@ -53,6 +53,7 @@ describe("diagnostics", function() {
     it("gracefully handles missing key", function(done) {
         api.diagnostics.get("foo", function(err, setting) {
             assert(err, "Should error for missing key");
+            assert(!setting, "When error is returned, setting should be null");
             done();
         });
     });

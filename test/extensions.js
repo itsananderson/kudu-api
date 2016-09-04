@@ -64,10 +64,14 @@ describe("extensions", function() {
             if (err) done(err);
             api.extensions.site.set(extension.id, extension, function(err, installedExtension) {
                 if (err) done(err);
+                assert.notNull(installedExtension);
+
                 api.extensions.site.list(function(err, oldExtensions) {
                     if (err) done(err);
                     api.extensions.site.del("np", function(err, deletedExtension) {
                         if (err) done(err);
+                        assert.notNull(deletedExtension);
+
                         api.extensions.site.list(function(err, newExtensions) {
                             if (err) done(err);
                             assert.equal(newExtensions.length, oldExtensions.length-1, "Should be one less extension installed");
