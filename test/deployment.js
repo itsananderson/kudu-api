@@ -1,7 +1,4 @@
 var assert = require("assert");
-var fs = require("fs");
-var path = require("path");
-var exec = require("child_process").exec;
 var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
 
 var gitUrl1 = "https://github.com/itsananderson/kudu-api-website.git";
@@ -15,11 +12,24 @@ describe("deployment", function() {
     before(function(done) {
         this.timeout(30 * 1000);
         api.deployment.deploy(gitUrl1, function(err, result) {
-            if (err) done(err);
+            if (err) {
+                done(err);
+            }
+
+            assert.notNull(result);
+
             api.deployment.deploy(gitUrl2, function(err, result) {
-                if (err) done(err);
+                if (err) {
+                    done(err);
+                }
+
+                assert.notNull(result);
+
                 api.deployment.list(function(err, deployments) {
-                    if (err) done(err);
+                    if (err) {
+                        done(err);
+                    }
+
                     deploymentList = deployments;
                     done();
                 });
@@ -29,7 +39,9 @@ describe("deployment", function() {
 
     it("can list all deployments", function(done) {
         api.deployment.list(function(err, deployments) {
-            if (err) done(err);
+            if (err) {
+                done(err);
+            }
 
             assert(Array.isArray(deployments), "Deployments should be an array");
             done();
@@ -37,7 +49,9 @@ describe("deployment", function() {
     });
     it("can get a single deployment", function(done) {
         api.deployment.get(deploymentList[0].id, function(err, deployment) {
-            if (err) done(err);
+            if (err) {
+                done(err);
+            }
 
             assert.equal(deployment.id, deploymentList[0].id, "Deployment id should match the one queried");
             done();
@@ -46,9 +60,16 @@ describe("deployment", function() {
     it("can deploy a previous deployment", function(done) {
         this.timeout(30 * 1000);
         api.deployment.redeploy(deploymentList[0].id, function(err, result) {
-            if (err) done(err);
+            if (err) {
+                done(err);
+            }
+
+            assert.notNull(result);
+
             api.deployment.get(deploymentList[0].id, function(err, deployment) {
-                if (err) done(err);
+                if (err) {
+                    done(err);
+                }
 
                 assert.equal(deployment.id, deploymentList[0].id, "Deployment id should match the one queried");
                 assert(deployment.active, "Deployment should be active");
@@ -58,16 +79,26 @@ describe("deployment", function() {
     });
     it("can delete a deployment", function(done) {
         api.deployment.list(function(err, oldDeployments) {
-            if (err) done(err);
+            if (err) {
+                done(err);
+            }
 
             var deploymentId = oldDeployments.filter(function(d) {
                 return !d.active;
             })[0].id;
 
             api.deployment.del(deploymentId, function(err, result) {
-                if (err) done(err);
+                if (err) {
+                    done(err);
+                }
+
+                assert.notNull(result);
+
                 api.deployment.list(function(err, newDeployments) {
-                    if (err) done(err);
+                    if (err) {
+                        done(err);
+                    }
+
                     assert.equal(newDeployments.length, oldDeployments.length-1, "Deployment count should be one less after deletion");
                     done();
                 });
@@ -76,7 +107,9 @@ describe("deployment", function() {
     });
     it("can get a deployment log", function(done) {
         api.deployment.log(deploymentList[0].id, function(err, entries) {
-            if (err) done(err);
+            if (err) {
+                done(err);
+            }
 
             assert(Array.isArray(entries), "number", "Deployment log entries should be an array");
             done();
@@ -89,6 +122,12 @@ describe("deployment", function() {
                 return !!entry.details_url;
             })[0];
             api.deployment.logDetails(deploymentId, entry.id, function(err, details) {
+                if (err) {
+                    done(err);
+                }
+
+                assert.notNull(details);
+
                 done();
             });
         });

@@ -12,7 +12,10 @@ describe("dump", function() {
             fs.unlinkSync(dest);
         }
         api.dump.download(dest, function(err) {
-            if (err) done(err);
+            if (err) {
+                done(err);
+            }
+
             assert(fs.existsSync(dest), "Downloaded dump file exists");
             done();
         });

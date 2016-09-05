@@ -11,7 +11,9 @@ describe("vfs", function() {
 
     it("can get a file", function(done) {
         api.vfs.getFile("site/wwwroot/test.txt", function(err, content) {
-            if (err) done(err);
+            if (err) {
+                done(err);
+            }
 
             assert.equal(content.trim(), "test", "Trimmed file content should be 'test'");
             done();
@@ -19,7 +21,9 @@ describe("vfs", function() {
     });
     it("can list files", function(done) {
         api.vfs.listFiles("site/wwwroot", function(err, fileList) {
-            if (err) done(err);
+            if (err) {
+                done(err);
+            }
 
             assert.equal(typeof fileList.length, "number", "File list should be an array with valid length");
             done();

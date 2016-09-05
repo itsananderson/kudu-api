@@ -1,5 +1,4 @@
 var assert = require("assert");
-var path = require("path");
 var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
 
 describe("sshkey", function() {
