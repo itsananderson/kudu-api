@@ -20,6 +20,14 @@
         "curly": [
             "error",
             "all"
+        ],
+        "strict": [
+            "error",
+            "safe"
+        ],
+        "eqeqeq": [
+            "error",
+            "always"
         ]
     }
 }
