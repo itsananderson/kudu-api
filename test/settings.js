@@ -1,8 +1,15 @@
+"use strict";
+
 var assert = require("assert");
-var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
+var testUtils = require("./test-utils")
+var api;
 
 describe("settings", function() {
     this.timeout(5000);
+
+    before(testUtils.setupKudu(function (kuduApi) {
+        api = kuduApi;
+    }));
 
     before(function(done) {
         api.settings.set({test_setting: "test"}, done);
@@ -18,6 +25,7 @@ describe("settings", function() {
             done();
         });
     });
+
     it("can retrieve a single setting", function(done) {
         api.settings.get("WEBSITE_SITE_NAME", function(err, setting) {
             if (err) {
@@ -28,6 +36,7 @@ describe("settings", function() {
             done();
         });
     });
+
     it("can update settings", function(done) {
         api.settings.get("test_setting", function(err, setting) {
             if (err) {
@@ -35,6 +44,7 @@ describe("settings", function() {
             }
 
             assert.equal(setting, "test");
+
             api.settings.set({test_setting: "test1"}, function(err) {
                 if (err) {
                     done(err);
@@ -51,8 +61,10 @@ describe("settings", function() {
             });
         });
     });
+
     it("can delete a setting", function(done) {
         this.timeout(10 * 1000);
+
         api.settings.set({test_setting: "test"}, function(err) {
             if (err) {
                 done(err);

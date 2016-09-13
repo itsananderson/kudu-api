@@ -59,6 +59,9 @@ function setupKudu(cb) {
                 return done(err);
             }
 
+            // Put site name into an environment variable for the tests that need it
+            env.WEBSITE = settings.name;
+
             cb(kuduApi({
                 website: settings.name,
                 username: settings.web.username,
