@@ -15,7 +15,7 @@ gulp.task("lint", function () {
 });
 
 gulp.task("watch-lint", ["lint"], function () {
-    return gulp.watch(libSources.concat(testSources), ["lint"]);
+    return gulp.watch(allSources, ["lint"]);
 });
 
 gulp.task("test", function () {
@@ -24,7 +24,7 @@ gulp.task("test", function () {
 });
 
 gulp.task("watch-test", ["test"], function () {
-    return gulp.watch(libSources.concat(testSources), ["test"]);
+    return gulp.watch(allSources, ["test"]);
 });
 
 gulp.task("watch", ["lint-watch", "test-watch"]);
