@@ -52,6 +52,10 @@ function setupKudu(cb) {
 
         aps.read(settingsPath, function (err, settings) {
             if (err) {
+                if (err.code === "ENOENT") {
+                    return done(new Error("A \"test.PublishSettings\" file was not found in the test directory. Please provide one or add WEBSITE, USERNAME and PASSWORD environment variables to enable kudu-api testing."));
+                }
+
                 return done(err);
             }
 
@@ -63,7 +67,7 @@ function setupKudu(cb) {
 
             done();
         });
-    }
+    };
 }
 
 module.exports = {
