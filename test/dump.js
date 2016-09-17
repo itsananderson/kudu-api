@@ -1,3 +1,5 @@
+"use strict";
+
 var assert = require("assert");
 var fs = require("fs");
 var path = require("path");
@@ -13,7 +15,7 @@ describe("dump", function() {
         }
         api.dump.download(dest, function(err) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             assert(fs.existsSync(dest), "Downloaded dump file exists");

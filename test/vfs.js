@@ -34,7 +34,7 @@ describe("vfs", function () {
     it("can get a file", function (done) {
         api.vfs.getFile("site/wwwroot/test.txt", function (err, content) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             assert.equal(content.trim(), "test", "Trimmed file content should be 'test'");
@@ -45,7 +45,7 @@ describe("vfs", function () {
     it("can list files", function (done) {
         api.vfs.listFiles("site/wwwroot", function (err, fileList) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             assert.equal(typeof fileList.length, "number", "File list should be an array with valid length");
@@ -67,7 +67,7 @@ describe("vfs", function () {
     it("can upload a file with a matching etag", function (done) {
         api.vfs.getFile("site/wwwroot/test.txt", function (err, ignore, response) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             var etag = response.headers.etag;

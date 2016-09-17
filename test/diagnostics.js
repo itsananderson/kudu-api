@@ -1,3 +1,5 @@
+"use strict";
+
 var assert = require("assert");
 var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
 
@@ -7,7 +9,7 @@ describe("diagnostics", function() {
     it("can retrieve all diagnostics settings", function(done) {
         api.diagnostics.list(function(err, settings) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             var keys = Object.keys(settings);
@@ -18,7 +20,7 @@ describe("diagnostics", function() {
     it("can retrieve a single diagnostics setting", function(done) {
         api.diagnostics.get("AzureDriveEnabled", function(err, setting) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             assert.notStrictEqual(setting, undefined, "AzureDriveEnabled setting is not undefined");
@@ -30,12 +32,12 @@ describe("diagnostics", function() {
     it("can update diagnotics settings", function(done) {
         api.diagnostics.set({AzureDriveEnabled: true}, function(err) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             api.diagnostics.get("AzureDriveEnabled", function(err, setting) {
                 if (err) {
-                    done(err);
+                    return done(err);
                 }
 
                 assert.equal(setting, true);
@@ -46,22 +48,22 @@ describe("diagnostics", function() {
     it("can delete a setting", function(done) {
         api.diagnostics.set({"test_setting": true}, function(err) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             api.diagnostics.list(function(err, oldSettings) {
                 if (err) {
-                    done(err);
+                    return done(err);
                 }
 
                 api.diagnostics.del("test_setting", function(err) {
                     if (err) {
-                        done(err);
+                        return done(err);
                     }
 
                     api.diagnostics.list(function(err, newSettings) {
                         if (err) {
-                            done(err);
+                            return done(err);
                         }
 
                         var oldKeys = Object.keys(oldSettings);

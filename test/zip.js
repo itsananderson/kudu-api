@@ -35,7 +35,7 @@ describe("zip", function () {
 
         testUtils.createZipFile(localZipPath, localZipContents, function (err) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             api.zip.upload(localZipPath, "site/wwwroot", done);
@@ -49,7 +49,7 @@ describe("zip", function () {
 
         testUtils.createZipFile(localZipPath, localZipContents, function (err) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             api.zip.upload(localZipPath, "site/wwwroot/illegal-character\"", function (err) {
@@ -68,7 +68,7 @@ describe("zip", function () {
 
             api.zip.download("site/wwwroot", localZipPath, function (err) {
                 if (err) {
-                    done(err);
+                    return done(err);
                 }
 
                 fs.exists(localZipPath, function (exists) {

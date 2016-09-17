@@ -1,3 +1,5 @@
+"use strict";
+
 var assert = require("assert");
 var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
 
@@ -13,21 +15,21 @@ describe("deployment", function() {
         this.timeout(30 * 1000);
         api.deployment.deploy(gitUrl1, function(err, result) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             assert.notNull(result);
 
             api.deployment.deploy(gitUrl2, function(err, result) {
                 if (err) {
-                    done(err);
+                    return done(err);
                 }
 
                 assert.notNull(result);
 
                 api.deployment.list(function(err, deployments) {
                     if (err) {
-                        done(err);
+                        return done(err);
                     }
 
                     deploymentList = deployments;

@@ -14,7 +14,7 @@ describe("logs", function() {
     it("can retrieve recent logs", function(done) {
         api.logs.recent(function(err, logs) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             assert(Array.isArray(logs), "logs should be an array");
@@ -29,7 +29,7 @@ describe("logs", function() {
 
         api.logs.recent(query, function(err, logs) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             assert(Array.isArray(logs), "logs should be an array");

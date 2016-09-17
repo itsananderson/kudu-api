@@ -1,3 +1,5 @@
+"use strict";
+
 var assert = require("assert");
 var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
 
@@ -6,7 +8,7 @@ describe("command", function() {
         this.timeout(30000);
         api.command.exec("echo hello world", "site", function(err, result) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             assert.equal(result.Error, "", "Error should be empty");
@@ -20,7 +22,7 @@ describe("command", function() {
         this.timeout(30000);
         api.command.exec("echo %CD%", function(err, result) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             assert.equal(result.Error, "", "Error should be empty");

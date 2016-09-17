@@ -14,7 +14,7 @@ describe("scm", function () {
     it("can retrieve info", function (done) {
         api.scm.info(function (err, info) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             assert.notEqual(info.Type, undefined, "Type is defined");

@@ -18,7 +18,7 @@ describe("settings", function() {
     it("can retrieve all settings", function(done) {
         api.settings.list(function(err, settings) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             assert.equal(settings.WEBSITE_SITE_NAME, process.env.WEBSITE, "Website sitname should match");
@@ -29,7 +29,7 @@ describe("settings", function() {
     it("can retrieve a single setting", function(done) {
         api.settings.get("WEBSITE_SITE_NAME", function(err, setting) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             assert.equal(setting, process.env.WEBSITE);
@@ -40,19 +40,19 @@ describe("settings", function() {
     it("can update settings", function(done) {
         api.settings.get("test_setting", function(err, setting) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             assert.equal(setting, "test");
 
             api.settings.set({test_setting: "test1"}, function(err) {
                 if (err) {
-                    done(err);
+                    return done(err);
                 }
 
                 api.settings.get("test_setting", function(err, setting) {
                     if (err) {
-                        done(err);
+                        return done(err);
                     }
 
                     assert.equal(setting, "test1");
