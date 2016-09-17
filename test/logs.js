@@ -1,8 +1,15 @@
+"use strict";
+
 var assert = require("assert");
-var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
+var testUtils = require("./test-utils");
+var api;
 
 describe("logs", function() {
     this.timeout(5000);
+
+    before(testUtils.setupKudu(function (kuduApi) {
+        api = kuduApi;
+    }));
 
     it("can retrieve recent logs", function(done) {
         api.logs.recent(function(err, logs) {
@@ -16,7 +23,11 @@ describe("logs", function() {
     });
 
     it("can retrieve custom number of recent logs", function(done) {
-        api.logs.recent(500, function(err, logs) {
+        var query = {
+            top: 500
+        };
+
+        api.logs.recent(query, function(err, logs) {
             if (err) {
                 done(err);
             }
