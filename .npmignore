@@ -31,3 +31,6 @@ test
 /mocha
 /test.js
 
+/.vscode
+gulpfile.js
+.eslintrc.json
