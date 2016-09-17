@@ -28,6 +28,14 @@
         "eqeqeq": [
             "error",
             "always"
+        ],
+        "one-var": [
+            "error",
+            "never"
+        ],
+        "multiline-ternary": [
+            "error",
+            "always"
         ]
     }
 }
