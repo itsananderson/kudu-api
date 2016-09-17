@@ -1,15 +1,20 @@
 "use strict";
 
 var assert = require("assert");
-var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
+var testUtils = require("./test-utils");
+var api;
 
-describe("extensions", function() {
+describe("extensions", function () {
     this.timeout(5000);
 
     var availableExtensions;
 
-    before(function(done) {
-        api.extensions.feed.list(function(err, extensions) {
+    before(testUtils.setupKudu(function (kuduApi) {
+        api = kuduApi;
+    }));
+
+    before(function (done) {
+        api.extensions.feed.list(function (err, extensions) {
             if (err) {
                 return done(err);
             }
@@ -19,8 +24,8 @@ describe("extensions", function() {
         });
     });
 
-    it("can filter feed extensions", function(done) {
-        api.extensions.feed.list("np", function(err, extensions) {
+    it("can filter feed extensions", function (done) {
+        api.extensions.feed.list("np", function (err, extensions) {
             if (err) {
                 return done(err);
             }
@@ -30,8 +35,8 @@ describe("extensions", function() {
         });
     });
 
-    it("can get a specific feed extension", function(done) {
-        api.extensions.feed.get("np", function(err, extension) {
+    it("can get a specific feed extension", function (done) {
+        api.extensions.feed.get("np", function (err, extension) {
             if (err) {
                 return done(err);
             }
@@ -41,8 +46,8 @@ describe("extensions", function() {
         });
     });
 
-    it("can list installed extensions", function(done) {
-        api.extensions.site.list(function(err, extensions) {
+    it("can list installed extensions", function (done) {
+        api.extensions.site.list(function (err, extensions) {
             if (err) {
                 return done(err);
             }
@@ -52,8 +57,8 @@ describe("extensions", function() {
         });
     });
 
-    it("can filter installed extensions", function(done) {
-        api.extensions.site.list("np", function(err, extensions) {
+    it("can filter installed extensions", function (done) {
+        api.extensions.site.list("np", function (err, extensions) {
             if (err) {
                 return done(err);
             }
@@ -63,14 +68,14 @@ describe("extensions", function() {
         });
     });
 
-    it("can add or update a package", function(done) {
+    it("can add or update a package", function (done) {
         this.timeout(10 * 1000);
-        api.extensions.feed.get("np", function(err, extension) {
+        api.extensions.feed.get("np", function (err, extension) {
             if (err) {
                 return done(err);
             }
 
-            api.extensions.site.set(extension.id, extension, function(err, installedExtension) {
+            api.extensions.site.set(extension.id, extension, function (err, installedExtension) {
                 if (err) {
                     return done(err);
                 }
@@ -81,38 +86,38 @@ describe("extensions", function() {
         });
     });
 
-    it("can delete a package", function(done) {
+    it("can delete a package", function (done) {
         this.timeout(30 * 1000);
-        api.extensions.feed.get("np", function(err, extension) {
+        api.extensions.feed.get("np", function (err, extension) {
             if (err) {
                 return done(err);
             }
 
-            api.extensions.site.set(extension.id, extension, function(err, installedExtension) {
+            api.extensions.site.set(extension.id, extension, function (err, installedExtension) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.notNull(installedExtension);
+                assert(installedExtension);
 
-                api.extensions.site.list(function(err, oldExtensions) {
+                api.extensions.site.list(function (err, oldExtensions) {
                     if (err) {
                         return done(err);
                     }
 
-                    api.extensions.site.del("np", function(err, deletedExtension) {
+                    api.extensions.site.del("np", function (err, deletedExtension) {
                         if (err) {
                             return done(err);
                         }
 
-                        assert.notNull(deletedExtension);
+                        assert(deletedExtension);
 
-                        api.extensions.site.list(function(err, newExtensions) {
+                        api.extensions.site.list(function (err, newExtensions) {
                             if (err) {
                                 return done(err);
                             }
 
-                            assert.equal(newExtensions.length, oldExtensions.length-1, "Should be one less extension installed");
+                            assert.equal(newExtensions.length, oldExtensions.length - 1, "Should be one less extension installed");
                             done();
                         });
                     });
