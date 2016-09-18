@@ -23,7 +23,7 @@
     "request": "^2.58.0"
   },
   "devDependencies": {
-    "azure-publish-settings": "^1.0.1",
+    "azure-publish-settings": "^1.1.0",
     "gulp": "^3.9.1",
     "gulp-eslint": "^3.0.1",
     "gulp-mocha": "^3.0.1",

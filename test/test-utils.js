@@ -83,12 +83,7 @@ function setupKudu(basic, cb) {
             // Put site name into an environment variable for the tests that need it
             env.WEBSITE = settings.name;
 
-            credentials = ensureCredentials(basic, {
-                website: settings.name,
-                username: settings.web.username,
-                password: settings.web.password
-            });
-
+            credentials = ensureCredentials(basic, settings.kudu);
             cb(kuduApi(credentials));
 
             done();
