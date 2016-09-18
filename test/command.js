@@ -1,12 +1,18 @@
 "use strict";
 
 var assert = require("assert");
-var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
+var testUtils = require("./test-utils");
+var api;
 
-describe("command", function() {
-    it("can execute a command", function(done) {
-        this.timeout(30000);
-        api.command.exec("echo hello world", "site", function(err, result) {
+describe("command", function () {
+    this.timeout(30000);
+
+    before(testUtils.setupKudu(function (kuduApi) {
+        api = kuduApi;
+    }));
+
+    it("can execute a command", function (done) {
+        api.command.exec("echo hello world", "site", function (err, result) {
             if (err) {
                 return done(err);
             }
@@ -18,9 +24,8 @@ describe("command", function() {
         });
     });
 
-    it("can execute a command with a default dir", function(done) {
-        this.timeout(30000);
-        api.command.exec("echo %CD%", function(err, result) {
+    it("can execute a command with a default dir", function (done) {
+        api.command.exec("echo %CD%", function (err, result) {
             if (err) {
                 return done(err);
             }
