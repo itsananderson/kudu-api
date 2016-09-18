@@ -6,14 +6,20 @@ var aps = require("azure-publish-settings");
 var path = require("path");
 var kuduApi = require("../");
 
+var artifactRoot = path.join(__dirname, "artifacts");
+
 function ensureArtifacts(done) {
-    fs.mkdir("test/artifacts", function (err) {
+    fs.mkdir(artifactRoot, function (err) {
         if (err && err.code !== "EEXIST") {
             return done(err);
         }
 
         done();
     });
+}
+
+function artifactPath(relativePath) {
+    return path.join(artifactRoot, relativePath);
 }
 
 function createZipFile(localPath, files, cb) {
@@ -93,6 +99,7 @@ function setupKudu(basic, cb) {
 
 module.exports = {
     ensureArtifacts: ensureArtifacts,
+    artifactPath: artifactPath,
     createZipFile: createZipFile,
     setupKudu: setupKudu
 };

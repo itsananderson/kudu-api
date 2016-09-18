@@ -8,7 +8,7 @@ var api;
 describe("vfs", function () {
     this.timeout(5000);
 
-    var localPath = "test/artifacts/test1.txt";
+    var localPath = testUtils.artifactPath("test1.txt");
 
     before(testUtils.setupKudu(function (kuduApi) {
         api = kuduApi;

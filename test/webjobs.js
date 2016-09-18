@@ -58,7 +58,7 @@ describe("webjobs", function () {
 
     describe("triggered basic operations", function () {
         var jobName = "triggered-job-1";
-        var localPath = "test/artifacts/" + jobName + ".zip";
+        var localPath = testUtils.artifactPath(jobName + ".zip");
 
         before(function (done) {
             testUtils.createZipFile(localPath, triggeredFiles, function (err) {
@@ -199,7 +199,7 @@ describe("webjobs", function () {
 
     describe("triggered upload", function () {
         var jobName = "triggered-job-2";
-        var localPath = "test/artifacts/" + jobName + ".zip";
+        var localPath = testUtils.artifactPath(jobName + ".zip");
 
         before(function (done) {
             testUtils.createZipFile(localPath, triggeredFiles, done);
@@ -231,7 +231,7 @@ describe("webjobs", function () {
 
     describe("triggered delete", function () {
         var jobName = "triggered-job-3";
-        var localPath = "test/artifacts/" + jobName + ".zip";
+        var localPath = testUtils.artifactPath(jobName + ".zip");
 
         before(function (done) {
             testUtils.createZipFile(localPath, triggeredFiles, done);
@@ -269,7 +269,7 @@ describe("webjobs", function () {
 
     describe("continuous basic operations", function () {
         var jobName = "continuous-job-1";
-        var localPath = "test/artifacts/" + jobName + ".zip";
+        var localPath = testUtils.artifactPath(jobName + ".zip");
 
         before(function (done) {
             testUtils.createZipFile(localPath, continuousFiles, function (err) {
@@ -360,7 +360,7 @@ describe("webjobs", function () {
 
     describe("continuous upload", function () {
         var jobName = "continuous-job-2";
-        var localPath = "test/artifacts/" + jobName + ".zip";
+        var localPath = testUtils.artifactPath(jobName + ".zip");
 
         before(function (done) {
             testUtils.createZipFile(localPath, continuousFiles, done);
@@ -392,7 +392,7 @@ describe("webjobs", function () {
 
     describe("continuous delete", function () {
         var jobName = "continuous-job-3";
-        var localPath = "test/artifacts/" + jobName + ".zip";
+        var localPath = testUtils.artifactPath(jobName + ".zip");
 
         before(function (done) {
             testUtils.createZipFile(localPath, continuousFiles, done);

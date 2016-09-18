@@ -2,11 +2,10 @@
 
 var assert = require("assert");
 var fs = require("fs");
-var path = require("path");
 var testUtils = require("./test-utils");
 var api;
 
-var localZipPath = path.join("test", "artifacts", "test.zip");
+var localZipPath = testUtils.artifactPath("test.zip");
 
 function deleteLocalZip(done) {
     fs.unlink(localZipPath, function () {
