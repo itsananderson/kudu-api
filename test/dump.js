@@ -2,24 +2,38 @@
 
 var assert = require("assert");
 var fs = require("fs");
-var path = require("path");
-var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
+var testUtils = require("./test-utils");
+var api;
 
 describe("dump", function() {
     this.timeout(30 * 1000);
 
+    var localPath = testUtils.artifactPath("dump1.zip");
+
+    before(testUtils.ensureArtifacts);
+
+    before(testUtils.setupKudu(function (kuduApi) {
+        api = kuduApi;
+    }));
+
+    afterEach(function(done) {
+        fs.unlink(localPath, function () {
+            // Ignore errors
+            done();
+        });
+    });
+
     it("can retrieve dump", function(done) {
-        var dest = path.join(__dirname, "test.zip");
-        if (fs.existsSync(dest)) {
-            fs.unlinkSync(dest);
-        }
-        api.dump.download(dest, function(err) {
+        api.dump.download(localPath, function(err) {
             if (err) {
                 return done(err);
             }
 
-            assert(fs.existsSync(dest), "Downloaded dump file exists");
-            done();
+            fs.exists(localPath, function (exists) {
+                assert(exists, "Downloaded dump file exists");
+
+                done();
+            });
         });
     });
 });
