@@ -34,16 +34,37 @@ function createZipFile(localPath, files, cb) {
         .on("finish", cb);
 }
 
-function setupKudu(cb) {
+function ensureCredentials(basic, credentials) {
+    if (!basic) {
+        return credentials;
+    }
+
+    var basicCredentials = new Buffer(credentials.username + ":" + credentials.password).toString("base64");
+
+    return {
+        website: credentials.website,
+        basic: basicCredentials
+    };
+}
+
+function setupKudu(basic, cb) {
+    if (typeof basic === "function") {
+        cb = basic;
+        basic = false;
+    }
+
     return function (done) {
         var env = process.env;
+        var credentials;
 
         if (env.WEBSITE) {
-            cb(kuduApi({
+            credentials = ensureCredentials(basic, {
                 website: env.WEBSITE,
                 username: env.USERNAME,
                 password: env.PASSWORD
-            }));
+            });
+
+            cb(kuduApi(credentials));
 
             return done();
         }
@@ -62,11 +83,13 @@ function setupKudu(cb) {
             // Put site name into an environment variable for the tests that need it
             env.WEBSITE = settings.name;
 
-            cb(kuduApi({
+            credentials = ensureCredentials(basic, {
                 website: settings.name,
                 username: settings.web.username,
                 password: settings.web.password
-            }));
+            });
+
+            cb(kuduApi(credentials));
 
             done();
         });
