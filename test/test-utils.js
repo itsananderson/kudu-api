@@ -57,7 +57,7 @@ function setupKudu(basic, cb) {
         var env = process.env;
         var credentials;
 
-        if (env.WEBSITE) {
+        if (env.WEBSITE && env.USERNAME && env.PASSWORD) {
             credentials = ensureCredentials(basic, {
                 website: env.WEBSITE,
                 username: env.USERNAME,

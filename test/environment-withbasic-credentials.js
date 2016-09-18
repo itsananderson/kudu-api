@@ -1,11 +1,15 @@
 "use strict";
 
 var assert = require("assert");
-var basicCredentials = new Buffer(process.env.USERNAME + ":" + process.env.PASSWORD).toString("base64");
-var api = require("../")({ website: process.env.WEBSITE, basic: basicCredentials });
+var testUtils = require("./test-utils");
+var api;
 
-describe("environment", function() {
+describe("environment with basic credentials", function() {
     this.timeout(5000);
+
+    before(testUtils.setupKudu(true, function (kuduApi) {
+        api = kuduApi;
+    }));
 
     it("can get the environment", function(done) {
         api.environment.get(function(err, environment) {

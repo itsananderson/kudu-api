@@ -1,10 +1,15 @@
 "use strict";
 
 var assert = require("assert");
-var api = require("../")({website: process.env.WEBSITE, username: process.env.USERNAME, password: process.env.PASSWORD});
+var testUtils = require("./test-utils");
+var api;
 
 describe("environment", function() {
     this.timeout(5000);
+
+    before(testUtils.setupKudu(function (kuduApi) {
+        api = kuduApi;
+    }));
 
     it("can get the environment", function(done) {
         api.environment.get(function(err, environment) {
