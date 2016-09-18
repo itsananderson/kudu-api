@@ -1,7 +1,7 @@
 "use strict";
 
 var assert = require("assert");
-var testUtils = require("./test-utils")
+var testUtils = require("./test-utils");
 var api;
 
 describe("settings", function() {
