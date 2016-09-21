@@ -67,17 +67,17 @@ describe("settings", function() {
 
         api.settings.set({test_setting: "test"}, function(err) {
             if (err) {
-                done(err);
+                return done(err);
             }
 
             api.settings.list(function(err, oldSettings) {
                 if (err) {
-                    done(err);
+                    return done(err);
                 }
 
                 api.settings.del("test_setting", function(err) {
                     if (err) {
-                        done(err);
+                        return done(err);
                     }
 
                     api.settings.list(function(err, newSettings) {
