@@ -27,4 +27,4 @@ gulp.task("watch-test", ["test"], function () {
     return gulp.watch(allSources, ["test"]);
 });
 
-gulp.task("watch", ["lint-watch", "test-watch"]);
+gulp.task("watch", ["watch-lint", "watch-test"]);
