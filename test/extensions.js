@@ -14,73 +14,75 @@ describe("extensions", function () {
     }));
 
     before(function (done) {
-        api.extensions.feed.list(function (err, extensions) {
+        api.extensions.feed.list(function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            availableExtensions = extensions;
+            availableExtensions = result.data;
             done();
         });
     });
 
     it("can filter feed extensions", function (done) {
-        api.extensions.feed.list("np", function (err, extensions) {
+        api.extensions.feed.list("np", function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert(extensions.length < availableExtensions.length, "Available extensions should be filtered");
+            assert(result.data.length < availableExtensions.length, "Available extensions should be filtered");
             done();
         });
     });
 
     it("can get a specific feed extension", function (done) {
-        api.extensions.feed.get("np", function (err, extension) {
+        api.extensions.feed.get("np", function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert(extension, "Queried extension exists");
+            assert(result.data, "Queried extension exists");
             done();
         });
     });
 
     it("can list installed extensions", function (done) {
-        api.extensions.site.list(function (err, extensions) {
+        api.extensions.site.list(function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert(Array.isArray(extensions), "Installed extensions should be an array");
+            assert(Array.isArray(result.data), "Installed extensions should be an array");
             done();
         });
     });
 
     it("can filter installed extensions", function (done) {
-        api.extensions.site.list("np", function (err, extensions) {
+        api.extensions.site.list("np", function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert(Array.isArray(extensions), "Installed extensions should be filterable");
+            assert(Array.isArray(result.data), "Installed extensions should be filterable");
             done();
         });
     });
 
     it("can add or update a package", function (done) {
         this.timeout(10 * 1000);
-        api.extensions.feed.get("np", function (err, extension) {
+        api.extensions.feed.get("np", function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            api.extensions.site.set(extension.id, extension, function (err, installedExtension) {
+            var extension = result.data;
+
+            api.extensions.site.set(extension.id, extension, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.equal(installedExtension.provisioningState, "Succeeded", "Should have successfully provisioned");
+                assert.equal(result.data.provisioningState, "Succeeded", "Should have successfully provisioned");
                 done();
             });
         });
@@ -88,36 +90,40 @@ describe("extensions", function () {
 
     it("can delete a package", function (done) {
         this.timeout(30 * 1000);
-        api.extensions.feed.get("np", function (err, extension) {
+        api.extensions.feed.get("np", function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            api.extensions.site.set(extension.id, extension, function (err, installedExtension) {
+            var extension = result.data;
+
+            api.extensions.site.set(extension.id, extension, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert(installedExtension);
+                assert(result.data);
 
-                api.extensions.site.list(function (err, oldExtensions) {
+                api.extensions.site.list(function (err, result) {
                     if (err) {
                         return done(err);
                     }
 
-                    api.extensions.site.del("np", function (err, deletedExtension) {
+                    var oldExtensions = result.data;
+
+                    api.extensions.site.del("np", function (err, result) {
                         if (err) {
                             return done(err);
                         }
 
-                        assert(deletedExtension);
+                        assert(result.data);
 
-                        api.extensions.site.list(function (err, newExtensions) {
+                        api.extensions.site.list(function (err, result) {
                             if (err) {
                                 return done(err);
                             }
 
-                            assert.equal(newExtensions.length, oldExtensions.length - 1, "Should be one less extension installed");
+                            assert.equal(result.data.length, oldExtensions.length - 1, "Should be one less extension installed");
                             done();
                         });
                     });

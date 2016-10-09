@@ -29,12 +29,12 @@ describe("deployment", function () {
                     return done(err);
                 }
 
-                api.deployment.list(function (err, deployments) {
+                api.deployment.list(function (err, result) {
                     if (err) {
                         return done(err);
                     }
 
-                    deploymentList = deployments;
+                    deploymentList = result.data;
                     done();
                 });
             });
@@ -42,23 +42,23 @@ describe("deployment", function () {
     });
 
     it("can list all deployments", function (done) {
-        api.deployment.list(function (err, deployments) {
+        api.deployment.list(function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert(Array.isArray(deployments), "Deployments should be an array");
+            assert(Array.isArray(result.data), "Deployments should be an array");
             done();
         });
     });
 
     it("can get a single deployment", function (done) {
-        api.deployment.get(deploymentList[0].id, function (err, deployment) {
+        api.deployment.get(deploymentList[0].id, function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert.equal(deployment.id, deploymentList[0].id, "Deployment id should match the one queried");
+            assert.equal(result.data.id, deploymentList[0].id, "Deployment id should match the one queried");
             done();
         });
     });
@@ -71,10 +71,12 @@ describe("deployment", function () {
                 return done(err);
             }
 
-            api.deployment.get(deploymentList[0].id, function (err, deployment) {
+            api.deployment.get(deploymentList[0].id, function (err, result) {
                 if (err) {
                     return done(err);
                 }
+
+                var deployment = result.data;
 
                 assert.equal(deployment.id, deploymentList[0].id, "Deployment id should match the one queried");
                 assert(deployment.active, "Deployment should be active");
@@ -84,11 +86,12 @@ describe("deployment", function () {
     });
 
     it("can delete a deployment", function (done) {
-        api.deployment.list(function (err, oldDeployments) {
+        api.deployment.list(function (err, result) {
             if (err) {
                 return done(err);
             }
 
+            var oldDeployments = result.data;
             var deploymentId = oldDeployments.filter(function (d) {
                 return !d.active;
             })[0].id;
@@ -98,12 +101,12 @@ describe("deployment", function () {
                     return done(err);
                 }
 
-                api.deployment.list(function (err, newDeployments) {
+                api.deployment.list(function (err, result) {
                     if (err) {
                         return done(err);
                     }
 
-                    assert.equal(newDeployments.length, oldDeployments.length - 1, "Deployment count should be one less after deletion");
+                    assert.equal(result.data.length, oldDeployments.length - 1, "Deployment count should be one less after deletion");
                     done();
                 });
             });
@@ -111,12 +114,12 @@ describe("deployment", function () {
     });
 
     it("can get a deployment log", function (done) {
-        api.deployment.log(deploymentList[0].id, function (err, entries) {
+        api.deployment.log(deploymentList[0].id, function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert(Array.isArray(entries), "number", "Deployment log entries should be an array");
+            assert(Array.isArray(result.data), "number", "Deployment log entries should be an array");
             done();
         });
     });
@@ -124,17 +127,17 @@ describe("deployment", function () {
     it("can get a deployment log entry", function (done) {
         var deploymentId = deploymentList[0].id;
 
-        api.deployment.log(deploymentId, function (err, entries) {
-            var entry = entries.filter(function (entry) {
+        api.deployment.log(deploymentId, function (err, result) {
+            var entry = result.data.filter(function (entry) {
                 return !!entry.details_url;
             })[0];
 
-            api.deployment.logDetails(deploymentId, entry.id, function (err, details) {
+            api.deployment.logDetails(deploymentId, entry.id, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert(details);
+                assert(result.data);
                 done();
             });
         });

@@ -12,15 +12,15 @@ describe("sshkey", function () {
     }));
 
     it("can generate a new key if none exists", function (done) {
-        api.sshkey.get(true, function (err, key) {
-            assert(/^ssh-rsa/.test(key), "Should be a valid key");
+        api.sshkey.get(true, function (err, result) {
+            assert(/^ssh-rsa/.test(result.data), "Should be a valid key");
             done(err);
         });
     });
 
     it("can download key", function (done) {
-        api.sshkey.get(function (err, key) {
-            assert(/^ssh-rsa/.test(key), "Should be a valid key");
+        api.sshkey.get(function (err, result) {
+            assert(/^ssh-rsa/.test(result.data), "Should be a valid key");
             done(err);
         });
     });

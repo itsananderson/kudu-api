@@ -16,46 +16,46 @@ describe("settings", function() {
     });
 
     it("can retrieve all settings", function(done) {
-        api.settings.list(function(err, settings) {
+        api.settings.list(function(err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert.equal(settings.WEBSITE_SITE_NAME, process.env.WEBSITE, "Website sitname should match");
+            assert.equal(result.data.WEBSITE_SITE_NAME, process.env.WEBSITE, "Website sitname should match");
             done();
         });
     });
 
     it("can retrieve a single setting", function(done) {
-        api.settings.get("WEBSITE_SITE_NAME", function(err, setting) {
+        api.settings.get("WEBSITE_SITE_NAME", function(err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert.equal(setting, process.env.WEBSITE);
+            assert.equal(result.data, process.env.WEBSITE);
             done();
         });
     });
 
     it("can update settings", function(done) {
-        api.settings.get("test_setting", function(err, setting) {
+        api.settings.get("test_setting", function(err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert.equal(setting, "test");
+            assert.equal(result.data, "test");
 
             api.settings.set({test_setting: "test1"}, function(err) {
                 if (err) {
                     return done(err);
                 }
 
-                api.settings.get("test_setting", function(err, setting) {
+                api.settings.get("test_setting", function(err, result) {
                     if (err) {
                         return done(err);
                     }
 
-                    assert.equal(setting, "test1");
+                    assert.equal(result.data, "test1");
                     done();
                 });
             });
@@ -70,19 +70,21 @@ describe("settings", function() {
                 return done(err);
             }
 
-            api.settings.list(function(err, oldSettings) {
+            api.settings.list(function(err, result) {
                 if (err) {
                     return done(err);
                 }
+
+                var oldSettings = result.data;
 
                 api.settings.del("test_setting", function(err) {
                     if (err) {
                         return done(err);
                     }
 
-                    api.settings.list(function(err, newSettings) {
+                    api.settings.list(function(err, result) {
                         var oldKeys = Object.keys(oldSettings);
-                        var newKeys = Object.keys(newSettings);
+                        var newKeys = Object.keys(result.data);
                         assert.equal(newKeys.length, oldKeys.length-1, "New keys count should be old count minus 1");
                         done();
                     });

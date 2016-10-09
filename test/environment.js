@@ -13,12 +13,12 @@ describe("environment", function() {
         }));
 
         it("can get the environment", function(done) {
-            api.environment.get(function(err, environment) {
+            api.environment.get(function(err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.notStrictEqual(environment.version, undefined, "version is defined");
+                assert.notStrictEqual(result.data.version, undefined, "version is defined");
                 done();
             });
         });
@@ -30,12 +30,12 @@ describe("environment", function() {
         }));
 
         it("can get the environment", function(done) {
-            api.environment.get(function(err, environment) {
+            api.environment.get(function(err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.notStrictEqual(environment.version, undefined, "version is defined");
+                assert.notStrictEqual(result.data.version, undefined, "version is defined");
                 done();
             });
         });

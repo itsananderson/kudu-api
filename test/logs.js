@@ -12,12 +12,12 @@ describe("logs", function() {
     }));
 
     it("can retrieve recent logs", function(done) {
-        api.logs.recent(function(err, logs) {
+        api.logs.recent(function(err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert(Array.isArray(logs), "logs should be an array");
+            assert(Array.isArray(result.data), "logs should be an array");
             done();
         });
     });
@@ -27,12 +27,12 @@ describe("logs", function() {
             top: 500
         };
 
-        api.logs.recent(query, function(err, logs) {
+        api.logs.recent(query, function(err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert(Array.isArray(logs), "logs should be an array");
+            assert(Array.isArray(result.data), "logs should be an array");
             done();
         });
     });

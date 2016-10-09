@@ -12,10 +12,12 @@ describe("scm", function () {
     }));
 
     it("can retrieve info", function (done) {
-        api.scm.info(function (err, info) {
+        api.scm.info(function (err, result) {
             if (err) {
                 return done(err);
             }
+
+            var info = result.data;
 
             assert.notEqual(info.Type, undefined, "Type is defined");
             assert.notEqual(info.GitUrl, undefined, "GitUrl is defined");
@@ -26,13 +28,13 @@ describe("scm", function () {
     it("can clean repo", function (done) {
         // Not much to test here
         // If successful, returns a 204. If no Git repo exists, returns a 500
-        api.scm.clean(function (err, response) {
+        api.scm.clean(function (err, result) {
             if (err) {
                 assert.strictEqual(err.response.statusCode, 500, "Should return 500 error if no Git repo exists");
                 return done();
             }
 
-            assert.strictEqual(response.statusCode, 204, "Should return 204 response if successful");
+            assert.strictEqual(result.response.statusCode, 204, "Should return 204 response if successful");
             done();
         });
     });

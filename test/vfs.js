@@ -32,23 +32,23 @@ describe("vfs", function () {
     });
 
     it("can get a file", function (done) {
-        api.vfs.getFile("site/wwwroot/test.txt", function (err, content) {
+        api.vfs.getFile("site/wwwroot/test.txt", function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert.equal(content.trim(), "test", "Trimmed file content should be 'test'");
+            assert.equal(result.data.trim(), "test", "Trimmed file content should be 'test'");
             done();
         });
     });
 
     it("can list files", function (done) {
-        api.vfs.listFiles("site/wwwroot", function (err, fileList) {
+        api.vfs.listFiles("site/wwwroot", function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert.equal(typeof fileList.length, "number", "File list should be an array with valid length");
+            assert.equal(typeof result.data.length, "number", "File list should be an array with valid length");
             done();
         });
     });
@@ -65,12 +65,12 @@ describe("vfs", function () {
     });
 
     it("can upload a file with a matching etag", function (done) {
-        api.vfs.getFile("site/wwwroot/test.txt", function (err, ignore, response) {
+        api.vfs.getFile("site/wwwroot/test.txt", function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            var etag = response.headers.etag;
+            var etag = result.response.headers.etag;
             api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", etag, done);
         });
     });
@@ -80,12 +80,12 @@ describe("vfs", function () {
     });
 
     it("can delete a file", function (done) {
-        api.vfs.deleteFile("site/wwwroot/test.txt", function (err, response) {
+        api.vfs.deleteFile("site/wwwroot/test.txt", function (err, result) {
             if (err) {
                 return done(err);
             }
 
-            assert(response.statusCode < 400, "Deletion response status code should not be in the error range.");
+            assert(result.response.statusCode < 400, "Deletion response status code should not be in the error range.");
             done();
         });
     });

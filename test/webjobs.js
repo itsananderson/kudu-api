@@ -26,14 +26,14 @@ function createPollingCallback(cb) {
         return new Error("Job list is empty.");
     }
 
-    function ensureResults(err, data) {
-        err = err || resolveError(data);
+    function ensureResults(err, result) {
+        err = err || resolveError(result.data);
 
         if (operation.retry(err)) {
             return;
         }
 
-        cb(err && operation.mainError(), data);
+        cb(err && operation.mainError(), result);
     }
 
     return function pollingCallback(err) {
@@ -77,45 +77,45 @@ describe("webjobs", function () {
         });
 
         it("can list all webjobs", function (done) {
-            api.webjobs.listAll(function (err, data) {
+            api.webjobs.listAll(function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(data.length, 1, "Web job list should contain one entry.");
+                assert.strictEqual(result.data.length, 1, "Web job list should contain one entry.");
                 done();
             });
         });
 
         it("can list triggered webjobs", function (done) {
-            api.webjobs.listTriggered(function (err, data) {
+            api.webjobs.listTriggered(function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(data.length, 1, "Triggered job list should contain one entry.");
+                assert.strictEqual(result.data.length, 1, "Triggered job list should contain one entry.");
                 done();
             });
         });
 
         it("can list triggered webjobs as swagger", function (done) {
-            api.webjobs.listTriggeredAsSwagger(function (err, data) {
+            api.webjobs.listTriggeredAsSwagger(function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(data.swagger, "2.0", "Triggered job list as swagger should have expected version.");
+                assert.strictEqual(result.data.swagger, "2.0", "Triggered job list as swagger should have expected version.");
                 done();
             });
         });
 
         it("can get triggered webjob by name", function (done) {
-            api.webjobs.getTriggered(jobName, function (err, data) {
+            api.webjobs.getTriggered(jobName, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(data.name, jobName, "Triggered job data does not contain correct name.");
+                assert.strictEqual(result.data.name, jobName, "Triggered job data does not contain correct name.");
                 done();
             });
         });
@@ -134,12 +134,12 @@ describe("webjobs", function () {
         });
 
         it("can run triggered webjob", function (done) {
-            api.webjobs.runTriggered(jobName, function (err, response) {
+            api.webjobs.runTriggered(jobName, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(response.statusCode, 202);
+                assert.strictEqual(result.response.statusCode, 202);
                 done();
             });
         });
@@ -158,39 +158,39 @@ describe("webjobs", function () {
         });
 
         it("can run triggered webjob with arguments", function (done) {
-            api.webjobs.runTriggered(jobName, "--message \"Kudu's API\"", function (err, response) {
+            api.webjobs.runTriggered(jobName, "--message \"Kudu's API\"", function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(response.statusCode, 202);
+                assert.strictEqual(result.response.statusCode, 202);
                 done();
             });
         });
 
         it("can list triggered webjob history", function (done) {
-            api.webjobs.listTriggeredHistory(jobName, function (err, data) {
+            api.webjobs.listTriggeredHistory(jobName, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert(Array.isArray(data.runs), "History list for triggered job should contain runs.");
+                assert(Array.isArray(result.data.runs), "History list for triggered job should contain runs.");
                 done();
             });
         });
 
         it("can get triggered webjob history item by id", function (done) {
-            api.webjobs.listTriggeredHistory(jobName, function (err, list) {
+            api.webjobs.listTriggeredHistory(jobName, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                api.webjobs.getTriggeredHistory(jobName, list.runs[0].id, function (err, item) {
+                api.webjobs.getTriggeredHistory(jobName, result.data.runs[0].id, function (err, result) {
                     if (err) {
                         return done(err);
                     }
 
-                    assert.strictEqual(item.output_url.slice(-4), ".txt", "History for triggered job should contain text output URL.");
+                    assert.strictEqual(result.data.output_url.slice(-4), ".txt", "History for triggered job should contain text output URL.");
                     done();
                 });
             });
@@ -217,13 +217,13 @@ describe("webjobs", function () {
         });
 
         it("can upload triggered webjob", function (done) {
-            api.webjobs.uploadTriggered(jobName, localPath, function (err, data, response) {
+            api.webjobs.uploadTriggered(jobName, localPath, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
-                assert.strictEqual(data.type, "triggered", "Should have correct type.");
+                assert.strictEqual(result.response.statusCode, 200, "Should respond with OK status code.");
+                assert.strictEqual(result.data.type, "triggered", "Should have correct type.");
                 done();
             });
         });
@@ -250,12 +250,12 @@ describe("webjobs", function () {
         });
 
         it("can delete triggered webjob", function (done) {
-            api.webjobs.deleteTriggered(jobName, function (err, response) {
+            api.webjobs.deleteTriggered(jobName, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
+                assert.strictEqual(result.response.statusCode, 200, "Should respond with OK status code.");
 
                 api.webjobs.getTriggered(jobName, function (err) {
                     assert(err);
@@ -288,56 +288,56 @@ describe("webjobs", function () {
         });
 
         it("can list continuous webjobs", function (done) {
-            api.webjobs.listContinuous(function (err, data) {
+            api.webjobs.listContinuous(function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(data.length, 1, "Continuous job list should contain one entry.");
+                assert.strictEqual(result.data.length, 1, "Continuous job list should contain one entry.");
                 done();
             });
         });
 
         it("can get continuous webjob by name", function (done) {
-            api.webjobs.getContinuous(jobName, function (err, data) {
+            api.webjobs.getContinuous(jobName, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(data.name, jobName, "Continuous job should have correct name.");
+                assert.strictEqual(result.data.name, jobName, "Continuous job should have correct name.");
                 done();
             });
         });
 
         it("can stop continuous webjob by name", function (done) {
-            api.webjobs.stopContinuous(jobName, function (err, response) {
+            api.webjobs.stopContinuous(jobName, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
+                assert.strictEqual(result.response.statusCode, 200, "Should respond with OK status code.");
                 done();
             });
         });
 
         it("can start continuous webjob by name", function (done) {
-            api.webjobs.startContinuous(jobName, function (err, response) {
+            api.webjobs.startContinuous(jobName, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
+                assert.strictEqual(result.response.statusCode, 200, "Should respond with OK status code.");
                 done();
             });
         });
 
         it("can get continuous webjob settings", function (done) {
-            api.webjobs.getContinuousSettings(jobName, function (err, data) {
+            api.webjobs.getContinuousSettings(jobName, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert(!data.is_singleton, "Singleton setting should be false.");
+                assert(!result.data.is_singleton, "Singleton setting should be false.");
                 done();
             });
         });
@@ -347,12 +347,12 @@ describe("webjobs", function () {
                 is_singleton: false
             };
 
-            api.webjobs.setContinuousSettings(jobName, settings, function (err, response) {
+            api.webjobs.setContinuousSettings(jobName, settings, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
+                assert.strictEqual(result.response.statusCode, 200, "Should respond with OK status code.");
                 done();
             });
         });
@@ -378,13 +378,13 @@ describe("webjobs", function () {
         });
 
         it("can upload continuous webjob", function (done) {
-            api.webjobs.uploadContinuous(jobName, localPath, function (err, data, response) {
+            api.webjobs.uploadContinuous(jobName, localPath, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
-                assert.strictEqual(data.type, "continuous", "Should have correct type.");
+                assert.strictEqual(result.response.statusCode, 200, "Should respond with OK status code.");
+                assert.strictEqual(result.data.type, "continuous", "Should have correct type.");
                 done();
             });
         });
@@ -411,12 +411,12 @@ describe("webjobs", function () {
         });
 
         it("can delete continuous webjob", function (done) {
-            api.webjobs.deleteContinuous(jobName, function (err, response) {
+            api.webjobs.deleteContinuous(jobName, function (err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.strictEqual(response.statusCode, 200, "Should respond with OK status code.");
+                assert.strictEqual(result.response.statusCode, 200, "Should respond with OK status code.");
 
                 api.webjobs.getContinuous(jobName, function (err) {
                     assert(err);

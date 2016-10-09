@@ -12,22 +12,24 @@ describe("diagnostics", function() {
     }));
 
     it("can retrieve all diagnostics settings", function(done) {
-        api.diagnostics.list(function(err, settings) {
+        api.diagnostics.list(function(err, result) {
             if (err) {
                 return done(err);
             }
 
-            var keys = Object.keys(settings);
+            var keys = Object.keys(result.data);
             assert.notEqual(keys.indexOf("AzureDriveEnabled"), -1, "Contains AzureDriveEnabled key");
             done();
         });
     });
 
     it("can retrieve a single diagnostics setting", function(done) {
-        api.diagnostics.get("AzureDriveEnabled", function(err, setting) {
+        api.diagnostics.get("AzureDriveEnabled", function(err, result) {
             if (err) {
                 return done(err);
             }
+
+            var setting = result.data;
 
             assert.notStrictEqual(setting, undefined, "AzureDriveEnabled setting is not undefined");
             assert.notStrictEqual(setting, null, "AzureDriveEnabled setting is not null");
@@ -42,12 +44,12 @@ describe("diagnostics", function() {
                 return done(err);
             }
 
-            api.diagnostics.get("AzureDriveEnabled", function(err, setting) {
+            api.diagnostics.get("AzureDriveEnabled", function(err, result) {
                 if (err) {
                     return done(err);
                 }
 
-                assert.equal(setting, true);
+                assert.equal(result.data, true);
                 done();
             });
         });
@@ -59,23 +61,25 @@ describe("diagnostics", function() {
                 return done(err);
             }
 
-            api.diagnostics.list(function(err, oldSettings) {
+            api.diagnostics.list(function(err, result) {
                 if (err) {
                     return done(err);
                 }
+
+                var oldSettings = result.data;
 
                 api.diagnostics.del("test_setting", function(err) {
                     if (err) {
                         return done(err);
                     }
 
-                    api.diagnostics.list(function(err, newSettings) {
+                    api.diagnostics.list(function(err, result) {
                         if (err) {
                             return done(err);
                         }
 
                         var oldKeys = Object.keys(oldSettings);
-                        var newKeys = Object.keys(newSettings);
+                        var newKeys = Object.keys(result.data);
                         assert.equal(newKeys.length, oldKeys.length - 1, "Settings key count should be old count minus 1");
                         done();
                     });
@@ -85,9 +89,9 @@ describe("diagnostics", function() {
     });
 
     it("gracefully handles missing key", function(done) {
-        api.diagnostics.get("foo", function(err, setting) {
+        api.diagnostics.get("foo", function(err, result) {
             assert(err, "Should error for missing key");
-            assert(!setting, "When error is returned, setting should be null");
+            assert(!result, "When error is returned, result should be null");
             done();
         });
     });
