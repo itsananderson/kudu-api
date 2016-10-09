@@ -30,8 +30,9 @@ var kudu = require("kudu-api")({
 ### Source Control `kudu.scm`
 
 ```javascript
-kudu.scm.info(function(err, info) {
+kudu.scm.info(function(err, result) {
     if (err) throw err;
+    var info = result.data;
     console.log(info);
     /*
     { Type: 1,
@@ -56,14 +57,16 @@ kudu.scm.del(function(err) {
 
 kudu.command.exec("echo hello world", "site/wwwroot", function(err, result) {
     if (err) throw err;
-    console.log(result);
+    var commandResult = result.data;
+    console.log(commandResult);
     // { Output: 'hello world\r\n', Error: '', ExitCode: 0 }
 });
 
 // Leaving out the directory will default to D:\home
 kudu.command.exec("echo %CD%", function(err, result) {
     if (err) throw err;
-    console.log(result);
+    var commandResult = result.data;
+    console.log(commandResult);
     // { Output: 'D:\\home\r\n', Error: '', ExitCode: 0 }
 });
 ```
@@ -71,13 +74,15 @@ kudu.command.exec("echo %CD%", function(err, result) {
 ### Virtual File System `kudu.vfs`
 
 ```javascript
-kudu.vfs.getFile("path/to/file", function(err, fileContents) {
+kudu.vfs.getFile("path/to/file", function(err, result) {
     if (err) throw err;
+    var fileContents = result.data;
     // fileContents is a string
 });
 
-kudu.vfs.listFiles("site", function(err, files) {
+kudu.vfs.listFiles("site", function(err, result) {
     if (err) throw err;
+    var files = result.data;
     /* files is an array of files with the following fields
     { name: 'deployments',
         size: 0,
@@ -130,8 +135,9 @@ kudu.zip.upload("local/zip/path.zip", "remote/folder", function(err) {
 ### Deployment `kudu.deployment`
 
 ```javascript
-kudu.deployment.list(function(err, deployments) {
+kudu.deployment.list(function(err, result) {
     if (err) throw err;
+    var deployments = result.data;
     console.log(deployments;
     // deployments is an array of objects with the following fields:
     /*
@@ -157,8 +163,9 @@ kudu.deployment.list(function(err, deployments) {
     */
 });
 
-kudu.deployment.get("1f19ea3b8e68397b6f7c290378526ef37975105d", function(err, deployment) {
+kudu.deployment.get("1f19ea3b8e68397b6f7c290378526ef37975105d", function(err, result) {
     if (err) throw err;
+    var deployment = result.data;
     // Deployment object has the same fields as described above
 });
 
@@ -166,8 +173,9 @@ kudu.deployment.del("1f19ea3b8e68397b6f7c290378526ef37975105d", function(err) {
     if (err) throw err;
 });
 
-kudu.deployment.log("1f19ea3b8e68397b6f7c290378526ef37975105d", function(err, logs) {
+kudu.deployment.log("1f19ea3b8e68397b6f7c290378526ef37975105d", function(err, result) {
     if (err) throw err;
+    var logs = result.data;
     console.log(logs);
     // logs is an array with the following fields
     /*
@@ -179,8 +187,9 @@ kudu.deployment.log("1f19ea3b8e68397b6f7c290378526ef37975105d", function(err, lo
     */
 });
 
-kudu.deployment.logDetails("1f19ea3b8e68397b6f7c290378526ef37975105d", "f198cf1b-8aca-4205-9be3-cd6a6855e4a0", function(err, details) {
+kudu.deployment.logDetails("1f19ea3b8e68397b6f7c290378526ef37975105d", "f198cf1b-8aca-4205-9be3-cd6a6855e4a0", function(err, result) {
     if (err) throw err;
+    var details = result.data;
     console.log(details);
     // details is an array of objects with the following fields
     /*
@@ -212,15 +221,17 @@ kudu.deployment.redeploy("1f19ea3b8e68397b6f7c290378526ef37975105d", function(er
 
 ```javascript
 // Acquires the public key used for deployments
-kudu.sshkey.get(function(err, key) {
+kudu.sshkey.get(function(err, result) {
     if (err) throw err;
+    var key = result.data;
     console.log(key);
     // If no key has been configured, 'key' will be an empty string
 })
 
 // You can have Kudu generate a key if none exists
-kudu.sshkey.get(true, function(err, key) {
+kudu.sshkey.get(true, function(err, result) {
     if (err) throw err;
+    var key = result.data;
     console.log(key);
     // 'key' contains the existing, or newly generated (if none existed) key
 });
@@ -230,8 +241,9 @@ kudu.sshkey.get(true, function(err, key) {
 
 ```javascript
 // Get some basic information about the Kudu environment
-kudu.environment.get(function(err, environment) {
+kudu.environment.get(function(err, result) {
     if (err) throw err;
+    var environment = result.data;
     console.log(environment);
     /*
     { version: '46.40702.1647.0',
@@ -243,14 +255,16 @@ kudu.environment.get(function(err, environment) {
 ### Settings `kudu.settings`
 
 ```javascript
-kudu.settings.list(function(err, settings) {
+kudu.settings.list(function(err, result) {
     if (err) throw err;
+    var settings = result.data;
     console.log(settings);
     // Settings is an object of key/value pairs
 });
 
-kudu.settings.get("SOME_SETTING", function(err, value) {
+kudu.settings.get("SOME_SETTING", function(err, result) {
     if (err) throw err;
+    var value = result.data;
     console.log(value);
 });
 
@@ -275,8 +289,9 @@ kudu.dump.download("local/path.zip", function(err) {
 ### Diagnostics Settings `kudu.diagnostics`
 
 ```javascript
-kudu.diagnostics.list(function(err, settings) {
+kudu.diagnostics.list(function(err, result) {
     if (err) throw err;
+    var settings = result.data;
     console.log(settings);
     /*
     { AzureDriveEnabled: false,
@@ -288,8 +303,9 @@ kudu.diagnostics.list(function(err, settings) {
     */
 });
 
-kudu.diagnostics.get("AzureDriveEnabled", function(err, value) {
+kudu.diagnostics.get("AzureDriveEnabled", function(err, result) {
     if (err) throw err;
+    var value = result.data;
     console.log(value);
     // false
 });
@@ -309,14 +325,16 @@ kudu.diagnostics.set("AzureDriveEnabled", true, function(err) {
 
 ```javascript
 // Returns most recent 100 logs by default
-kudu.logs.recent(function(err, logs) {
+kudu.logs.recent(function(err, result) {
     if (err) throw err;
+    var logs = result.data;
     console.log(logs);
 });
 
 // Can query for up to 1000 most recent logs
-kudu.logs.recent(1000, function(err, logs) {
+kudu.logs.recent(1000, function(err, result) {
     if (err) throw err;
+    var logs = result.data;
     console.log(logs);
 });
 ```
@@ -324,8 +342,9 @@ kudu.logs.recent(1000, function(err, logs) {
 ### Site Extensions `kudu.extensions`
 
 ```javascript
-kudu.extensions.feed.list(function(err, extensions) {
+kudu.extensions.feed.list(function(err, result) {
     if (err) throw err;
+    var extensions = result.data;
     console.log(extensions);
     // extensions is an array of the available extensions like the following:
     /*
@@ -352,28 +371,33 @@ kudu.extensions.feed.list(function(err, extensions) {
 });
 
 // You can filter the list by passing in a string
-kudu.extensions.feed.list("test", function(err, matchingExtensions) {
+kudu.extensions.feed.list("test", function(err, result) {
     if (err) throw err;
+    var matchingExtensions = result.data;
     console.log(matchingExtensions);
 });
 
 // Or retrieve a specific extension by ID
-kudu.extensions.feed.get("extensionId", function(err, extension) {
+kudu.extensions.feed.get("extensionId", function(err, result) {
     if (err) throw err;
+    var extension = result.data;
     console.log(extension);
 });
 
 // You can also list/filter/get currently installed extensions
-kudu.extensions.site.list(function(err, installedExtensions) {
+kudu.extensions.site.list(function(err, result) {
     if (err) throw err;
+    var installedExtensions = result.data;
     console.log(installedExtensions);
 });
-kudu.extensions.site.list("test", function(err, installedExtensions) {
+kudu.extensions.site.list("test", function(err, result) {
     if (err) throw err;
+    var installedExtensions = result.data;
     console.log(installedExtensions);
 });
-kudu.extensions.site.get("extensionId", function(err, extension) {
+kudu.extensions.site.get("extensionId", function(err, result) {
     if (err) throw err;
+    var extension = result.data;
     console.log(extension);
 });
 
@@ -383,8 +407,9 @@ kudu.extensions.site.del("extensionId", function(err) {
 });
 
 // Enable or update an extension by passing its full object
-kudu.extensions.feed.get("extensionId", function(err, extension) {
+kudu.extensions.feed.get("extensionId", function(err, result) {
     if (err) throw err;
+    var extension = result.data;
     kudu.extensions.feed.set("extensionId", extension, function(err) {
         if (err) throw err;
     });
@@ -395,38 +420,42 @@ Wrappers for the [Kudu WebJobs API](https://github.com/projectkudu/kudu/wiki/Web
 
 ```javascript
 // List all jobs
-kudu.webjobs.listAll(function (err, jobList) {
+kudu.webjobs.listAll(function (err, result) {
     if (err) {
         throw err;
     }
 
+    var jobList = result.data;
     console.log(jobList);
 });
 
 // List triggered jobs
-kudu.webjobs.listTriggered(function (err, jobList) {
+kudu.webjobs.listTriggered(function (err, result) {
     if (err) {
         throw err;
     }
 
+    var jobList = result.data;
     console.log(jobList);
 });
 
 // List triggered jobs in Swagger format
-kudu.webjobs.listTriggeredAsSwagger(function (err, swagger) {
+kudu.webjobs.listTriggeredAsSwagger(function (err, result) {
     if (err) {
         throw err;
     }
 
+    var swagger = result.data;
     console.log(swagger);
 });
 
 // Get a triggered job by name
-kudu.webjobs.getTriggered("jobname", function (err, job) {
+kudu.webjobs.getTriggered("jobname", function (err, result) {
     if (err) {
         throw err;
     }
 
+    var job = result.data;
     console.log(job);
 });
 
@@ -459,38 +488,42 @@ kudu.webjobs.runTriggered("jobname", "--arg 42", function (err) {
 });
 
 // List the history of a triggered job by name
-kudu.webjobs.listTriggeredHistory("jobname", function (err, historyList) {
+kudu.webjobs.listTriggeredHistory("jobname", function (err, result) {
     if (err) {
         throw err;
     }
 
+    var historyList = result.data;
     console.log(historyList);
 });
 
 // Get a single triggered job history item by name and id
-kudu.webjobs.getTriggeredHistory("jobname", "historyId", function (err, history) {
+kudu.webjobs.getTriggeredHistory("jobname", "historyId", function (err, result) {
     if (err) {
         throw err;
     }
 
+    var history = result.data;
     console.log(history);
 });
 
 // List continuous jobs
-kudu.webjobs.listContinuous(function (err, jobList) {
+kudu.webjobs.listContinuous(function (err, result) {
     if (err) {
         throw err;
     }
 
+    var jobList = result.data;
     console.log(jobList);
 });
 
 // Get a continuous job
-kudu.webjobs.getContinuous("jobname", function (err, job) {
+kudu.webjobs.getContinuous("jobname", function (err, result) {
     if (err) {
         throw err;
     }
 
+    var job = result.data;
     console.log(job);
 });
 
@@ -523,11 +556,12 @@ kudu.webjobs.stopContinuous("jobname", function (err) {
 });
 
 // Get settings for a continuous job by name
-kudu.webjobs.getContinuousSettings("jobname", function (err, settings) {
+kudu.webjobs.getContinuousSettings("jobname", function (err, result) {
     if (err) {
         throw err;
     }
 
+    var settings = result.data;
     console.log(settings);
 });
 
