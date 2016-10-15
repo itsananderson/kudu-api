@@ -14,6 +14,19 @@ var diagnostics = require("./lib/diagnostics");
 var logs = require("./lib/logs");
 var extensions = require("./lib/extensions");
 var webjobs = require("./lib/webjobs");
+var Promise = require("bluebird");
+
+function promisifyApi(target) {
+    Object.keys(target).forEach(function (key) {
+        Promise.promisifyAll(target[key]);
+    });
+
+    Object.keys(target.extensions).forEach(function (key) {
+        Promise.promisifyAll(target.extensions[key]);
+    });
+
+    return target;
+}
 
 module.exports = function api(options) {
     // Backward compat for old method signature
@@ -47,7 +60,7 @@ module.exports = function api(options) {
         headers: headers,
     });
 
-    return {
+    return promisifyApi({
         scm: scm(r),
         command: command(r),
         vfs: vfs(r),
@@ -61,5 +74,5 @@ module.exports = function api(options) {
         logs: logs(r),
         extensions: extensions(r),
         webjobs: webjobs(r)
-    };
+    });
 };
