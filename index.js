@@ -1,3 +1,5 @@
+"use strict";
+
 var request = require("request");
 var scm = require("./lib/scm");
 var command = require("./lib/command");
@@ -27,17 +29,17 @@ module.exports = function api(options) {
     var domain = options.domain || "scm.azurewebsites.net";
 
     //options: website, username, password, basic (hashed)
-    var website = options.website,
-        headers = {};
+    var website = options.website;
+    var headers = {};
 
-    if(options.username && options.password){
-        headers.Authorization =  "Basic " +
+    if (options.username && options.password) {
+        headers.Authorization = "Basic " +
             new Buffer(options.username + ":" + options.password)
-            .toString("base64");
+                .toString("base64");
     }
 
-    if(options.basic){
-      headers.Authorization =  "Basic " + options.basic;
+    if (options.basic) {
+        headers.Authorization = "Basic " + options.basic;
     }
 
     var r = request.defaults({
