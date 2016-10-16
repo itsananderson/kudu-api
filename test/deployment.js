@@ -19,26 +19,18 @@ describe("deployment", function () {
     before(function (done) {
         this.timeout(30 * 1000);
 
-        api.deployment.deploy(gitUrl1, function (err) {
-            if (err) {
-                return done(err);
-            }
-
-            api.deployment.deploy(gitUrl2, function (err) {
-                if (err) {
-                    return done(err);
-                }
-
-                api.deployment.list(function (err, result) {
-                    if (err) {
-                        return done(err);
-                    }
-
-                    deploymentList = result.data;
-                    done();
-                });
-            });
-        });
+        api.deployment.deployAsync(gitUrl1)
+            .then(function () {
+                return api.deployment.deployAsync(gitUrl2);
+            })
+            .then(function () {
+                return api.deployment.listAsync();
+            })
+            .then(function (result) {
+                deploymentList = result.data;
+                done();
+            })
+            .catch(done);
     });
 
     it("can list all deployments", function (done) {
@@ -66,51 +58,40 @@ describe("deployment", function () {
     it("can deploy a previous deployment", function (done) {
         this.timeout(30 * 1000);
 
-        api.deployment.redeploy(deploymentList[0].id, function (err) {
-            if (err) {
-                return done(err);
-            }
-
-            api.deployment.get(deploymentList[0].id, function (err, result) {
-                if (err) {
-                    return done(err);
-                }
-
+        api.deployment.redeployAsync(deploymentList[0].id)
+            .then(function () {
+                return api.deployment.getAsync(deploymentList[0].id);
+            })
+            .then(function (result) {
                 var deployment = result.data;
 
                 assert.equal(deployment.id, deploymentList[0].id, "Deployment id should match the one queried");
                 assert(deployment.active, "Deployment should be active");
                 done();
-            });
-        });
+            })
+            .catch(done);
     });
 
     it("can delete a deployment", function (done) {
-        api.deployment.list(function (err, result) {
-            if (err) {
-                return done(err);
-            }
+        var oldDeployments;
 
-            var oldDeployments = result.data;
-            var deploymentId = oldDeployments.filter(function (d) {
-                return !d.active;
-            })[0].id;
+        api.deployment.listAsync()
+            .then(function (result) {
+                oldDeployments = result.data;
+                var deploymentId = oldDeployments.filter(function (d) {
+                    return !d.active;
+                })[0].id;
 
-            api.deployment.del(deploymentId, function (err) {
-                if (err) {
-                    return done(err);
-                }
-
-                api.deployment.list(function (err, result) {
-                    if (err) {
-                        return done(err);
-                    }
-
-                    assert.equal(result.data.length, oldDeployments.length - 1, "Deployment count should be one less after deletion");
-                    done();
-                });
-            });
-        });
+                return api.deployment.delAsync(deploymentId);
+            })
+            .then(function () {
+                return api.deployment.listAsync();
+            })
+            .then(function (result) {
+                assert.equal(result.data.length, oldDeployments.length - 1, "Deployment count should be one less after deletion");
+                done();
+            })
+            .catch(done);
     });
 
     it("can get a deployment log", function (done) {
@@ -127,19 +108,18 @@ describe("deployment", function () {
     it("can get a deployment log entry", function (done) {
         var deploymentId = deploymentList[0].id;
 
-        api.deployment.log(deploymentId, function (err, result) {
-            var entry = result.data.filter(function (entry) {
-                return !!entry.details_url;
-            })[0];
+        api.deployment.logAsync(deploymentId)
+            .then(function (result) {
+                var entry = result.data.filter(function (entry) {
+                    return !!entry.details_url;
+                })[0];
 
-            api.deployment.logDetails(deploymentId, entry.id, function (err, result) {
-                if (err) {
-                    return done(err);
-                }
-
+                return api.deployment.logDetailsAsync(deploymentId, entry.id);
+            })
+            .then(function (result) {
                 assert(result.data);
                 done();
-            });
-        });
+            })
+            .catch(done);
     });
 });
