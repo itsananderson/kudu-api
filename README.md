@@ -24,7 +24,7 @@ var kudu = require("kudu-api")({
     website: "website",
     username: "$username",
     password: "password",
-    domain: "scml.domain.com" //optional
+    domain: "scm.domain.com" //optional
 });
 ```
 
