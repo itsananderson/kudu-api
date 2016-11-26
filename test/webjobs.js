@@ -121,16 +121,16 @@ describe("webjobs", function () {
         });
 
         it("should report error getting unknown triggered webjob", function (done) {
-            api.webjobs.getTriggered("unknown-job", function (err) {
-                if (err) {
-                    var statusPattern = /404\ \(Not\ Found\)/;
-                    assert(statusPattern.test(err.message), "Unknown triggered job error should contain status code.");
+            api.webjobs.getTriggeredAsync("unknown-job")
+                .then(function () {
+                    done(new Error("Expected error was not thrown."));
+                })
+                .catch(function (err) {
+                    assert.strictEqual(err.response.statusCode, 404, "Unknown triggered job error should contain status code.");
 
-                    return done();
-                }
-
-                done(new Error("Expected error was not thrown."));
-            });
+                    done();
+                })
+                .catch(done);
         });
 
         it("can run triggered webjob", function (done) {
@@ -145,16 +145,16 @@ describe("webjobs", function () {
         });
 
         it("should report error running unknown triggered webjob", function (done) {
-            api.webjobs.runTriggered("unknown-job", function (err) {
-                if (err) {
-                    var statusPattern = /404\ \(Not\ Found\)/;
-                    assert(statusPattern.test(err.message), "Unknown triggered job error should contain status code.");
+            api.webjobs.runTriggeredAsync("unknown-job")
+                .then(function () {
+                    done(new Error("Expected error was not thrown."));
+                })
+                .catch(function (err) {
+                    assert.strictEqual(err.response.statusCode, 404, "Unknown triggered job error should contain status code.");
 
-                    return done();
-                }
-
-                done(new Error("Expected error was not thrown."));
-            });
+                    done();
+                })
+                .catch(done);
         });
 
         it("can run triggered webjob with arguments", function (done) {
@@ -180,20 +180,15 @@ describe("webjobs", function () {
         });
 
         it("can get triggered webjob history item by id", function (done) {
-            api.webjobs.listTriggeredHistory(jobName, function (err, result) {
-                if (err) {
-                    return done(err);
-                }
-
-                api.webjobs.getTriggeredHistory(jobName, result.data.runs[0].id, function (err, result) {
-                    if (err) {
-                        return done(err);
-                    }
-
+            api.webjobs.listTriggeredHistoryAsync(jobName)
+                .then(function (result) {
+                    return api.webjobs.getTriggeredHistoryAsync(jobName, result.data.runs[0].id);
+                })
+                .then(function (result) {
                     assert.strictEqual(result.data.output_url.slice(-4), ".txt", "History for triggered job should contain text output URL.");
                     done();
-                });
-            });
+                })
+                .catch(done);
         });
     });
 
@@ -250,20 +245,21 @@ describe("webjobs", function () {
         });
 
         it("can delete triggered webjob", function (done) {
-            api.webjobs.deleteTriggered(jobName, function (err, result) {
-                if (err) {
-                    return done(err);
-                }
+            api.webjobs.deleteTriggeredAsync(jobName)
+                .then(function (result) {
+                    assert.strictEqual(result.response.statusCode, 200, "Should respond with OK status code.");
 
-                assert.strictEqual(result.response.statusCode, 200, "Should respond with OK status code.");
-
-                api.webjobs.getTriggered(jobName, function (err) {
-                    assert(err);
+                    return api.webjobs.getTriggeredAsync(jobName);
+                })
+                .then(function () {
+                    done(new Error("Expected error was not thrown."));
+                })
+                .catch(function (err) {
                     assert.strictEqual(err.response.statusCode, 404, "Deleted triggered job should be not found.");
 
                     done();
-                });
-            });
+                })
+                .catch(done);
         });
     });
 
