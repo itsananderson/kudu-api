@@ -70,65 +70,45 @@ describe("extensions", function () {
 
     it("can add or update a package", function (done) {
         this.timeout(10 * 1000);
-        api.extensions.feed.get("np", function (err, result) {
-            if (err) {
-                return done(err);
-            }
 
-            var extension = result.data;
-
-            api.extensions.site.set(extension.id, extension, function (err, result) {
-                if (err) {
-                    return done(err);
-                }
-
+        api.extensions.feed.getAsync("np")
+            .then(function (result) {
+                return api.extensions.site.setAsync(result.data.id, result.data);
+            })
+            .then(function (result) {
                 assert.equal(result.data.provisioningState, "Succeeded", "Should have successfully provisioned");
                 done();
-            });
-        });
+            })
+            .catch(done);
     });
 
     it("can delete a package", function (done) {
         this.timeout(30 * 1000);
-        api.extensions.feed.get("np", function (err, result) {
-            if (err) {
-                return done(err);
-            }
+        var oldExtensions;
 
-            var extension = result.data;
-
-            api.extensions.site.set(extension.id, extension, function (err, result) {
-                if (err) {
-                    return done(err);
-                }
-
+        api.extensions.feed.getAsync("np")
+            .then(function (result) {
+                return api.extensions.site.setAsync(result.data.id, result.data);
+            })
+            .then(function (result) {
                 assert(result.data);
 
-                api.extensions.site.list(function (err, result) {
-                    if (err) {
-                        return done(err);
-                    }
+                return api.extensions.site.listAsync();
+            })
+            .then(function (result) {
+                oldExtensions = result.data;
 
-                    var oldExtensions = result.data;
+                return api.extensions.site.delAsync("np");
+            })
+            .then(function (result) {
+                assert(result.data);
 
-                    api.extensions.site.del("np", function (err, result) {
-                        if (err) {
-                            return done(err);
-                        }
-
-                        assert(result.data);
-
-                        api.extensions.site.list(function (err, result) {
-                            if (err) {
-                                return done(err);
-                            }
-
-                            assert.equal(result.data.length, oldExtensions.length - 1, "Should be one less extension installed");
-                            done();
-                        });
-                    });
-                });
-            });
-        });
+                return api.extensions.site.listAsync();
+            })
+            .then(function (result) {
+                assert.equal(result.data.length, oldExtensions.length - 1, "Should be one less extension installed");
+                done();
+            })
+            .catch(done);
     });
 });
