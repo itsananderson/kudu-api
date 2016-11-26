@@ -46,17 +46,22 @@ describe("zip", function () {
             "test.txt": "test\n"
         };
 
-        testUtils.createZipFile(localZipPath, localZipContents, function (err) {
-            if (err) {
-                return done(err);
-            }
+        testUtils.createZipFileAsync(localZipPath, localZipContents)
+            .then(function () {
+                return api.zip.uploadAsync(localZipPath, "site/wwwroot/illegal-character\"");
+            })
+            .then(function () {
+                throw new Error("Upload with illegal characters in path should not succeed.");
+            })
+            .catch(function (err) {
+                if (!err.response) {
+                    throw err;
+                }
 
-            api.zip.upload(localZipPath, "site/wwwroot/illegal-character\"", function (err) {
-                assert(err, "Error should exist.");
                 assert.strictEqual(err.response.statusCode, 500, "Error status code should be 500.");
                 done();
-            });
-        });
+            })
+            .catch(done);
     });
 
     it("can download a folder as a zip", function (done) {

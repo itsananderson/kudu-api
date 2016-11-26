@@ -4,6 +4,7 @@ var JSZip = require("jszip");
 var fs = require("fs");
 var aps = require("azure-publish-settings");
 var path = require("path");
+var Promise = require("bluebird");
 var kuduApi = require("../");
 
 var artifactRoot = path.join(__dirname, "artifacts");
@@ -39,6 +40,8 @@ function createZipFile(localPath, files, cb) {
         .on("error", cb)
         .on("finish", cb);
 }
+
+var createZipFileAsync = Promise.promisify(createZipFile);
 
 function ensureCredentials(basic, credentials) {
     if (!basic) {
@@ -102,5 +105,6 @@ module.exports = {
     ensureArtifacts: ensureArtifacts,
     artifactPath: artifactPath,
     createZipFile: createZipFile,
+    createZipFileAsync: createZipFileAsync,
     setupKudu: setupKudu
 };
