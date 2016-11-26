@@ -27,17 +27,15 @@ describe("command", function () {
     });
 
     it("can execute a command with a default dir", function (done) {
-        api.command.exec("echo %CD%", function (err, result) {
-            if (err) {
-                return done(err);
-            }
+        api.command.execAsync("echo %CD%")
+            .then(function (result) {
+                var data = result.data;
 
-            var data = result.data;
-
-            assert.equal(data.Error, "", "Error should be empty");
-            assert.equal(data.Output, "D:\\home\r\n", "Output should be 'D:\\home\\r\\n'");
-            assert.equal(data.ExitCode, 0, "Exit code should be 0");
-            done();
-        });
+                assert.equal(data.Error, "", "Error should be empty");
+                assert.equal(data.Output, "D:\\home\r\n", "Output should be 'D:\\home\\r\\n'");
+                assert.equal(data.ExitCode, 0, "Exit code should be 0");
+                done();
+            })
+            .catch(done);
     });
 });
