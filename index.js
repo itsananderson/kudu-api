@@ -24,11 +24,8 @@ module.exports = function api(options) {
     }
     
     //option: domain - in case the kudu api doesn't run on azurewebsites
-    var toplevelDomain = "scm.azurewebsites.net";
-    if(options.domain){
-        toplevelDomain = options.domain;
-    }
-    
+    var domain = options.domain || "scm.azurewebsites.net";
+
     //options: website, username, password, basic (hashed)
     var website = options.website,
         headers = {};
@@ -44,9 +41,10 @@ module.exports = function api(options) {
     }
 
     var r = request.defaults({
-        baseUrl: "https://" + website + "." + toplevelDomain + "/",
+        baseUrl: "https://" + website + "." + domain + "/",
         headers: headers,
     });
+
     return {
         scm: scm(r),
         command: command(r),
