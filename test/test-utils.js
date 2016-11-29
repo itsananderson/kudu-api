@@ -67,7 +67,8 @@ function setupKudu(basic, cb) {
             credentials = ensureCredentials(basic, {
                 website: env.WEBSITE,
                 username: env.USERNAME,
-                password: env.PASSWORD
+                password: env.PASSWORD,
+                domain: env.DOMAIN
             });
 
             cb(kuduApi(credentials));
