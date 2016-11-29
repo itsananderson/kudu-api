@@ -23,7 +23,8 @@ Usage
 var kudu = require("kudu-api")({
     website: "website",
     username: "$username",
-    password: "password"
+    password: "password",
+    domain: "scm.domain.com" //optional
 });
 ```
 
