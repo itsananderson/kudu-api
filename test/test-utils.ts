@@ -4,7 +4,7 @@ var JSZip = require("jszip");
 var fs = require("fs");
 var aps = require("azure-publish-settings");
 var path = require("path");
-var Promise = require("bluebird");
+var  bluebird = require("bluebird");
 var kuduApi = require("../");
 
 var artifactRoot = path.join(__dirname, "artifacts");
@@ -41,7 +41,7 @@ function createZipFile(localPath, files, cb) {
         .on("finish", cb);
 }
 
-var createZipFileAsync = Promise.promisify(createZipFile);
+var createZipFileAsync = bluebird.promisify(createZipFile);
 
 function ensureCredentials(basic, credentials) {
     if (!basic) {

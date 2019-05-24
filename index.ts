@@ -1,6 +1,7 @@
 "use strict";
 
 var request = require("request");
+var bluebird = require("bluebird");
 var scm = require("./lib/scm");
 var command = require("./lib/command");
 var vfs = require("./lib/vfs");
@@ -14,15 +15,14 @@ var diagnostics = require("./lib/diagnostics");
 var logs = require("./lib/logs");
 var extensions = require("./lib/extensions");
 var webjobs = require("./lib/webjobs");
-var Promise = require("bluebird");
 
 function promisifyApi(target) {
     Object.keys(target).forEach(function (key) {
-        Promise.promisifyAll(target[key]);
+        bluebird.promisifyAll(target[key]);
     });
 
     Object.keys(target.extensions).forEach(function (key) {
-        Promise.promisifyAll(target.extensions[key]);
+        bluebird.promisifyAll(target.extensions[key]);
     });
 
     return target;
