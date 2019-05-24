@@ -85,8 +85,14 @@ describe("zip", function () {
     });
 
 
-    it("downloads full zips", function(done) {
+    it("downloads complete zips without truncation", function(done) {
         this.timeout(30 * 1000);
+
+        // The zip download API doesn't report the size of the zip file, so there's no way to verify that the zip
+        // file is the correct size. The best we can do is download several times and verify that the file sizes
+        // are all equal.
+        //
+        // For bug report: https://github.com/itsananderson/kudu-api/issues/21
 
         var downloadSizes = [];
 
@@ -108,6 +114,7 @@ describe("zip", function () {
             });
         }
 
+        // Store downloaded file size. If we've downloaded 5 times, confirm that all the sizes match
         function validateDownload(size) {
             downloadSizes.push(size);
 
