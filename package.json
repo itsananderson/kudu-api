@@ -4,7 +4,8 @@
   "description": "Node wrapper for the Kudu REST API",
   "main": "index.js",
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "lint": "eslint . --ext ts,js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "azure-publish-settings": "^1.1.0",
+    "eslint": "^5.16.0",
     "gulp": "4.0.2",
     "gulp-eslint": "5.0.0",
     "gulp-mocha": "6.0.0",
