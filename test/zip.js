@@ -84,6 +84,55 @@ describe("zip", function () {
         });
     });
 
+
+    it("downloads complete zips without truncation", function(done) {
+        this.timeout(30 * 1000);
+
+        // The zip download API doesn't report the size of the zip file, so there's no way to verify that the zip
+        // file is the correct size. The best we can do is download several times and verify that the file sizes
+        // are all equal.
+        //
+        // For bug report: https://github.com/itsananderson/kudu-api/issues/21
+
+        var downloadSizes = [];
+
+        function download(cb) {
+            if (fs.existsSync(localZipPath)) {
+                fs.unlinkSync(localZipPath);
+            }
+
+            api.zip.download("site/wwwroot", localZipPath, function(err) {
+              if (err) {
+                  return done(err);
+              }
+
+              fs.exists(localZipPath, function(exists) {
+                  assert(exists, "Local zip should exist after download");
+
+                  cb(fs.statSync(localZipPath).size);
+              });
+            });
+        }
+
+        // Store downloaded file size. If we've downloaded 5 times, confirm that all the sizes match
+        function validateDownload(size) {
+            downloadSizes.push(size);
+
+            if (downloadSizes.length >= 5) {
+                var firstSize = downloadSizes[0];
+                for (var i = 1; i < downloadSizes.length; i++) {
+                    assert.equal(firstSize, downloadSizes[i]);
+                }
+                done();
+            } else {
+                download(validateDownload);
+            }
+        }
+
+        // Kick off first download
+        download(validateDownload);
+    });
+
     it("should return a not found error downloading a non-existent folder", function (done) {
         api.zip.download("site/wwwroot/does-not-exist", localZipPath, function (err) {
             assert(err, "Error should exist.");
