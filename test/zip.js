@@ -102,15 +102,15 @@ describe("zip", function () {
             }
 
             api.zip.download("site/wwwroot", localZipPath, function(err) {
-              if (err) {
-                  return done(err);
-              }
+                if (err) {
+                    return done(err);
+                }
 
-              fs.exists(localZipPath, function(exists) {
-                  assert(exists, "Local zip should exist after download");
+                fs.exists(localZipPath, function(exists) {
+                    assert(exists, "Local zip should exist after download");
 
-                  cb(fs.statSync(localZipPath).size);
-              });
+                    cb(fs.statSync(localZipPath).size);
+                });
             });
         }
 
