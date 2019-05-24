@@ -31,3 +31,5 @@ node_modules
 /test/test.PublishSettings
 /mocha
 /test.js
+
+.vscode/
