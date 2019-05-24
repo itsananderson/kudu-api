@@ -14,17 +14,17 @@ gulp.task("lint", function () {
         .pipe(eslint.format());
 });
 
-gulp.task("watch-lint", ["lint"], function () {
+gulp.task("watch-lint", gulp.series("lint", function () {
     return gulp.watch(allSources, ["lint"]);
-});
+}));
 
 gulp.task("test", function () {
     return gulp.src(testSources)
         .pipe(mocha());
 });
 
-gulp.task("watch-test", ["test"], function () {
+gulp.task("watch-test", gulp.series("test", function () {
     return gulp.watch(allSources, ["test"]);
-});
+}));
 
-gulp.task("watch", ["watch-lint", "watch-test"]);
+gulp.task("watch", gulp.parallel("watch-lint", "watch-test"));
