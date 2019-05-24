@@ -25,7 +25,7 @@ describe("extensions", function () {
     });
 
     it("can filter feed extensions", function (done) {
-        api.extensions.feed.list("np", function (err, result) {
+        api.extensions.feed.list("filecounter", function (err, result) {
             if (err) {
                 return done(err);
             }
@@ -36,7 +36,7 @@ describe("extensions", function () {
     });
 
     it("can get a specific feed extension", function (done) {
-        api.extensions.feed.get("np", function (err, result) {
+        api.extensions.feed.get("filecounter", function (err, result) {
             if (err) {
                 return done(err);
             }
@@ -58,7 +58,7 @@ describe("extensions", function () {
     });
 
     it("can filter installed extensions", function (done) {
-        api.extensions.site.list("np", function (err, result) {
+        api.extensions.site.list("filecounter", function (err, result) {
             if (err) {
                 return done(err);
             }
@@ -71,7 +71,7 @@ describe("extensions", function () {
     it("can add or update a package", function (done) {
         this.timeout(10 * 1000);
 
-        api.extensions.feed.getAsync("np")
+        api.extensions.feed.getAsync("filecounter")
             .then(function (result) {
                 return api.extensions.site.setAsync(result.data.id, result.data);
             })
@@ -86,7 +86,7 @@ describe("extensions", function () {
         this.timeout(30 * 1000);
         var oldExtensions;
 
-        api.extensions.feed.getAsync("np")
+        api.extensions.feed.getAsync("filecounter")
             .then(function (result) {
                 return api.extensions.site.setAsync(result.data.id, result.data);
             })
@@ -98,7 +98,7 @@ describe("extensions", function () {
             .then(function (result) {
                 oldExtensions = result.data;
 
-                return api.extensions.site.delAsync("np");
+                return api.extensions.site.delAsync("filecounter");
             })
             .then(function (result) {
                 assert(result.data);
