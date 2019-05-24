@@ -11,7 +11,8 @@
     "url": "git@github.com:itsananderson/kudu-api.git"
   },
   "keywords": [
-    "kudu"
+    "kudu",
+    "azure"
   ],
   "author": "Will Anderson",
   "license": "MIT",
