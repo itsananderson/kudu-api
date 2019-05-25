@@ -6,17 +6,17 @@ var api;
 
 var localZipPath = testUtils.artifactPath("test.zip");
 
-function deleteLocalZip(done) {
-    fs.unlink(localZipPath, function () {
+function deleteLocalZip(done): void {
+    fs.unlink(localZipPath, function (): void {
         // Ignore errors
         done();
     });
 }
 
-describe("zip", function () {
+describe("zip", function (): void {
     this.timeout(5000);
 
-    before(testUtils.setupKudu(false, function (kuduApi) {
+    before(testUtils.setupKudu(false, function (kuduApi): void {
         api = kuduApi;
     }));
 
@@ -26,12 +26,12 @@ describe("zip", function () {
 
     afterEach(deleteLocalZip);
 
-    it("can upload a zip", function (done) {
+    it("can upload a zip", function (done): void {
         var localZipContents = {
             "test.txt": "test\n"
         };
 
-        testUtils.createZipFile(localZipPath, localZipContents, function (err) {
+        testUtils.createZipFile(localZipPath, localZipContents, function (err): void {
             if (err) {
                 return done(err);
             }
@@ -40,19 +40,19 @@ describe("zip", function () {
         });
     });
 
-    it("should return a server error uploading to a folder with illegal characters", function (done) {
+    it("should return a server error uploading to a folder with illegal characters", function (done): void {
         var localZipContents = {
             "test.txt": "test\n"
         };
 
         testUtils.createZipFileAsync(localZipPath, localZipContents)
-            .then(function () {
+            .then(function (): Promise<void> {
                 return api.zip.uploadAsync(localZipPath, "site/wwwroot/illegal-character\"");
             })
-            .then(function () {
+            .then(function (): void {
                 throw new Error("Upload with illegal characters in path should not succeed.");
             })
-            .catch(function (err) {
+            .catch(function (err): void {
                 if (!err.response) {
                     throw err;
                 }
@@ -63,18 +63,18 @@ describe("zip", function () {
             .catch(done);
     });
 
-    it("can download a folder as a zip", function (done) {
+    it("can download a folder as a zip", function (done): void {
         this.timeout(30 * 1000);
 
-        fs.exists(localZipPath, function (exists) {
+        fs.exists(localZipPath, function (exists): void {
             assert(!exists, "Local zip should not exist before download");
 
-            api.zip.download("site/wwwroot", localZipPath, function (err) {
+            api.zip.download("site/wwwroot", localZipPath, function (err): void {
                 if (err) {
                     return done(err);
                 }
 
-                fs.exists(localZipPath, function (exists) {
+                fs.exists(localZipPath, function (exists): void {
                     assert(exists, "Local zip should exist after download");
 
                     done();
@@ -84,7 +84,7 @@ describe("zip", function () {
     });
 
 
-    it("downloads complete zips without truncation", function(done) {
+    it("downloads complete zips without truncation", function(done): void {
         this.timeout(30 * 1000);
 
         // The zip download API doesn't report the size of the zip file, so there's no way to verify that the zip
@@ -95,17 +95,18 @@ describe("zip", function () {
 
         var downloadSizes = [];
 
-        function download(cb) {
+        function download(cb): void {
             if (fs.existsSync(localZipPath)) {
                 fs.unlinkSync(localZipPath);
             }
 
-            api.zip.download("site/wwwroot", localZipPath, function(err) {
+            api.zip.download("site/wwwroot", localZipPath, function(err): void {
                 if (err) {
-                    return done(err);
+                    done(err);
+                    return;
                 }
 
-                fs.exists(localZipPath, function(exists) {
+                fs.exists(localZipPath, function(exists): void {
                     assert(exists, "Local zip should exist after download");
 
                     cb(fs.statSync(localZipPath).size);
@@ -114,7 +115,7 @@ describe("zip", function () {
         }
 
         // Store downloaded file size. If we've downloaded 5 times, confirm that all the sizes match
-        function validateDownload(size) {
+        function validateDownload(size): void {
             downloadSizes.push(size);
 
             if (downloadSizes.length >= 5) {
@@ -132,8 +133,8 @@ describe("zip", function () {
         download(validateDownload);
     });
 
-    it("should return a not found error downloading a non-existent folder", function (done) {
-        api.zip.download("site/wwwroot/does-not-exist", localZipPath, function (err) {
+    it("should return a not found error downloading a non-existent folder", function (done): void {
+        api.zip.download("site/wwwroot/does-not-exist", localZipPath, function (err): void {
             assert(err, "Error should exist.");
             assert.strictEqual(err.response.statusCode, 404, "Error status code should be 404.");
             done();
