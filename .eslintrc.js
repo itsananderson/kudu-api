@@ -3,7 +3,9 @@ module.exports = {
         "node": true,
         "mocha": true
     },
-    "extends": "eslint:recommended",
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
+    "extends": ["plugin:@typescript-eslint/recommended"],
     "rules": {
         "indent": [
             "error",
@@ -38,4 +40,4 @@ module.exports = {
             "always"
         ]
     }
-}
+};
