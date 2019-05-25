@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "gulp test",
-    "lint": "eslint . --ext ts,js"
+    "lint": "eslint . --ext ts"
   },
   "repository": {
     "type": "git",
