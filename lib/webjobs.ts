@@ -76,7 +76,7 @@ module.exports = function webjobs(request) {
         },
 
         runTriggered: function runTriggered(name, args, cb) {
-            var query = {};
+            var query = { arguments: undefined };
             
             if (typeof args === "function") {
                 cb = args;

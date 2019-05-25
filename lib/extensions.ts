@@ -3,10 +3,10 @@
 var utils = require("./utils");
 
 module.exports = function extensions(request) {
-    function extension(baseUrl) {
-        return {
+    function extension(baseUrl, extraMethods = {}) {
+        return { ...{
             list: function list(filter, cb) {
-                var query = {};
+                var query = { filter: undefined };
 
                 if (typeof filter === "function") {
                     cb = filter;
@@ -33,31 +33,31 @@ module.exports = function extensions(request) {
 
                 request(options, utils.createCallback(action, cb));
             }
-        };
+        }, ...extraMethods};
     }
 
     var feed = extension("/api/extensionfeed");
-    var site = extension("/api/siteextensions");
+    var site = extension("/api/siteextensions", {
+        del : function del(id, cb) {
+                var options = {
+                    uri: "/api/siteextensions/" + encodeURIComponent(id),
+                    json: true
+                };
+                var action = "deleting extension with id " + id;
 
-    site.del = function del(id, cb) {
-        var options = {
-            uri: "/api/siteextensions/" + encodeURIComponent(id),
-            json: true
-        };
-        var action = "deleting extension with id " + id;
+                request.del(options, utils.createCallback(action, cb));
+            },
 
-        request.del(options, utils.createCallback(action, cb));
-    };
+            set : function set(id, payload, cb) {
+                var options = {
+                    uri: "/api/siteextensions/" + encodeURIComponent(id),
+                    json: payload
+                };
+                var action = "installing or updating extension with id " + id;
 
-    site.set = function set(id, payload, cb) {
-        var options = {
-            uri: "/api/siteextensions/" + encodeURIComponent(id),
-            json: payload
-        };
-        var action = "installing or updating extension with id " + id;
-
-        request.put(options, utils.createCallback(action, cb));
-    };
+                request.put(options, utils.createCallback(action, cb));
+            }
+    });
 
     return {
         feed: feed,

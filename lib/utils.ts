@@ -12,7 +12,7 @@ function resolveHttpError(response, message) {
     message += "Status code " + response.statusCode + " (" + response.statusMessage + "). See the response property for details.";
 
     var error = new Error(message);
-    error.response = response;
+    (error as any).response = response;
 
     return error;
 }

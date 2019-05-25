@@ -5,7 +5,7 @@ var utils = require("./utils");
 module.exports = function sshkey(request) {
     return {
         get: function get(generate, cb) {
-            var query = {};
+            var query = { ensurePublicKey: undefined };
 
             if (typeof generate === "function") {
                 cb = generate;
