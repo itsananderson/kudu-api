@@ -1,8 +1,6 @@
-"use strict";
+import * as utils from "./utils";
 
-var utils = require("./utils");
-
-module.exports = function scm(request) {
+export default function scm(request) {
     return {
         info: function info(cb) {
             var options = {
@@ -21,4 +19,4 @@ module.exports = function scm(request) {
             request.del("/api/scm", utils.createCallback("deleting the repository", cb));
         }
     };
-};
+}

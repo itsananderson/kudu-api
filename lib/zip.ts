@@ -1,9 +1,7 @@
-"use strict";
+import * as fs from "fs";
+import * as utils from "./utils";
 
-var fs = require("fs");
-var utils = require("./utils");
-
-module.exports = function zip(request) {
+export default function zip(request) {
     return {
         download: function download(fromPath, toPath, cb) {
             var url = "/api/zip/" + fromPath;
@@ -33,4 +31,4 @@ module.exports = function zip(request) {
                 .pipe(request.put(url, utils.createCallback(action, cb)));
         }
     };
-};
+}

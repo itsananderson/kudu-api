@@ -1,8 +1,6 @@
-"use strict";
+import * as utils from "./utils";
 
-var utils = require("./utils");
-
-module.exports = function command(request) {
+export default function command(request) {
     return {
         exec: function exec(command, dir, cb) {
             if (typeof dir === "function") {
@@ -22,4 +20,4 @@ module.exports = function command(request) {
             request.post(options, utils.createCallback(action, cb));
         }
     };
-};
+}

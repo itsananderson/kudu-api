@@ -1,8 +1,8 @@
-"use strict";
+import * as assert from "assert";
+import * as fs from "fs";
 
-var assert = require("assert");
-var testUtils = require("./test-utils");
-var fs = require("fs");
+import * as testUtils from "./test-utils";
+
 var api;
 
 describe("vfs", function () {
@@ -10,7 +10,7 @@ describe("vfs", function () {
 
     var localPath = testUtils.artifactPath("test1.txt");
 
-    before(testUtils.setupKudu(function (kuduApi) {
+    before(testUtils.setupKudu(false, function (kuduApi) {
         api = kuduApi;
     }));
 

@@ -1,7 +1,7 @@
-"use strict";
+import * as assert from "assert";
 
-var assert = require("assert");
-var testUtils = require("./test-utils");
+import * as testUtils from "./test-utils";
+
 var api;
 
 describe("extensions", function () {
@@ -9,7 +9,7 @@ describe("extensions", function () {
 
     var availableExtensions;
 
-    before(testUtils.setupKudu(function (kuduApi) {
+    before(testUtils.setupKudu(false, function (kuduApi) {
         api = kuduApi;
     }));
 

@@ -1,8 +1,6 @@
-"use strict";
+import * as utils from "./utils";
 
-var utils = require("./utils");
-
-module.exports = function deployment(request) {
+export default function deployment(request) {
     return {
         list: function list(cb) {
             var options = {
@@ -78,4 +76,4 @@ module.exports = function deployment(request) {
             request.put(options, utils.createCallback(action, cb));
         }
     };
-};
+}

@@ -1,8 +1,6 @@
-"use strict";
+import * as utils from "./utils";
 
-var utils = require("./utils");
-
-module.exports = function environment(request) {
+export default function environment(request) {
     return {
         get: function get(cb) {
             var options = {
@@ -13,4 +11,4 @@ module.exports = function environment(request) {
             request(options, utils.createCallback("getting the Kudu environment", cb));
         }
     };
-};
+}

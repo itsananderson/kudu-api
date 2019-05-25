@@ -1,9 +1,9 @@
-"use strict";
+import * as assert from "assert";
+import * as fs from "fs";
+import * as retry from "retry";
 
-var assert = require("assert");
-var fs = require("fs");
-var testUtils = require("./test-utils");
-var retry = require("retry");
+import * as testUtils from "./test-utils";
+
 var api;
 
 var triggeredFiles = {
@@ -50,7 +50,7 @@ function createPollingCallback(cb) {
 describe("webjobs", function () {
     this.timeout(10000);
 
-    before(testUtils.setupKudu(function (kuduApi) {
+    before(testUtils.setupKudu(false, function (kuduApi) {
         api = kuduApi;
     }));
 

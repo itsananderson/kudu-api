@@ -1,8 +1,6 @@
-"use strict";
+import * as utils from "./utils";
 
-var utils = require("./utils");
-
-module.exports = function sshkey(request) {
+export default function sshkey(request) {
     return {
         get: function get(generate, cb) {
             var query = { ensurePublicKey: undefined };
@@ -23,4 +21,4 @@ module.exports = function sshkey(request) {
             request(options, utils.createCallback(action, cb));
         }
     };
-};
+}

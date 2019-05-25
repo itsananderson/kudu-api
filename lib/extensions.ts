@@ -1,8 +1,6 @@
-"use strict";
+import * as utils from "./utils";
 
-var utils = require("./utils");
-
-module.exports = function extensions(request) {
+export default function extensions(request) {
     function extension(baseUrl, extraMethods = {}) {
         return { ...{
             list: function list(filter, cb) {
@@ -63,4 +61,4 @@ module.exports = function extensions(request) {
         feed: feed,
         site: site
     };
-};
+}

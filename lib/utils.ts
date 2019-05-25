@@ -1,6 +1,4 @@
-"use strict";
-
-function resolveHttpError(response, message) {
+export function resolveHttpError(response, message) {
     if (response.statusCode < 400) {
         return;
     }
@@ -17,7 +15,7 @@ function resolveHttpError(response, message) {
     return error;
 }
 
-function createCallback(action, cb) {
+export function createCallback(action, cb) {
     return function (err, response) {
         err = err || resolveHttpError(response, "Error " + action + ".");
 
@@ -31,7 +29,3 @@ function createCallback(action, cb) {
         });
     };
 }
-
-module.exports = {
-    createCallback: createCallback
-};

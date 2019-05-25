@@ -1,8 +1,7 @@
-"use strict";
+import * as fs from "fs";
+import * as path from "path";
 
-var fs = require("fs");
-var path = require("path");
-var utils = require("./utils");
+import * as utils from "./utils";
 
 function createUploadHeaders(localPath) {
     var fileName = path.basename(localPath);
@@ -16,7 +15,7 @@ function createUploadHeaders(localPath) {
     };
 }
 
-module.exports = function webjobs(request) {
+export default function webjobs(request) {
     return {
         listAll: function listAll(cb) {
             var options = {
@@ -186,4 +185,4 @@ module.exports = function webjobs(request) {
             request.put(options, utils.createCallback(action, cb));
         }
     };
-};
+}

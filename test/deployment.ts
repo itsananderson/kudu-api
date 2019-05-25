@@ -1,7 +1,7 @@
-"use strict";
+import * as assert from "assert";
 
-var assert = require("assert");
-var testUtils = require("./test-utils");
+import * as testUtils from "./test-utils";
+
 var api;
 
 var gitUrl1 = "https://github.com/itsananderson/kudu-api-website.git";
@@ -12,7 +12,7 @@ describe("deployment", function () {
 
     var deploymentList;
 
-    before(testUtils.setupKudu(function (kuduApi) {
+    before(testUtils.setupKudu(false, function (kuduApi) {
         api = kuduApi;
     }));
 
@@ -100,7 +100,7 @@ describe("deployment", function () {
                 return done(err);
             }
 
-            assert(Array.isArray(result.data), "number", "Deployment log entries should be an array");
+            assert(Array.isArray(result.data), "Deployment log entries should be an array");
             done();
         });
     });

@@ -1,7 +1,6 @@
-"use strict";
+import * as fs from "fs";
 
-var fs = require("fs");
-var utils = require("./utils");
+import * as utils from "./utils";
 
 function ensureTrailingSlash(path) {
     if ("/" !== path[path.length - 1]) {
@@ -11,7 +10,7 @@ function ensureTrailingSlash(path) {
     return path;
 }
 
-module.exports = function vfs(request) {
+export default function vfs(request) {
     return {
         getFile: function getFile(path, cb) {
             var url = "/api/vfs/" + path;
@@ -85,4 +84,4 @@ module.exports = function vfs(request) {
             request.del(url, utils.createCallback(action, cb));
         }
     };
-};
+}

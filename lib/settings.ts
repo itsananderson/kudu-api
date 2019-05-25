@@ -1,8 +1,6 @@
-"use strict";
+import * as utils from "./utils";
 
-var utils = require("./utils");
-
-module.exports = function settings(request) {
+export default function settings(request) {
     return {
         list: function list(cb) {
             var options = {
@@ -40,4 +38,4 @@ module.exports = function settings(request) {
             request.post(options, utils.createCallback(action, cb));
         }
     };
-};
+}

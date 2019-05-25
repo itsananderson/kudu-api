@@ -1,8 +1,6 @@
-"use strict";
+import * as utils from "./utils";
 
-var utils = require("./utils");
-
-module.exports = function logs(request) {
+export default function logs(request) {
     return {
         recent: function recent(query, cb) {
             if (typeof query === "function") {
@@ -20,4 +18,4 @@ module.exports = function logs(request) {
             request(options, utils.createCallback(action, cb));
         }
     };
-};
+}

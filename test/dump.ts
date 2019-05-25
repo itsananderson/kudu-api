@@ -1,8 +1,8 @@
-"use strict";
+import * as assert from "assert";
+import * as fs from "fs";
 
-var assert = require("assert");
-var fs = require("fs");
-var testUtils = require("./test-utils");
+import * as testUtils from "./test-utils";
+
 var api;
 
 describe("dump", function() {
@@ -12,7 +12,7 @@ describe("dump", function() {
 
     before(testUtils.ensureArtifacts);
 
-    before(testUtils.setupKudu(function (kuduApi) {
+    before(testUtils.setupKudu(false, function (kuduApi) {
         api = kuduApi;
     }));
 

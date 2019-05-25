@@ -1,15 +1,15 @@
-"use strict";
+import * as fs from "fs";
+import * as path from "path";
 
-var JSZip = require("jszip");
-var fs = require("fs");
-var aps = require("azure-publish-settings");
-var path = require("path");
-var  bluebird = require("bluebird");
-var kuduApi = require("../");
+import * as aps from "azure-publish-settings";
+import * as bluebird from "bluebird";
+import * as JSZip from "jszip";
+
+import kuduApi from "../";
 
 var artifactRoot = path.join(__dirname, "artifacts");
 
-function ensureArtifacts(done) {
+export function ensureArtifacts(done) {
     fs.mkdir(artifactRoot, function (err) {
         if (err && err.code !== "EEXIST") {
             return done(err);
@@ -19,11 +19,11 @@ function ensureArtifacts(done) {
     });
 }
 
-function artifactPath(relativePath) {
+export function artifactPath(relativePath) {
     return path.join(artifactRoot, relativePath);
 }
 
-function createZipFile(localPath, files, cb) {
+export function createZipFile(localPath, files, cb) {
     var generateOptions = {
         type: "nodebuffer",
         streamFiles: true
@@ -41,9 +41,9 @@ function createZipFile(localPath, files, cb) {
         .on("finish", cb);
 }
 
-var createZipFileAsync = bluebird.promisify(createZipFile);
+export const createZipFileAsync = bluebird.promisify(createZipFile);
 
-function ensureCredentials(basic, credentials) {
+export function ensureCredentials(basic, credentials) {
     if (!basic) {
         return credentials;
     }
@@ -56,7 +56,7 @@ function ensureCredentials(basic, credentials) {
     };
 }
 
-function setupKudu(basic, cb) {
+export function setupKudu(basic, cb) {
     if (typeof basic === "function") {
         cb = basic;
         basic = false;
@@ -101,10 +101,3 @@ function setupKudu(basic, cb) {
     };
 }
 
-module.exports = {
-    ensureArtifacts: ensureArtifacts,
-    artifactPath: artifactPath,
-    createZipFile: createZipFile,
-    createZipFileAsync: createZipFileAsync,
-    setupKudu: setupKudu
-};

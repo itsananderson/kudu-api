@@ -1,8 +1,7 @@
-"use strict";
+import * as assert from "assert";
+import * as fs from "fs";
+import * as testUtils from "./test-utils";
 
-var assert = require("assert");
-var fs = require("fs");
-var testUtils = require("./test-utils");
 var api;
 
 var localZipPath = testUtils.artifactPath("test.zip");
@@ -17,7 +16,7 @@ function deleteLocalZip(done) {
 describe("zip", function () {
     this.timeout(5000);
 
-    before(testUtils.setupKudu(function (kuduApi) {
+    before(testUtils.setupKudu(false, function (kuduApi) {
         api = kuduApi;
     }));
 
