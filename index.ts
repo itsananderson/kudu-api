@@ -15,19 +15,19 @@ import logs from "./lib/logs";
 import extensions from "./lib/extensions";
 import webjobs from "./lib/webjobs";
 
-function promisifyApi(target) {
-    Object.keys(target).forEach(function (key) {
+function promisifyApi(target): any {
+    Object.keys(target).forEach(function (key): void {
         bluebird.promisifyAll(target[key]);
     });
 
-    Object.keys(target.extensions).forEach(function (key) {
+    Object.keys(target.extensions).forEach(function (key): void {
         bluebird.promisifyAll(target.extensions[key]);
     });
 
     return target;
 }
 
-export default function api(options) {
+export default function api(options): any {
     // Backward compat for old method signature
     if (typeof options === "string") {
         options = {
@@ -43,7 +43,7 @@ export default function api(options) {
     //options: website, username, password, basic (hashed)
     var website = options.website;
     var headers: {
-        Authorization?: string
+        Authorization?: string;
     } = {};
 
     if (options.username && options.password) {

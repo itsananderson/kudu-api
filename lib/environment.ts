@@ -1,8 +1,12 @@
 import * as utils from "./utils";
 
-export default function environment(request) {
+export interface Environment {
+    get: (cb) => void;
+}
+
+export default function environment(request): Environment {
     return {
-        get: function get(cb) {
+        get: function get(cb): void {
             var options = {
                 uri: "/api/environment",
                 json: true

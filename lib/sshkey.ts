@@ -1,8 +1,12 @@
 import * as utils from "./utils";
 
-export default function sshkey(request) {
+interface SshKey {
+    get: (generate, cb) => void;
+}
+
+export default function sshkey(request): SshKey {
     return {
-        get: function get(generate, cb) {
+        get: function get(generate, cb): void {
             var query = { ensurePublicKey: undefined };
 
             if (typeof generate === "function") {

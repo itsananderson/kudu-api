@@ -4,15 +4,15 @@ import * as testUtils from "./test-utils";
 
 var api;
 
-describe("diagnostics", function() {
+describe("diagnostics", function(): void {
     this.timeout(5000);
 
-    before(testUtils.setupKudu(false, function (kuduApi) {
+    before(testUtils.setupKudu(false, function (kuduApi): void {
         api = kuduApi;
     }));
 
-    it("can retrieve all diagnostics settings", function(done) {
-        api.diagnostics.list(function(err, result) {
+    it("can retrieve all diagnostics settings", function(done): void {
+        api.diagnostics.list(function(err, result): void {
             if (err) {
                 return done(err);
             }
@@ -23,8 +23,8 @@ describe("diagnostics", function() {
         });
     });
 
-    it("can retrieve a single diagnostics setting", function(done) {
-        api.diagnostics.get("AzureDriveEnabled", function(err, result) {
+    it("can retrieve a single diagnostics setting", function(done): void {
+        api.diagnostics.get("AzureDriveEnabled", function(err, result): void {
             if (err) {
                 return done(err);
             }
@@ -38,13 +38,13 @@ describe("diagnostics", function() {
         });
     });
 
-    it("can update diagnotics settings", function(done) {
-        api.diagnostics.set({ AzureDriveEnabled: true}, function(err) {
+    it("can update diagnotics settings", function(done): void {
+        api.diagnostics.set({ AzureDriveEnabled: true}, function(err): void {
             if (err) {
                 return done(err);
             }
 
-            api.diagnostics.get("AzureDriveEnabled", function(err, result) {
+            api.diagnostics.get("AzureDriveEnabled", function(err, result): void {
                 if (err) {
                     return done(err);
                 }
@@ -55,25 +55,25 @@ describe("diagnostics", function() {
         });
     });
 
-    it("can delete a setting", function(done) {
-        api.diagnostics.set({"test_setting": true}, function(err) {
+    it("can delete a setting", function(done): void {
+        api.diagnostics.set({"test_setting": true}, function(err): void {
             if (err) {
                 return done(err);
             }
 
-            api.diagnostics.list(function(err, result) {
+            api.diagnostics.list(function(err, result): void {
                 if (err) {
                     return done(err);
                 }
 
                 var oldSettings = result.data;
 
-                api.diagnostics.del("test_setting", function(err) {
+                api.diagnostics.del("test_setting", function(err): void {
                     if (err) {
                         return done(err);
                     }
 
-                    api.diagnostics.list(function(err, result) {
+                    api.diagnostics.list(function(err, result): void {
                         if (err) {
                             return done(err);
                         }
@@ -88,8 +88,8 @@ describe("diagnostics", function() {
         });
     });
 
-    it("gracefully handles missing key", function(done) {
-        api.diagnostics.get("foo", function(err, result) {
+    it("gracefully handles missing key", function(done): void {
+        api.diagnostics.get("foo", function(err, result): void {
             assert(err, "Should error for missing key");
             assert(!result, "When error is returned, result should be null");
             done();

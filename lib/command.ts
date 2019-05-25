@@ -1,8 +1,12 @@
 import * as utils from "./utils";
 
-export default function command(request) {
+export interface Command {
+    exec: (command, dir, cb) => void;
+}
+
+export default function command(request): Command {
     return {
-        exec: function exec(command, dir, cb) {
+        exec: function exec(command, dir, cb): void {
             if (typeof dir === "function") {
                 cb = dir;
                 dir = "";

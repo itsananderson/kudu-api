@@ -2,7 +2,7 @@ import * as fs from "fs";
 
 import * as utils from "./utils";
 
-function ensureTrailingSlash(path) {
+function ensureTrailingSlash(path): void {
     if ("/" !== path[path.length - 1]) {
         path += "/";
     }
@@ -10,16 +10,25 @@ function ensureTrailingSlash(path) {
     return path;
 }
 
-export default function vfs(request) {
+export interface VFS {
+    getFile: (path, cb) => void;
+    listFiles: (path, cb) => void;
+    uploadFile: (localPath, destPath, etag, cb) => void;
+    createDirectory: (path, cb) => void;
+    deleteFile: (path, etag, cb) => void;
+    deleteDirectory: (path, cb) => void;
+}
+
+export default function vfs(request): VFS {
     return {
-        getFile: function getFile(path, cb) {
+        getFile: function getFile(path, cb): void {
             var url = "/api/vfs/" + path;
             var action = "getting file with path " + path;
 
             request(url, utils.createCallback(action, cb));
         },
 
-        listFiles: function listFiles(path, cb) {
+        listFiles: function listFiles(path, cb): void {
             path = ensureTrailingSlash(path);
 
             var options = {
@@ -31,7 +40,7 @@ export default function vfs(request) {
             request(options, utils.createCallback(action, cb));
         },
 
-        uploadFile: function uploadFile(localPath, destPath, etag, cb) {
+        uploadFile: function uploadFile(localPath, destPath, etag, cb): void {
             if (typeof etag === "function") {
                 cb = etag;
                 etag = "*";
@@ -49,7 +58,7 @@ export default function vfs(request) {
                 .pipe(request.put(options, utils.createCallback(action, cb)));
         },
 
-        createDirectory: function createDirectory(path, cb) {
+        createDirectory: function createDirectory(path, cb): void {
             path = ensureTrailingSlash(path);
 
             var url = "/api/vfs/" + path;
@@ -58,7 +67,7 @@ export default function vfs(request) {
             request.put(url, utils.createCallback(action, cb));
         },
 
-        deleteFile: function deleteFile(path, etag, cb) {
+        deleteFile: function deleteFile(path, etag, cb): void {
             if (typeof etag === "function") {
                 cb = etag;
                 etag = "*";
@@ -75,7 +84,7 @@ export default function vfs(request) {
             request.del(options, utils.createCallback(action, cb));
         },
 
-        deleteDirectory: function deleteDirectory(path, cb) {
+        deleteDirectory: function deleteDirectory(path, cb): void {
             path = ensureTrailingSlash(path);
 
             var url = "/api/vfs/" + path;

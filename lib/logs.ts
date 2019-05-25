@@ -1,8 +1,12 @@
 import * as utils from "./utils";
 
-export default function logs(request) {
+interface Logs {
+    recent: (query, cb) => void;
+}
+
+export default function logs(request): Logs {
     return {
-        recent: function recent(query, cb) {
+        recent: function recent(query, cb): void {
             if (typeof query === "function") {
                 cb = query;
                 query = {};

@@ -1,9 +1,14 @@
 import * as fs from "fs";
 import * as utils from "./utils";
 
-export default function zip(request) {
+interface Zip {
+    download: (fromPath, toPath, cb) => void;
+    upload: (fromPath, toPath, cb) => void;
+}
+
+export default function zip(request): Zip {
     return {
-        download: function download(fromPath, toPath, cb) {
+        download: function download(fromPath, toPath, cb): void {
             var url = "/api/zip/" + fromPath;
             var action = "downloading zip file from " + fromPath;
 
@@ -11,19 +16,19 @@ export default function zip(request) {
 
             var response;
             request(url)
-                .on("response", function(res) {
+                .on("response", function(res): void {
                     response = res;
                 })
-                .on("error", function(err) {
+                .on("error", function(err): void {
                     callbackWrapper(err, response);
                 })
                 .pipe(fs.createWriteStream(toPath))
-                .on("close", function () {
+                .on("close", function (): void {
                     callbackWrapper(null, response);
                 });
         },
 
-        upload: function upload(fromPath, toPath, cb) {
+        upload: function upload(fromPath, toPath, cb): void {
             var url = "/api/zip/" + toPath;
             var action = "uploading zip file to " + toPath;
 

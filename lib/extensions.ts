@@ -1,9 +1,24 @@
 import * as utils from "./utils";
 
-export default function extensions(request) {
-    function extension(baseUrl, extraMethods = {}) {
-        return { ...{
-            list: function list(filter, cb) {
+export interface ExtensionsBase {
+    list: (filter, cb) => void;
+    get: (id, cb) => void;
+}
+
+export interface SiteExtensions extends ExtensionsBase {
+    del: (id, cb) => void;
+    set: (id, payload, cb) => void;
+}
+
+export interface Extensions {
+    feed: ExtensionsBase;
+    site: SiteExtensions;
+}
+
+export default function extensions(request): Extensions {
+    function extension(baseUrl): ExtensionsBase {
+        return {
+            list: function list(filter, cb): void {
                 var query = { filter: undefined };
 
                 if (typeof filter === "function") {
@@ -22,7 +37,7 @@ export default function extensions(request) {
                 request(options, utils.createCallback(action, cb));
             },
 
-            get: function get(id, cb) {
+            get: function get(id, cb): void {
                 var options = {
                     uri: baseUrl + "/" + encodeURIComponent(id),
                     json: true
@@ -31,12 +46,14 @@ export default function extensions(request) {
 
                 request(options, utils.createCallback(action, cb));
             }
-        }, ...extraMethods};
+        };
     }
 
-    var feed = extension("/api/extensionfeed");
-    var site = extension("/api/siteextensions", {
-        del : function del(id, cb) {
+    return {
+        feed: extension("/api/extensionfeed"),
+        site: {
+            ...extension("/api/siteextensions"),
+            del: function del(id, cb): void {
                 var options = {
                     uri: "/api/siteextensions/" + encodeURIComponent(id),
                     json: true
@@ -45,8 +62,7 @@ export default function extensions(request) {
 
                 request.del(options, utils.createCallback(action, cb));
             },
-
-            set : function set(id, payload, cb) {
+            set: function set(id, payload, cb): void {
                 var options = {
                     uri: "/api/siteextensions/" + encodeURIComponent(id),
                     json: payload
@@ -55,10 +71,6 @@ export default function extensions(request) {
 
                 request.put(options, utils.createCallback(action, cb));
             }
-    });
-
-    return {
-        feed: feed,
-        site: site
+        }
     };
 }

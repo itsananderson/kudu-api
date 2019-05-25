@@ -5,31 +5,32 @@ import * as testUtils from "./test-utils";
 
 var api;
 
-describe("dump", function() {
+describe("dump", function(): void {
     this.timeout(30 * 1000);
 
     var localPath = testUtils.artifactPath("dump1.zip");
 
     before(testUtils.ensureArtifacts);
 
-    before(testUtils.setupKudu(false, function (kuduApi) {
+    before(testUtils.setupKudu(false, function (kuduApi): void {
         api = kuduApi;
     }));
 
-    afterEach(function(done) {
-        fs.unlink(localPath, function () {
+    afterEach(function(done): void {
+        fs.unlink(localPath, function (): void {
             // Ignore errors
             done();
         });
     });
 
-    it("can retrieve dump", function(done) {
-        api.dump.download(localPath, function(err) {
+    it("can retrieve dump", function(done): void {
+        api.dump.download(localPath, function(err): void {
             if (err) {
-                return done(err);
+                done(err);
+                return;
             }
 
-            fs.exists(localPath, function (exists) {
+            fs.exists(localPath, function (exists): void {
                 assert(exists, "Downloaded dump file exists");
 
                 done();
