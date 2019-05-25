@@ -78,7 +78,7 @@ describe("extensions", function (): void {
 
         api.extensions.feed.getAsync("filecounter")
             .then(function (result): void {
-                api.extensions.site.setAsync(result.data.id, result.data);
+                return api.extensions.site.setAsync(result.data.id, result.data);
             })
             .then(function (result): void {
                 assert.equal(result.data.provisioningState, "Succeeded", "Should have successfully provisioned");
