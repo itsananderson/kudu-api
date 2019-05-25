@@ -1,0 +1,2 @@
+definitions/**/*.d.ts
+dist/**/*.js
