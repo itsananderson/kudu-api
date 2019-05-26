@@ -4,7 +4,7 @@ import * as testUtils from "./test-utils";
 
 var api;
 
-describe.only("settings", function(): void {
+describe("settings", function(): void {
   this.timeout(5000);
 
   before(
