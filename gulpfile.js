@@ -13,52 +13,64 @@ var allSources = libSources.concat(testSources);
 var builtTestFiles = ["dist/test/**/*.js"];
 
 function tsDestPath(destFolder) {
-    return (file) => {
-        const targetFilePath = path.join(destFolder, file.path.replace(__dirname, ''));
-        const targetDirectory = path.dirname(targetFilePath);
-        return targetDirectory;
-    }
+  return file => {
+    const targetFilePath = path.join(
+      destFolder,
+      file.path.replace(__dirname, "")
+    );
+    const targetDirectory = path.dirname(targetFilePath);
+    return targetDirectory;
+  };
 }
 
 gulp.task("clean", function() {
-    return del(["definitions/**/*", "dist/**/*"]);
+  return del(["definitions/**/*", "dist/**/*"]);
 });
 
 gulp.task("build:copy-assets", function() {
-    return gulp.src(["test/*.PublishSettings"])
-        .pipe(gulp.dest("dist/test"));
+  return gulp.src(["test/*.PublishSettings"]).pipe(gulp.dest("dist/test"));
 });
 
 gulp.task("build:typescript", function() {
-    var tsResult = gulp.src(allSources)
-        .pipe(ts({
-            declaration: true
-        }));
-    return merge([
-        tsResult.dts.pipe(gulp.dest(tsDestPath("definitions"))),
-        tsResult.js.pipe(gulp.dest(tsDestPath("dist")))
-    ]);
+  var tsResult = gulp.src(allSources).pipe(
+    ts({
+      declaration: true
+    })
+  );
+  return merge([
+    tsResult.dts.pipe(gulp.dest(tsDestPath("definitions"))),
+    tsResult.js.pipe(gulp.dest(tsDestPath("dist")))
+  ]);
 });
 
 gulp.task("build", gulp.parallel("build:copy-assets", "build:typescript"));
 
-gulp.task("lint", function () {
-    return gulp.src(allSources)
-        .pipe(eslint())
-        .pipe(eslint.format());
+gulp.task("lint", function() {
+  return gulp
+    .src(allSources)
+    .pipe(eslint())
+    .pipe(eslint.format());
 });
 
-gulp.task("watch-lint", gulp.series("lint", function () {
+gulp.task(
+  "watch-lint",
+  gulp.series("lint", function() {
     return gulp.watch(allSources, ["lint"]);
-}));
+  })
+);
 
-gulp.task("test", gulp.series("build", function () {
-    return gulp.src(builtTestFiles)
-        .pipe(mocha());
-}));
+gulp.task(
+  "test",
+  gulp.series("build", function() {
+    return gulp.src(builtTestFiles).pipe(mocha());
+  })
+);
 
-gulp.task("watch-test", gulp.series("test", function () {
+gulp.task(
+  "watch-test",
+  gulp.series("test", function() {
     return gulp.watch(allSources, ["test"]);
-}));
+  })
+);
 
 gulp.task("watch", gulp.parallel("watch-lint", "watch-test"));

@@ -4,40 +4,24 @@ module.exports = {
         "mocha": true
     },
     "parser": "@typescript-eslint/parser",
-    "plugins": ["@typescript-eslint"],
-    "extends": ["plugin:@typescript-eslint/recommended"],
+    "plugins": ["@typescript-eslint", "prettier"],
+    "extends": ["plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
     "rules": {
-        "indent": [
-            "error",
-            4
-        ],
-        "quotes": [
-            "error",
-            "double"
-        ],
-        "semi": [
-            "error",
-            "always"
-        ],
-        "curly": [
-            "error",
-            "all"
-        ],
-        "strict": [
-            "error",
-            "safe"
-        ],
+
+        // Conflicts with Prettier
+        "@typescript-eslint/indent": "off",
+
+        // Conflicts with some rest API parameters
+        "@typescript-eslint/camelcase": "off",
+
         "eqeqeq": [
             "error",
             "always"
         ],
+
         "one-var": [
             "error",
             "never"
         ],
-        "multiline-ternary": [
-            "error",
-            "always"
-        ]
     }
 };
