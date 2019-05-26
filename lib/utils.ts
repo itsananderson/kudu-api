@@ -15,8 +15,8 @@ export function resolveHttpError(response, message): Error | undefined {
     response.statusMessage +
     "). See the response property for details.";
 
-  var error: Error & { response?: string } = new Error(message);
-  error.response = response;
+  var error: Error & { rawResponse?: Response } = new Error(message);
+  error.rawResponse = response;
 
   return error;
 }
