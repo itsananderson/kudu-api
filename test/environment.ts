@@ -14,20 +14,14 @@ describe("environment", function(): void {
       })
     );
 
-    it("can get the environment", function(done): void {
-      api.environment.get(function(err, result): void {
-        if (err) {
-          done(err);
-          return;
-        }
+    it("can get the environment", async function(): Promise<void> {
+      const response = await api.environment.get();
 
-        assert.notStrictEqual(
-          result.data.version,
-          undefined,
-          "version is defined"
-        );
-        done();
-      });
+      assert.notStrictEqual(
+        response.payload.version,
+        undefined,
+        "version is defined"
+      );
     });
   });
 
@@ -38,20 +32,14 @@ describe("environment", function(): void {
       })
     );
 
-    it("can get the environment", function(done): void {
-      api.environment.get(function(err, result): void {
-        if (err) {
-          done(err);
-          return;
-        }
+    it("can get the environment", async function(): Promise<void> {
+      const response = await api.environment.get();
 
-        assert.notStrictEqual(
-          result.data.version,
-          undefined,
-          "version is defined"
-        );
-        done();
-      });
+      assert.notStrictEqual(
+        response.payload.version,
+        undefined,
+        "version is defined"
+      );
     });
   });
 });
