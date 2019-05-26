@@ -1,11 +1,13 @@
-"use strict";
+import * as utils from "./utils";
 
-var utils = require("./utils");
+interface SshKey {
+    get: (generate, cb) => void;
+}
 
-module.exports = function sshkey(request) {
+export default function sshkey(request): SshKey {
     return {
-        get: function get(generate, cb) {
-            var query = {};
+        get: function get(generate, cb): void {
+            var query = { ensurePublicKey: undefined };
 
             if (typeof generate === "function") {
                 cb = generate;
@@ -23,4 +25,4 @@ module.exports = function sshkey(request) {
             request(options, utils.createCallback(action, cb));
         }
     };
-};
+}

@@ -1,6 +1,4 @@
-"use strict";
-
-function resolveHttpError(response, message) {
+export function resolveHttpError(response, message): Error | undefined {
     if (response.statusCode < 400) {
         return;
     }
@@ -11,14 +9,14 @@ function resolveHttpError(response, message) {
 
     message += "Status code " + response.statusCode + " (" + response.statusMessage + "). See the response property for details.";
 
-    var error = new Error(message);
+    var error: Error & { response?: string } = new Error(message);
     error.response = response;
 
     return error;
 }
 
-function createCallback(action, cb) {
-    return function (err, response) {
+export function createCallback(action, cb): (err, response) => void {
+    return function (err, response): void {
         err = err || resolveHttpError(response, "Error " + action + ".");
 
         if (err) {
@@ -31,7 +29,3 @@ function createCallback(action, cb) {
         });
     };
 }
-
-module.exports = {
-    createCallback: createCallback
-};

@@ -1,16 +1,16 @@
-"use strict";
+import * as fs from "fs";
+import * as path from "path";
 
-var JSZip = require("jszip");
-var fs = require("fs");
-var aps = require("azure-publish-settings");
-var path = require("path");
-var Promise = require("bluebird");
-var kuduApi = require("../");
+import * as aps from "azure-publish-settings";
+import * as bluebird from "bluebird";
+import * as JSZip from "jszip";
+
+import kuduApi from "../";
 
 var artifactRoot = path.join(__dirname, "artifacts");
 
-function ensureArtifacts(done) {
-    fs.mkdir(artifactRoot, function (err) {
+export function ensureArtifacts(done): void {
+    fs.mkdir(artifactRoot, function (err): void {
         if (err && err.code !== "EEXIST") {
             return done(err);
         }
@@ -19,11 +19,11 @@ function ensureArtifacts(done) {
     });
 }
 
-function artifactPath(relativePath) {
+export function artifactPath(relativePath): string {
     return path.join(artifactRoot, relativePath);
 }
 
-function createZipFile(localPath, files, cb) {
+export function createZipFile(localPath, files, cb): void {
     var generateOptions = {
         type: "nodebuffer",
         streamFiles: true
@@ -31,7 +31,7 @@ function createZipFile(localPath, files, cb) {
 
     var zip = new JSZip();
 
-    Object.keys(files).forEach(function (key) {
+    Object.keys(files).forEach(function (key): void {
         zip.file(key, files[key]);
     });
 
@@ -41,9 +41,16 @@ function createZipFile(localPath, files, cb) {
         .on("finish", cb);
 }
 
-var createZipFileAsync = Promise.promisify(createZipFile);
+export const createZipFileAsync = bluebird.promisify(createZipFile);
 
-function ensureCredentials(basic, credentials) {
+interface Credentials {
+    website: string;
+    username: string;
+    password: string;
+    domain: string;
+};
+
+export function ensureCredentials(basic: boolean, credentials: Credentials): Credentials | { website: string; basic: string } {
     if (!basic) {
         return credentials;
     }
@@ -56,13 +63,13 @@ function ensureCredentials(basic, credentials) {
     };
 }
 
-function setupKudu(basic, cb) {
+export function setupKudu(basic, cb): (done) => void {
     if (typeof basic === "function") {
         cb = basic;
         basic = false;
     }
 
-    return function (done) {
+    return function (done): void {
         var env = process.env;
         var credentials;
 
@@ -81,7 +88,7 @@ function setupKudu(basic, cb) {
 
         var settingsPath = path.join(__dirname, "test.PublishSettings");
 
-        aps.read(settingsPath, function (err, settings) {
+        aps.read(settingsPath, function (err, settings): void {
             if (err) {
                 if (err.code === "ENOENT") {
                     return done(new Error("A \"test.PublishSettings\" file was not found in the test directory. Please provide one or add WEBSITE, USERNAME and PASSWORD environment variables to enable kudu-api testing."));
@@ -101,10 +108,3 @@ function setupKudu(basic, cb) {
     };
 }
 
-module.exports = {
-    ensureArtifacts: ensureArtifacts,
-    artifactPath: artifactPath,
-    createZipFile: createZipFile,
-    createZipFileAsync: createZipFileAsync,
-    setupKudu: setupKudu
-};

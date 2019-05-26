@@ -2,9 +2,11 @@
   "name": "kudu-api",
   "version": "1.4.1",
   "description": "Node wrapper for the Kudu REST API",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "definitions/index.d.ts",
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "lint": "eslint . --ext ts"
   },
   "repository": {
     "type": "git",
@@ -25,12 +27,21 @@
     "request": "^2.58.0"
   },
   "devDependencies": {
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^12.0.2",
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
     "azure-publish-settings": "^1.1.0",
-    "gulp": "^3.9.1",
-    "gulp-eslint": "^3.0.1",
-    "gulp-mocha": "^3.0.1",
+    "del": "^4.1.1",
+    "eslint": "^5.16.0",
+    "gulp": "4.0.2",
+    "gulp-eslint": "5.0.0",
+    "gulp-mocha": "6.0.0",
+    "gulp-typescript": "^5.0.1",
     "jszip": "^3.0.0",
-    "mocha": "^2.2.5",
-    "retry": "^0.9.0"
+    "merge2": "^1.2.3",
+    "mocha": "6.1.4",
+    "retry": "^0.9.0",
+    "typescript": "^3.4.5"
   }
 }

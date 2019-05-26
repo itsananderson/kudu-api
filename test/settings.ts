@@ -1,22 +1,22 @@
-"use strict";
+import * as assert from "assert";
 
-var assert = require("assert");
-var testUtils = require("./test-utils");
+import * as testUtils from "./test-utils";
+
 var api;
 
-describe("settings", function() {
+describe("settings", function(): void {
     this.timeout(5000);
 
-    before(testUtils.setupKudu(function (kuduApi) {
+    before(testUtils.setupKudu(false, function (kuduApi): void {
         api = kuduApi;
     }));
 
-    before(function(done) {
-        api.settings.set({test_setting: "test"}, done);
+    before(function(done): void {
+        api.settings.set({"test_setting": "test"}, done);
     });
 
-    it("can retrieve all settings", function(done) {
-        api.settings.list(function(err, result) {
+    it("can retrieve all settings", function(done): void {
+        api.settings.list(function(err, result): void {
             if (err) {
                 return done(err);
             }
@@ -26,8 +26,8 @@ describe("settings", function() {
         });
     });
 
-    it("can retrieve a single setting", function(done) {
-        api.settings.get("WEBSITE_SITE_NAME", function(err, result) {
+    it("can retrieve a single setting", function(done): void {
+        api.settings.get("WEBSITE_SITE_NAME", function(err, result): void {
             if (err) {
                 return done(err);
             }
@@ -37,20 +37,20 @@ describe("settings", function() {
         });
     });
 
-    it("can update settings", function(done) {
-        api.settings.get("test_setting", function(err, result) {
+    it("can update settings", function(done): void {
+        api.settings.get("test_setting", function(err, result): void {
             if (err) {
                 return done(err);
             }
 
             assert.equal(result.data, "test");
 
-            api.settings.set({test_setting: "test1"}, function(err) {
+            api.settings.set({"test_setting": "test1"}, function(err): void {
                 if (err) {
                     return done(err);
                 }
 
-                api.settings.get("test_setting", function(err, result) {
+                api.settings.get("test_setting", function(err, result): void {
                     if (err) {
                         return done(err);
                     }
@@ -62,27 +62,27 @@ describe("settings", function() {
         });
     });
 
-    it("can delete a setting", function(done) {
+    it("can delete a setting", function(done): void {
         this.timeout(10 * 1000);
 
-        api.settings.set({test_setting: "test"}, function(err) {
+        api.settings.set({"test_setting": "test"}, function(err): void {
             if (err) {
                 return done(err);
             }
 
-            api.settings.list(function(err, result) {
+            api.settings.list(function(err, result): void {
                 if (err) {
                     return done(err);
                 }
 
                 var oldSettings = result.data;
 
-                api.settings.del("test_setting", function(err) {
+                api.settings.del("test_setting", function(err): void {
                     if (err) {
                         return done(err);
                     }
 
-                    api.settings.list(function(err, result) {
+                    api.settings.list(function(err, result): void {
                         var oldKeys = Object.keys(oldSettings);
                         var newKeys = Object.keys(result.data);
                         assert.equal(newKeys.length, oldKeys.length-1, "New keys count should be old count minus 1");

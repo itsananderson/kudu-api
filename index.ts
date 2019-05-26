@@ -1,34 +1,33 @@
-"use strict";
+import * as request from "request";
+import * as bluebird from "bluebird";
 
-var request = require("request");
-var scm = require("./lib/scm");
-var command = require("./lib/command");
-var vfs = require("./lib/vfs");
-var zip = require("./lib/zip");
-var deployment = require("./lib/deployment");
-var sshkey = require("./lib/sshkey");
-var environment = require("./lib/environment");
-var settings = require("./lib/settings");
-var dump = require("./lib/dump");
-var diagnostics = require("./lib/diagnostics");
-var logs = require("./lib/logs");
-var extensions = require("./lib/extensions");
-var webjobs = require("./lib/webjobs");
-var Promise = require("bluebird");
+import scm from "./lib/scm";
+import command from "./lib/command";
+import vfs from "./lib/vfs";
+import zip from "./lib/zip";
+import deployment from "./lib/deployment";
+import sshkey from "./lib/sshkey";
+import environment from "./lib/environment";
+import settings from "./lib/settings";
+import dump from "./lib/dump";
+import diagnostics from "./lib/diagnostics";
+import logs from "./lib/logs";
+import extensions from "./lib/extensions";
+import webjobs from "./lib/webjobs";
 
-function promisifyApi(target) {
-    Object.keys(target).forEach(function (key) {
-        Promise.promisifyAll(target[key]);
+function promisifyApi(target): any {
+    Object.keys(target).forEach(function (key): void {
+        bluebird.promisifyAll(target[key]);
     });
 
-    Object.keys(target.extensions).forEach(function (key) {
-        Promise.promisifyAll(target.extensions[key]);
+    Object.keys(target.extensions).forEach(function (key): void {
+        bluebird.promisifyAll(target.extensions[key]);
     });
 
     return target;
 }
 
-module.exports = function api(options) {
+export default function api(options): any {
     // Backward compat for old method signature
     if (typeof options === "string") {
         options = {
@@ -43,7 +42,9 @@ module.exports = function api(options) {
 
     //options: website, username, password, basic (hashed)
     var website = options.website;
-    var headers = {};
+    var headers: {
+        Authorization?: string;
+    } = {};
 
     if (options.username && options.password) {
         headers.Authorization = "Basic " +

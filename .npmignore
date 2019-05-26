@@ -27,10 +27,21 @@ build/Release
 node_modules
 
 # Tests and artifacts
-test
+/test
 /mocha
 /test.js
+/dist/test
+/definitions/test
 
+# Various build/env files
 /.vscode
 gulpfile.js
-.eslintrc.json
+.eslintrc.js
+.eslintignore
+tsconfig.json
+yarn.lock
+kudu-api-*.tgz
+
+# Ignore TypeScript source files
+index.ts
+/lib

@@ -1,10 +1,12 @@
-"use strict";
+import * as utils from "./utils";
 
-var utils = require("./utils");
+interface Logs {
+    recent: (query, cb) => void;
+}
 
-module.exports = function logs(request) {
+export default function logs(request): Logs {
     return {
-        recent: function recent(query, cb) {
+        recent: function recent(query, cb): void {
             if (typeof query === "function") {
                 cb = query;
                 query = {};
@@ -20,4 +22,4 @@ module.exports = function logs(request) {
             request(options, utils.createCallback(action, cb));
         }
     };
-};
+}

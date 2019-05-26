@@ -1,10 +1,15 @@
-"use strict";
+import * as utils from "./utils";
 
-var utils = require("./utils");
+export interface Diagnostics {
+    list: (cb) => void;
+    get: (key, cb) => void;
+    del: (key, cb) => void;
+    set: (settings, cb) => void;
+}
 
-module.exports = function diagnostics(request) {
+export default function diagnostics(request): Diagnostics {
     return {
-        list: function list(cb) {
+        list: function list(cb): void {
             var options = {
                 uri: "/api/diagnostics/settings",
                 json: true
@@ -13,7 +18,7 @@ module.exports = function diagnostics(request) {
             request(options, utils.createCallback("listing diagnostic settings", cb));
         },
 
-        get: function get(key, cb) {
+        get: function get(key, cb): void {
             var options = {
                 uri: "/api/diagnostics/settings/" + encodeURIComponent(key),
                 json: true
@@ -23,14 +28,14 @@ module.exports = function diagnostics(request) {
             request(options, utils.createCallback(action, cb));
         },
 
-        del: function del(key, cb) {
+        del: function del(key, cb): void {
             var url = "/api/diagnostics/settings/" + encodeURIComponent(key);
             var action = "deleting diagnostic settiing with key " + key;
 
             request.del(url, utils.createCallback(action, cb));
         },
 
-        set: function set(settings, cb) {
+        set: function set(settings, cb): void {
             var options = {
                 uri: "/api/diagnostics/settings/",
                 json: settings
@@ -40,4 +45,4 @@ module.exports = function diagnostics(request) {
             request.post(options, utils.createCallback(action, cb));
         }
     };
-};
+}

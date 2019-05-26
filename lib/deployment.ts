@@ -1,10 +1,18 @@
-"use strict";
+import * as utils from "./utils";
 
-var utils = require("./utils");
+export interface Deployment {
+    list: (cb) => void;
+    get: (id, cb) => void;
+    del: (id, cb) => void;
+    log: (id, cb) => void;
+    logDetails: (id, entryId, cb) => void;
+    deploy: (repoUrl, cb) => void;
+    redeploy: (id, payload, cb) => void;
+}
 
-module.exports = function deployment(request) {
+export default function deployment(request): Deployment {
     return {
-        list: function list(cb) {
+        list: function list(cb): void {
             var options = {
                 uri: "/api/deployments/",
                 json: true
@@ -13,7 +21,7 @@ module.exports = function deployment(request) {
             request(options, utils.createCallback("listing deployments", cb));
         },
 
-        get: function get(id, cb) {
+        get: function get(id, cb): void {
             var options = {
                 uri: "/api/deployments/" + encodeURIComponent(id),
                 json: true
@@ -23,14 +31,14 @@ module.exports = function deployment(request) {
             request(options, utils.createCallback(action, cb));
         },
 
-        del: function del(id, cb) {
+        del: function del(id, cb): void {
             var url = "/api/deployments/" + encodeURIComponent(id);
             var action = "deleting deployment with id " + id;
 
             request.del(url, utils.createCallback(action, cb));
         },
 
-        log: function log(id, cb) {
+        log: function log(id, cb): void {
             var options = {
                 uri: "/api/deployments/" + encodeURIComponent(id) + "/log",
                 json: true
@@ -40,7 +48,7 @@ module.exports = function deployment(request) {
             request(options, utils.createCallback(action, cb));
         },
 
-        logDetails: function logDetails(id, entryId, cb) {
+        logDetails: function logDetails(id, entryId, cb): void {
             var options = {
                 uri: "/api/deployments/" + encodeURIComponent(id) + "/log/" + encodeURIComponent(entryId),
                 json: true
@@ -50,7 +58,7 @@ module.exports = function deployment(request) {
             request(options, utils.createCallback(action, cb));
         },
 
-        deploy: function deploy(repoUrl, cb) {
+        deploy: function deploy(repoUrl, cb): void {
             var options = {
                 uri: "/deploy/",
                 json: {
@@ -63,7 +71,7 @@ module.exports = function deployment(request) {
             request.post(options, utils.createCallback(action, cb));
         },
 
-        redeploy: function redeploy(id, payload, cb) {
+        redeploy: function redeploy(id, payload, cb): void {
             if (typeof payload === "function") {
                 cb = payload;
                 payload = undefined;
@@ -78,4 +86,4 @@ module.exports = function deployment(request) {
             request.put(options, utils.createCallback(action, cb));
         }
     };
-};
+}

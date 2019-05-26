@@ -1,18 +1,18 @@
-"use strict";
+import * as assert from "assert";
 
-var assert = require("assert");
-var testUtils = require("./test-utils");
+import * as testUtils from "./test-utils";
+
 var api;
 
-describe("command", function () {
+describe("command", function (): void {
     this.timeout(30000);
 
-    before(testUtils.setupKudu(function (kuduApi) {
+    before(testUtils.setupKudu(false, function (kuduApi): void {
         api = kuduApi;
     }));
 
-    it("can execute a command", function (done) {
-        api.command.exec("echo hello world", "site", function (err, result) {
+    it("can execute a command", function (done): void {
+        api.command.exec("echo hello world", "site", function (err, result): void {
             if (err) {
                 return done(err);
             }
@@ -26,9 +26,9 @@ describe("command", function () {
         });
     });
 
-    it("can execute a command with a default dir", function (done) {
+    it("can execute a command with a default dir", function (done): void {
         api.command.execAsync("echo %CD%")
-            .then(function (result) {
+            .then(function (result): void {
                 var data = result.data;
 
                 assert.equal(data.Error, "", "Error should be empty");
