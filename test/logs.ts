@@ -13,31 +13,19 @@ describe("logs", function(): void {
     })
   );
 
-  it("can retrieve recent logs", function(done): void {
-    api.logs.recent(function(err, result): void {
-      if (err) {
-        done(err);
-        return;
-      }
-
-      assert(Array.isArray(result.data), "logs should be an array");
-      done();
-    });
+  it("can retrieve recent logs", async function(): Promise<void> {
+    const response = await api.logs.recent();
+    assert(Array.isArray(response.payload), "logs should be an array");
   });
 
-  it("can retrieve custom number of recent logs", function(done): void {
+  it("can retrieve custom number of recent logs", async function(): Promise<
+    void
+  > {
     var query = {
       top: 500
     };
 
-    api.logs.recent(query, function(err, result): void {
-      if (err) {
-        done(err);
-        return;
-      }
-
-      assert(Array.isArray(result.data), "logs should be an array");
-      done();
-    });
+    const response = await api.logs.recent(query);
+    assert(Array.isArray(response.payload), "logs should be an array");
   });
 });
