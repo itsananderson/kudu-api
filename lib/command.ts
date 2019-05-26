@@ -1,17 +1,22 @@
-import * as utils from "./utils";
+import { RequestAPI, Request, CoreOptions, RequiredUriUrl } from "request";
+import { createPromiseCallback } from "./utils";
+import { ApiResponse } from "./types";
 
 export interface Command {
-  exec: (command, dir, cb) => void;
+  exec: (command: string, dir: string) => void;
 }
 
-export default function command(request): Command {
-  return {
-    exec: function exec(command, dir, cb): void {
-      if (typeof dir === "function") {
-        cb = dir;
-        dir = "";
-      }
+export interface ExecResult {
+  ExitCode: number;
+  Error: string;
+  Output: string;
+}
 
+export default function command(
+  request: RequestAPI<Request, CoreOptions, RequiredUriUrl>
+): Command {
+  return {
+    exec: function exec(command, dir = ""): Promise<ApiResponse<ExecResult>> {
       var options = {
         uri: "/api/command",
         json: {
@@ -21,7 +26,9 @@ export default function command(request): Command {
       };
       var action = "executing command " + command;
 
-      request.post(options, utils.createCallback(action, cb));
+      return new Promise<ApiResponse<ExecResult>>((resolve, reject) => {
+        request.post(options, createPromiseCallback(action, resolve, reject));
+      });
     }
   };
 }
