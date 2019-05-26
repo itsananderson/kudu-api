@@ -4,14 +4,19 @@ Node wrapper for the [Kudu REST API](https://github.com/projectkudu/kudu/wiki/RE
 Install
 ---
 
+`yarn add kudu-api`
+
+Or
+
 `npm install kudu-api`
+
 
 Or from GitHub:
 
 ```
 git clone git@github.com:itsananderson/kudu-api.git
 cd kudu-api
-npm install
+yarn install
 ```
 
 Usage
@@ -588,7 +593,7 @@ You can use it if you need to check a `response.statusCode` from the server, or 
 Testing
 ---
 
-Tests can be run with `mocha` or `npm test`
+Tests can be run with `mocha` or `yarn test`
 
 The tests are pretty sparse right now, but they should at least attempt to hit all the endpoints.
 
@@ -601,9 +606,14 @@ Because the tests integrate against a Azure Kudu api, you'll need to configure t
 For my setup, I have a simple script that I use to set these variables and run the tests:
 
 ```
-WEBSITE=foo USERNAME='$foo' PASSWORD=12345fake npm test -- $1
+WEBSITE=foo USERNAME='$foo' PASSWORD=12345fake yarn test -- $1
 ```
 
 I have the `$1` so I can run `./mocha test/scm.js` to only run part of the tests.
 
 You can also just configure these environment variables globally if you wish. Steps for doing this depend on your operating system.
+
+Linting
+---
+
+You can run the linter with `yarn lint`. To automatically fix format errors, run `yarn lint --fix`.
