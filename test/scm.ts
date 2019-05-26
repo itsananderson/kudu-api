@@ -13,44 +13,36 @@ describe("scm", function(): void {
     })
   );
 
-  it("can retrieve info", function(done): void {
-    api.scm.info(function(err, result): void {
-      if (err) {
-        return done(err);
-      }
+  it("can retrieve info", async function(): Promise<void> {
+    const response = await api.scm.info();
 
-      var info = result.data;
+    var info = response.payload;
 
-      assert.notEqual(info.Type, undefined, "Type is defined");
-      assert.notEqual(info.GitUrl, undefined, "GitUrl is defined");
-      done();
-    });
+    assert.notEqual(info.Type, undefined, "Type is defined");
+    assert.notEqual(info.GitUrl, undefined, "GitUrl is defined");
   });
 
-  it("can clean repo", function(done): void {
+  it("can clean repo", async function(): Promise<void> {
     // Not much to test here
     // If successful, returns a 204. If no Git repo exists, returns a 500
-    api.scm.clean(function(err, result): void {
-      if (err) {
-        assert.strictEqual(
-          err.response.statusCode,
-          500,
-          "Should return 500 error if no Git repo exists"
-        );
-        return done();
-      }
-
+    try {
+      const response = await api.scm.clean();
       assert.strictEqual(
-        result.response.statusCode,
+        response.rawResponse.statusCode,
         204,
         "Should return 204 response if successful"
       );
-      done();
-    });
+    } catch (err) {
+      assert.strictEqual(
+        err.rawResponse.statusCode,
+        500,
+        "Should return 500 error if no Git repo exists"
+      );
+    }
   });
 
-  it("can delete repo", function(done): void {
+  it("can delete repo", async function(): Promise<void> {
     // If successful, default config is still returned, so this is hard to test
-    api.scm.del(done);
+    await api.scm.del();
   });
 });
