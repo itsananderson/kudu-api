@@ -1,13 +1,21 @@
 import * as fs from "fs";
 import * as utils from "./utils";
 import { ApiResponse } from "./types";
-import { Response } from "request";
+import {
+  Response,
+  Request,
+  RequestAPI,
+  CoreOptions,
+  RequiredUriUrl
+} from "request";
 
 export interface Dump {
   download: (dest: string) => Promise<ApiResponse<void>>;
 }
 
-export default function dump(request): Dump {
+export default function dump(
+  request: RequestAPI<Request, CoreOptions, RequiredUriUrl>
+): Dump {
   return {
     download: function download(dest): Promise<ApiResponse<void>> {
       return new Promise<ApiResponse<void>>((resolve, reject) => {
