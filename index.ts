@@ -1,5 +1,4 @@
 import * as request from "request";
-import * as bluebird from "bluebird";
 
 import scm from "./lib/scm";
 import command from "./lib/command";

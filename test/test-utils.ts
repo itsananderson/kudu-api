@@ -2,7 +2,6 @@ import * as fs from "fs";
 import * as path from "path";
 
 import * as aps from "azure-publish-settings";
-import * as bluebird from "bluebird";
 import * as JSZip from "jszip";
 
 import kuduApi from "../";
@@ -42,7 +41,18 @@ export function createZipFile(localPath, files, cb): void {
     .on("finish", cb);
 }
 
-export const createZipFileAsync = bluebird.promisify(createZipFile);
+export function createZipFileAsync(localPath, files): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+        createZipFile(localPath, files, (err): void => {
+            if (err) {
+                reject(err);
+                return
+            }
+
+            resolve();
+        });
+    });
+}
 
 interface Credentials {
   website: string;
