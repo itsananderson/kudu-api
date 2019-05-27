@@ -1,40 +1,63 @@
 import * as fs from "fs";
 import * as utils from "./utils";
+import { ApiResponse } from "./types";
+import {
+  RequestAPI,
+  Request,
+  Response,
+  CoreOptions,
+  RequiredUriUrl
+} from "request";
 
 interface Zip {
-  download: (fromPath, toPath, cb) => void;
-  upload: (fromPath, toPath, cb) => void;
+  download: (fromPath: string, toPath: string) => Promise<ApiResponse<void>>;
+  upload: (fromPath: string, toPath: string) => Promise<ApiResponse<void>>;
 }
 
-export default function zip(request): Zip {
+export default function zip(
+  request: RequestAPI<Request, CoreOptions, RequiredUriUrl>
+): Zip {
   return {
-    download: function download(fromPath, toPath, cb): void {
+    download: function download(
+      fromPath: string,
+      toPath: string
+    ): Promise<ApiResponse<void>> {
       var url = "/api/zip/" + fromPath;
       var action = "downloading zip file from " + fromPath;
 
-      var callbackWrapper = utils.createCallback(action, cb);
-
-      var response;
-      request(url)
-        .on("response", function(res): void {
-          response = res;
-        })
-        .on("error", function(err): void {
-          callbackWrapper(err, response);
-        })
-        .pipe(fs.createWriteStream(toPath))
-        .on("close", function(): void {
-          callbackWrapper(null, response);
-        });
+      return new Promise<ApiResponse<void>>((resolve, reject) => {
+        var callbackWrapper = utils.createPromiseCallback(
+          action,
+          resolve,
+          reject
+        );
+        let response: Response;
+        request(url)
+          .on("response", function(res): void {
+            response = res;
+          })
+          .on("error", function(err): void {
+            callbackWrapper(err, response);
+          })
+          .pipe(fs.createWriteStream(toPath))
+          .on("close", function(): void {
+            callbackWrapper(null, response);
+          });
+      });
     },
 
-    upload: function upload(fromPath, toPath, cb): void {
+    upload: function upload(
+      fromPath: string,
+      toPath: string
+    ): Promise<ApiResponse<void>> {
       var url = "/api/zip/" + toPath;
       var action = "uploading zip file to " + toPath;
 
-      fs.createReadStream(fromPath).pipe(
-        request.put(url, utils.createCallback(action, cb))
-      );
+      return new Promise<ApiResponse<void>>((resolve, reject) => {
+        fs.createReadStream(fromPath).pipe(
+          request.put(url, utils.createPromiseCallback(action, resolve, reject))
+        );
+      });
     }
   };
 }
