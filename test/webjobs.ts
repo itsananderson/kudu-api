@@ -14,44 +14,8 @@ var continuousFiles = {
     "console.log(process.argv.join(' ')); setInterval(() => console.log('ping'), 30000);"
 };
 
-function createPollingCallback(cb): (err?: Error) => void {
-  var operation = retry.operation({
-    retries: 5
-  });
-
-  function resolveError(data): Error | undefined {
-    if (data.length) {
-      return;
-    }
-
-    return new Error("Job list is empty.");
-  }
-
-  function ensureResults(err, result): void {
-    err = err || resolveError(result.data);
-
-    if (operation.retry(err)) {
-      return;
-    }
-
-    cb(err && operation.mainError(), result);
-  }
-
-  return (err?: Error): void => {
-    if (err) {
-      return cb(err);
-    }
-
-    operation.attempt(
-      (): void => {
-        api.webjobs.listAll(ensureResults);
-      }
-    );
-  };
-}
-
 describe("webjobs", function(): void {
-  this.timeout(10000);
+  this.timeout(10 * 1000);
 
   before(
     testUtils.setupKudu(
@@ -64,227 +28,147 @@ describe("webjobs", function(): void {
 
   before(testUtils.ensureArtifacts);
 
-  describe("triggered basic operations", (): void => {
+  describe("triggered basic operations", function(): void {
     var jobName = "triggered-job-1";
     var localPath = testUtils.artifactPath(jobName + ".zip");
 
-    before(
-      (done): void => {
-        testUtils.createZipFile(
-          localPath,
-          triggeredFiles,
-          (err): void => {
-            if (err) {
-              return done(err);
-            }
+    before(async function(): Promise<void> {
+      await testUtils.createZipFileAsync(localPath, triggeredFiles);
 
-            api.webjobs.uploadTriggered(
-              jobName,
-              localPath,
-              createPollingCallback(done)
-            );
-          }
+      await api.webjobs.uploadTriggered(jobName, localPath);
+
+      const retries = 5;
+      for (let i = 0; i < retries; i++) {
+        const response = await api.webjobs.listAll();
+        if (response.payload.length > 0) {
+          // found an uploaded webjob
+          return;
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+
+      assert.fail(
+        `Failed to find an uploaded webjob after ${retries} attempts`
+      );
+    });
+
+    after(async function(): Promise<void> {
+      await api.webjobs.deleteTriggered(jobName);
+      fs.unlinkSync(localPath);
+    });
+
+    it("can list all webjobs", async function(): Promise<void> {
+      const response = await api.webjobs.listAll();
+
+      assert.strictEqual(
+        response.payload.length,
+        1,
+        "Web job list should contain one entry."
+      );
+    });
+
+    it("can list triggered webjobs", async function(): Promise<void> {
+      const response = await api.webjobs.listTriggered();
+
+      assert.strictEqual(
+        response.payload.length,
+        1,
+        "Triggered job list should contain one entry."
+      );
+    });
+
+    it("can list triggered webjobs as swagger", async function(): Promise<
+      void
+    > {
+      const response = await api.webjobs.listTriggeredAsSwagger();
+
+      assert.strictEqual(
+        response.payload.swagger,
+        "2.0",
+        "Triggered job list as swagger should have expected version."
+      );
+    });
+
+    it("can get triggered webjob by name", async function(): Promise<void> {
+      const response = await api.webjobs.getTriggered(jobName);
+
+      assert.strictEqual(
+        response.payload.name,
+        jobName,
+        "Triggered job data does not contain correct name."
+      );
+    });
+
+    it("should report error getting unknown triggered webjob", async function(): Promise<
+      void
+    > {
+      try {
+        await api.webjobs.getTriggered("unknown-job");
+        assert.fail("Requesting an unknown job should have failed");
+      } catch (err) {
+        assert.strictEqual(
+          err.rawResponse.statusCode,
+          404,
+          "Unknown triggered job error should contain status code."
         );
       }
-    );
+    });
 
-    after(
-      (done): void => {
-        api.webjobs.deleteTriggered(
-          jobName,
-          (): void => {
-            fs.unlink(localPath, done);
-          }
+    it("can run triggered webjob", async function(): Promise<void> {
+      const response = await api.webjobs.runTriggered(jobName);
+      assert.strictEqual(response.rawResponse.statusCode, 202);
+    });
+
+    it("should report error running unknown triggered webjob", async function(): Promise<
+      void
+    > {
+      try {
+        const response = await api.webjobs.runTriggered("unknown-job");
+        assert.fail("Expected error was not thrown.");
+      } catch (err) {
+        assert.strictEqual(
+          err.rawResponse.statusCode,
+          404,
+          "Unknown triggered job error should contain status code."
         );
       }
-    );
-
-    it("can list all webjobs", function(done): void {
-      api.webjobs.listAll(
-        (err, result): void => {
-          if (err) {
-            done(err);
-            return;
-          }
-
-          assert.strictEqual(
-            result.data.length,
-            1,
-            "Web job list should contain one entry."
-          );
-          done();
-        }
-      );
     });
 
-    it("can list triggered webjobs", function(done): void {
-      api.webjobs.listTriggered(
-        (err, result): void => {
-          if (err) {
-            done(err);
-            return;
-          }
-
-          assert.strictEqual(
-            result.data.length,
-            1,
-            "Triggered job list should contain one entry."
-          );
-          done();
-        }
-      );
-    });
-
-    it("can list triggered webjobs as swagger", function(done): void {
-      api.webjobs.listTriggeredAsSwagger(
-        (err, result): void => {
-          if (err) {
-            done(err);
-            return;
-          }
-
-          assert.strictEqual(
-            result.data.swagger,
-            "2.0",
-            "Triggered job list as swagger should have expected version."
-          );
-          done();
-        }
-      );
-    });
-
-    it("can get triggered webjob by name", function(done): void {
-      api.webjobs.getTriggered(
+    it("can run triggered webjob with arguments", async function(): Promise<
+      void
+    > {
+      const response = await api.webjobs.runTriggered(
         jobName,
-        (err, result): void => {
-          if (err) {
-            done(err);
-            return;
-          }
+        '--message "Kudu\'s API"'
+      );
 
-          assert.strictEqual(
-            result.data.name,
-            jobName,
-            "Triggered job data does not contain correct name."
-          );
-          done();
-        }
+      assert.strictEqual(response.rawResponse.statusCode, 202);
+    });
+
+    it("can list triggered webjob history", async function(): Promise<void> {
+      const response = await api.webjobs.listTriggeredHistory(jobName);
+
+      assert(
+        Array.isArray(response.payload.runs),
+        "History list for triggered job should contain runs."
       );
     });
 
-    it("should report error getting unknown triggered webjob", function(done): void {
-      api.webjobs
-        .getTriggeredAsync("unknown-job")
-        .then(
-          (): void => {
-            done(new Error("Expected error was not thrown."));
-          }
-        )
-        .catch(
-          (err): void => {
-            assert.strictEqual(
-              err.response.statusCode,
-              404,
-              "Unknown triggered job error should contain status code."
-            );
+    it("can get triggered webjob history item by id", async function(): Promise<
+      void
+    > {
+      const response = await api.webjobs.listTriggeredHistory(jobName);
 
-            done();
-          }
-        )
-        .catch(done);
-    });
-
-    it("can run triggered webjob", function(done): void {
-      api.webjobs.runTriggered(
+      const detailResponse = await api.webjobs.getTriggeredHistory(
         jobName,
-        (err, result): void => {
-          if (err) {
-            done(err);
-            return;
-          }
-
-          assert.strictEqual(result.response.statusCode, 202);
-          done();
-        }
+        response.payload.runs[0].id
       );
-    });
-
-    it("should report error running unknown triggered webjob", function(done): void {
-      api.webjobs
-        .runTriggeredAsync("unknown-job")
-        .then(
-          (): void => {
-            done(new Error("Expected error was not thrown."));
-          }
-        )
-        .catch(
-          (err): void => {
-            assert.strictEqual(
-              err.response.statusCode,
-              404,
-              "Unknown triggered job error should contain status code."
-            );
-
-            done();
-          }
-        )
-        .catch(done);
-    });
-
-    it("can run triggered webjob with arguments", function(done): void {
-      api.webjobs.runTriggered(
-        jobName,
-        '--message "Kudu\'s API"',
-        (err, result): void => {
-          if (err) {
-            done(err);
-            return;
-          }
-
-          assert.strictEqual(result.response.statusCode, 202);
-          done();
-        }
+      assert.strictEqual(
+        detailResponse.payload.output_url.slice(-4),
+        ".txt",
+        "History for triggered job should contain text output URL."
       );
-    });
-
-    it("can list triggered webjob history", function(done): void {
-      api.webjobs.listTriggeredHistory(
-        jobName,
-        (err, result): void => {
-          if (err) {
-            done(err);
-            return;
-          }
-
-          assert(
-            Array.isArray(result.data.runs),
-            "History list for triggered job should contain runs."
-          );
-          done();
-        }
-      );
-    });
-
-    it("can get triggered webjob history item by id", function(done): void {
-      api.webjobs
-        .listTriggeredHistoryAsync(jobName)
-        .then(function(result): void {
-          return api.webjobs.getTriggeredHistoryAsync(
-            jobName,
-            result.data.runs[0].id
-          );
-        })
-        .then(
-          (result): void => {
-            assert.strictEqual(
-              result.data.output_url.slice(-4),
-              ".txt",
-              "History for triggered job should contain text output URL."
-            );
-            done();
-          }
-        )
-        .catch(done);
     });
   });
 
@@ -304,37 +188,26 @@ describe("webjobs", function(): void {
       }
     );
 
-    afterEach(
-      (done): void => {
-        api.webjobs.deleteTriggered(jobName, function(): void {
-          // Ignore errors.
-          done();
-        });
+    afterEach(async function(): Promise<void> {
+      try {
+        await api.webjobs.deleteTriggered(jobName);
+      } catch (e) {
+        // Ignore errors.
       }
-    );
+    });
 
-    it("can upload triggered webjob", function(done): void {
-      api.webjobs.uploadTriggered(
-        jobName,
-        localPath,
-        (err, result): void => {
-          if (err) {
-            done(err);
-            return;
-          }
+    it("can upload triggered webjob", async function(): Promise<void> {
+      const response = await api.webjobs.uploadTriggered(jobName, localPath);
 
-          assert.strictEqual(
-            result.response.statusCode,
-            200,
-            "Should respond with OK status code."
-          );
-          assert.strictEqual(
-            result.data.type,
-            "triggered",
-            "Should have correct type."
-          );
-          done();
-        }
+      assert.strictEqual(
+        response.rawResponse.statusCode,
+        200,
+        "Should respond with OK status code."
+      );
+      assert.strictEqual(
+        response.payload.type,
+        "triggered",
+        "Should have correct type."
       );
     });
   });
@@ -355,49 +228,33 @@ describe("webjobs", function(): void {
       }
     );
 
-    beforeEach(
-      (done): void => {
-        api.webjobs.uploadTriggered(jobName, localPath, done);
+    beforeEach(async function(): Promise<void> {
+      await api.webjobs.uploadTriggered(jobName, localPath);
+    });
+
+    afterEach(async function(): Promise<void> {
+      await api.webjobs.deleteTriggered(jobName);
+    });
+
+    it("can delete triggered webjob", async function(): Promise<void> {
+      const response = await api.webjobs.deleteTriggered(jobName);
+
+      assert.strictEqual(
+        response.rawResponse.statusCode,
+        200,
+        "Should respond with OK status code."
+      );
+
+      try {
+        await api.webjobs.getTriggered(jobName);
+        assert.fail("Expected error was not thrown.");
+      } catch (err) {
+        assert.strictEqual(
+          err.rawResponse.statusCode,
+          404,
+          "Deleted triggered job should be not found."
+        );
       }
-    );
-
-    afterEach(
-      (done): void => {
-        api.webjobs.deleteTriggered(jobName, done);
-      }
-    );
-
-    it("can delete triggered webjob", function(done): void {
-      api.webjobs
-        .deleteTriggeredAsync(jobName)
-        .then(
-          (result): void => {
-            assert.strictEqual(
-              result.response.statusCode,
-              200,
-              "Should respond with OK status code."
-            );
-
-            return api.webjobs.getTriggeredAsync(jobName);
-          }
-        )
-        .then(
-          (): void => {
-            done(new Error("Expected error was not thrown."));
-          }
-        )
-        .catch(
-          (err): void => {
-            assert.strictEqual(
-              err.response.statusCode,
-              404,
-              "Deleted triggered job should be not found."
-            );
-
-            done();
-          }
-        )
-        .catch(done);
     });
   });
 
@@ -405,133 +262,96 @@ describe("webjobs", function(): void {
     var jobName = "continuous-job-1";
     var localPath = testUtils.artifactPath(jobName + ".zip");
 
-    before(
-      (done): void => {
-        testUtils.createZipFile(localPath, continuousFiles, function(
-          err
-        ): void {
-          if (err) {
-            return done(err);
-          }
+    before(async function(): Promise<void> {
+      await testUtils.createZipFileAsync(localPath, continuousFiles);
 
-          api.webjobs.uploadContinuous(
-            jobName,
-            localPath,
-            createPollingCallback(done)
-          );
-        });
+      await api.webjobs.uploadContinuous(jobName, localPath);
+      // createPollingCallback(done)
+      const retries = 5;
+      for (let i = 0; i < retries; i++) {
+        const response = await api.webjobs.listAll();
+        if (response.payload.length > 0) {
+          // found an uploaded webjob
+          return;
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
       }
-    );
+      assert.fail(
+        `Failed to find an uploaded webjob after ${retries} attempts`
+      );
+    });
 
     after(
-      (done): void => {
-        api.webjobs.deleteContinuous(
-          jobName,
-          (): void => {
-            fs.unlink(localPath, done);
-          }
-        );
+      async (): Promise<void> => {
+        await api.webjobs.deleteContinuous(jobName);
+        fs.unlinkSync(localPath);
       }
     );
 
-    it("can list continuous webjobs", function(done): void {
-      api.webjobs.listContinuous(
-        (err, result): void => {
-          if (err) {
-            done(err);
-            return;
-          }
+    it("can list continuous webjobs", async function(): Promise<void> {
+      const response = await api.webjobs.listContinuous();
 
-          assert.strictEqual(
-            result.data.length,
-            1,
-            "Continuous job list should contain one entry."
-          );
-          done();
-        }
+      assert.strictEqual(
+        response.payload.length,
+        1,
+        "Continuous job list should contain one entry."
       );
     });
 
-    it("can get continuous webjob by name", function(done): void {
-      api.webjobs.getContinuous(
+    it("can get continuous webjob by name", async function(): Promise<void> {
+      const response = await api.webjobs.getContinuous(jobName);
+
+      assert.strictEqual(
+        response.payload.name,
         jobName,
-        (err, result): void => {
-          if (err) {
-            done(err);
-            return;
-          }
-
-          assert.strictEqual(
-            result.data.name,
-            jobName,
-            "Continuous job should have correct name."
-          );
-          done();
-        }
+        "Continuous job should have correct name."
       );
     });
 
-    it("can stop continuous webjob by name", function(done): void {
-      api.webjobs.stopContinuous(jobName, function(err, result): void {
-        if (err) {
-          return done(err);
-        }
+    it("can stop continuous webjob by name", async function(): Promise<void> {
+      const response = await api.webjobs.stopContinuous(jobName);
 
-        assert.strictEqual(
-          result.response.statusCode,
-          200,
-          "Should respond with OK status code."
-        );
-        done();
-      });
+      assert.strictEqual(
+        response.rawResponse.statusCode,
+        200,
+        "Should respond with OK status code."
+      );
     });
 
-    it("can start continuous webjob by name", function(done): void {
-      api.webjobs.startContinuous(jobName, function(err, result): void {
-        if (err) {
-          return done(err);
-        }
-
-        assert.strictEqual(
-          result.response.statusCode,
-          200,
-          "Should respond with OK status code."
-        );
-        done();
-      });
+    it("can start continuous webjob by name", async function(): Promise<void> {
+      const response = await api.webjobs.startContinuous(jobName);
+      assert.strictEqual(
+        response.rawResponse.statusCode,
+        200,
+        "Should respond with OK status code."
+      );
     });
 
-    it("can get continuous webjob settings", function(done): void {
-      api.webjobs.getContinuousSettings(jobName, function(err, result): void {
-        if (err) {
-          return done(err);
-        }
+    it("can get continuous webjob settings", async function(): Promise<void> {
+      const response = await api.webjobs.getContinuousSettings(jobName);
 
-        assert(!result.data.is_singleton, "Singleton setting should be false.");
-        done();
-      });
+      assert(
+        !response.payload.is_singleton,
+        "Singleton setting should be false."
+      );
     });
 
-    it("can set continuous webjob settings", function(done): void {
+    it("can set continuous webjob settings", async function(): Promise<void> {
       var settings = {
         is_singleton: false
       };
 
-      api.webjobs.setContinuousSettings(jobName, settings, function(
-        err,
-        result
-      ): void {
-        if (err) {
-          return done(err);
-        }
+      const response = await api.webjobs.setContinuousSettings(
+        jobName,
+        settings
+      );
 
-        assert.strictEqual(
-          result.response.statusCode,
-          200,
-          "Should respond with OK status code."
-        );
-        done();
-      });
+      assert.strictEqual(
+        response.rawResponse.statusCode,
+        200,
+        "Should respond with OK status code."
+      );
     });
   });
 
@@ -547,35 +367,27 @@ describe("webjobs", function(): void {
       fs.unlink(localPath, done);
     });
 
-    afterEach(function(done): void {
-      api.webjobs.deleteContinuous(jobName, function(): void {
-        // Ignore errors.
-        done();
-      });
+    afterEach(async function(): Promise<void> {
+      try {
+        await api.webjobs.deleteContinuous(jobName);
+      } catch (err) {
+        // Ignore errors
+      }
     });
 
-    it("can upload continuous webjob", function(done): void {
-      api.webjobs.uploadContinuous(jobName, localPath, function(
-        err,
-        result
-      ): void {
-        if (err) {
-          done(err);
-          return;
-        }
+    it("can upload continuous webjob", async function(): Promise<void> {
+      const response = await api.webjobs.uploadContinuous(jobName, localPath);
 
-        assert.strictEqual(
-          result.response.statusCode,
-          200,
-          "Should respond with OK status code."
-        );
-        assert.strictEqual(
-          result.data.type,
-          "continuous",
-          "Should have correct type."
-        );
-        done();
-      });
+      assert.strictEqual(
+        response.rawResponse.statusCode,
+        200,
+        "Should respond with OK status code."
+      );
+      assert.strictEqual(
+        response.payload.type,
+        "continuous",
+        "Should have correct type."
+      );
     });
   });
 
@@ -591,37 +403,32 @@ describe("webjobs", function(): void {
       fs.unlink(localPath, done);
     });
 
-    beforeEach(function(done): void {
-      api.webjobs.uploadContinuous(jobName, localPath, done);
+    beforeEach(async function(): Promise<void> {
+      await api.webjobs.uploadContinuous(jobName, localPath);
     });
 
-    afterEach(function(done): void {
-      api.webjobs.deleteContinuous(jobName, done);
+    afterEach(async function(): Promise<void> {
+      await api.webjobs.deleteContinuous(jobName);
     });
 
-    it("can delete continuous webjob", function(done): void {
-      api.webjobs.deleteContinuous(jobName, function(err, result): void {
-        if (err) {
-          return done(err);
-        }
+    it("can delete continuous webjob", async function(): Promise<void> {
+      const response = await api.webjobs.deleteContinuous(jobName);
+      assert.strictEqual(
+        response.rawResponse.statusCode,
+        200,
+        "Should respond with OK status code."
+      );
 
+      try {
+        await api.webjobs.getContinuous(jobName);
+        assert.fail("Getting deleted webjob should throw an error");
+      } catch (err) {
         assert.strictEqual(
-          result.response.statusCode,
-          200,
-          "Should respond with OK status code."
+          err.rawResponse.statusCode,
+          404,
+          "Deleted continuous job should be not found."
         );
-
-        api.webjobs.getContinuous(jobName, function(err): void {
-          assert(err);
-          assert.strictEqual(
-            err.response.statusCode,
-            404,
-            "Deleted continuous job should be not found."
-          );
-
-          done();
-        });
-      });
+      }
     });
   });
 });
