@@ -2,8 +2,9 @@ import * as assert from "assert";
 import * as fs from "fs";
 
 import * as testUtils from "./test-utils";
+import { KuduApi } from "../index";
 
-var api;
+let api: KuduApi;
 
 describe("dump", function(): void {
   this.timeout(30 * 1000);
@@ -13,7 +14,7 @@ describe("dump", function(): void {
   before(testUtils.ensureArtifacts);
 
   before(
-    testUtils.setupKudu(false, function(kuduApi): void {
+    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );

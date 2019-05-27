@@ -1,15 +1,16 @@
 import * as assert from "assert";
 
 import * as testUtils from "./test-utils";
+import { KuduApi } from "../index";
 
-var api;
+let api: KuduApi;
 
 describe("environment", function(): void {
   this.timeout(5000);
 
   describe("with standard credentials", function(): void {
     before(
-      testUtils.setupKudu(false, function(kuduApi): void {
+      testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
         api = kuduApi;
       })
     );

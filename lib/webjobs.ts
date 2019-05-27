@@ -20,6 +20,18 @@ function createUploadHeaders(localPath): { [key: string]: string } {
 
 export interface WebJob {
   name: string;
+  latest_run: null | string;
+  history_url: string;
+  scheduler_logs_url: null | string;
+  run_command: string;
+  url: string;
+  extra_info_url: string;
+  type: string;
+  error: null | "string";
+  using_sdk: boolean;
+  settings: {
+    [key: string]: string;
+  };
 }
 
 export interface TriggeredWebJobHistoryDetail {
@@ -43,12 +55,12 @@ export interface TriggeredWebJobHistory {
 export interface WebJobsApi {
   listAll: () => Promise<ApiResponse<WebJob[]>>;
   listTriggered: () => Promise<ApiResponse<WebJob[]>>;
-  listTriggeredAsSwagger: () => Promise<ApiResponse<{}>>;
+  listTriggeredAsSwagger: () => Promise<ApiResponse<{ [key: string]: any }>>;
   getTriggered: (name: string) => Promise<ApiResponse<WebJob>>;
   uploadTriggered: (
     name: string,
     localPath: string
-  ) => Promise<ApiResponse<void>>;
+  ) => Promise<ApiResponse<WebJob>>;
   deleteTriggered: (name: string) => Promise<ApiResponse<void>>;
   runTriggered: (name: string, args?: string) => Promise<ApiResponse<void>>;
   listTriggeredHistory: (
@@ -63,16 +75,14 @@ export interface WebJobsApi {
   uploadContinuous: (
     name: string,
     localPath: string
-  ) => Promise<ApiResponse<void>>;
+  ) => Promise<ApiResponse<WebJob>>;
   deleteContinuous: (name: string) => Promise<ApiResponse<void>>;
   startContinuous: (name: string) => Promise<ApiResponse<void>>;
   stopContinuous: (name: string) => Promise<ApiResponse<void>>;
-  getContinuousSettings: (
-    name: string
-  ) => Promise<ApiResponse<{ [key: string]: string }>>;
+  getContinuousSettings: (name: string) => Promise<ApiResponse<any>>;
   setContinuousSettings: (
     name: string,
-    settings: { [key: string]: string }
+    settings: any
   ) => Promise<ApiResponse<void>>;
 }
 
@@ -149,7 +159,7 @@ export default function webjobs(
     uploadTriggered: function uploadTriggered(
       name: string,
       localPath: string
-    ): Promise<ApiResponse<void>> {
+    ): Promise<ApiResponse<WebJob>> {
       var options = {
         uri: "/api/triggeredwebjobs/" + encodeURIComponent(name),
         json: true,
@@ -157,7 +167,7 @@ export default function webjobs(
       };
       var action = "uploading triggered webjob with name '" + name + "'";
 
-      return new Promise<ApiResponse<void>>((resolve, reject) => {
+      return new Promise<ApiResponse<WebJob>>((resolve, reject) => {
         fs.createReadStream(localPath)
           .on("error", e => reject(e))
           .pipe(
@@ -284,7 +294,7 @@ export default function webjobs(
     uploadContinuous: function uploadContinuous(
       name: string,
       localPath: string
-    ): Promise<ApiResponse<void>> {
+    ): Promise<ApiResponse<WebJob>> {
       var options = {
         uri: "/api/continuouswebjobs/" + encodeURIComponent(name),
         json: true,
@@ -292,7 +302,7 @@ export default function webjobs(
       };
       var action = "uploading continuous webjob with name '" + name + "'";
 
-      return new Promise<ApiResponse<void>>((resolve, reject) => {
+      return new Promise<ApiResponse<WebJob>>((resolve, reject) => {
         fs.createReadStream(localPath)
           .on("error", err => reject(err))
           .pipe(
@@ -339,7 +349,7 @@ export default function webjobs(
 
     getContinuousSettings: function getContinuousSettings(
       name: string
-    ): Promise<ApiResponse<{ [key: string]: string }>> {
+    ): Promise<ApiResponse<any>> {
       var options = {
         uri: "/api/continuouswebjobs/" + encodeURIComponent(name) + "/settings",
         json: true
@@ -359,7 +369,7 @@ export default function webjobs(
 
     setContinuousSettings: function setContinuousSettings(
       name: string,
-      settings: { [key: string]: string }
+      settings: any
     ): Promise<ApiResponse<void>> {
       var options = {
         uri: "/api/continuouswebjobs/" + encodeURIComponent(name) + "/settings",

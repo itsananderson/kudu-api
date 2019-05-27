@@ -1,14 +1,15 @@
 import * as assert from "assert";
 
 import * as testUtils from "./test-utils";
+import { KuduApi } from "../index";
 
-var api;
+var api: KuduApi;
 
 describe("diagnostics", function(): void {
   this.timeout(5000);
 
   before(
-    testUtils.setupKudu(false, function(kuduApi): void {
+    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );
@@ -76,13 +77,15 @@ describe("diagnostics", function(): void {
   });
 
   it("gracefully handles missing key", async function(): Promise<void> {
-    let threw = false;
     try {
-      const response = await api.diagnostics.get("foo");
-    } catch {
-      threw = true;
+      await api.diagnostics.get("foo");
+      assert.fail("Should fail to fetch a missing key");
+    } catch (err) {
+      assert.equal(
+        err.rawResponse.statusCode,
+        404,
+        "Should get a 404 when fetching a missing key"
+      );
     }
-
-    assert(threw, "Should error for missing key");
   });
 });

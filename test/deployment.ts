@@ -2,8 +2,9 @@ import * as assert from "assert";
 
 import * as testUtils from "./test-utils";
 import { Deployment } from "../lib/deployment";
+import { KuduApi } from "../index";
 
-var api;
+let api: KuduApi;
 
 var gitUrl1 = "https://github.com/itsananderson/kudu-api-website.git";
 var gitUrl2 =
@@ -15,7 +16,7 @@ describe("deployment", function(): void {
   var deploymentList: Deployment[];
 
   before(
-    testUtils.setupKudu(false, function(kuduApi): void {
+    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );

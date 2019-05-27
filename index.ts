@@ -15,19 +15,23 @@ import logs from "./lib/logs";
 import extensions from "./lib/extensions";
 import webjobs from "./lib/webjobs";
 
-function promisifyApi(target): any {
-  Object.keys(target).forEach(function(key): void {
-    bluebird.promisifyAll(target[key]);
-  });
-
-  Object.keys(target.extensions).forEach(function(key): void {
-    bluebird.promisifyAll(target.extensions[key]);
-  });
-
-  return target;
+export interface KuduApi {
+  scm: ReturnType<typeof scm>;
+  command: ReturnType<typeof command>;
+  vfs: ReturnType<typeof vfs>;
+  zip: ReturnType<typeof zip>;
+  deployment: ReturnType<typeof deployment>;
+  sshkey: ReturnType<typeof sshkey>;
+  environment: ReturnType<typeof environment>;
+  settings: ReturnType<typeof settings>;
+  dump: ReturnType<typeof dump>;
+  diagnostics: ReturnType<typeof diagnostics>;
+  logs: ReturnType<typeof logs>;
+  extensions: ReturnType<typeof extensions>;
+  webjobs: ReturnType<typeof webjobs>;
 }
 
-export default function api(options): any {
+export default function api(options): KuduApi {
   // Backward compat for old method signature
   if (typeof options === "string") {
     options = {
@@ -61,7 +65,7 @@ export default function api(options): any {
     headers: headers
   });
 
-  return promisifyApi({
+  return {
     scm: scm(r),
     command: command(r),
     vfs: vfs(r),
@@ -75,5 +79,5 @@ export default function api(options): any {
     logs: logs(r),
     extensions: extensions(r),
     webjobs: webjobs(r)
-  });
+  };
 }

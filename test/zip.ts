@@ -1,8 +1,9 @@
 import * as assert from "assert";
 import * as fs from "fs";
 import * as testUtils from "./test-utils";
+import { KuduApi } from "../index";
 
-var api;
+let api: KuduApi;
 
 var localZipPath = testUtils.artifactPath("test.zip");
 
@@ -17,7 +18,7 @@ describe("zip", function(): void {
   this.timeout(5000);
 
   before(
-    testUtils.setupKudu(false, function(kuduApi): void {
+    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );

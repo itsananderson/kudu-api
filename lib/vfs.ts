@@ -22,7 +22,7 @@ export interface VfsApi {
     etag?: string
   ) => Promise<ApiResponse<void>>;
   createDirectory: (path: string) => Promise<ApiResponse<void>>;
-  deleteFile: (path: string, etag: string) => Promise<ApiResponse<void>>;
+  deleteFile: (path: string, etag?: string) => Promise<ApiResponse<void>>;
   deleteDirectory: (path: string) => Promise<ApiResponse<void>>;
 }
 

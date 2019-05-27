@@ -2,8 +2,9 @@ import * as assert from "assert";
 
 import * as testUtils from "./test-utils";
 import { Extension } from "../lib/extensions";
+import { KuduApi } from "../index";
 
-var api;
+let api: KuduApi;
 
 describe("extensions", function(): void {
   this.timeout(5000);
@@ -11,7 +12,7 @@ describe("extensions", function(): void {
   let availableExtensions: Extension[];
 
   before(
-    testUtils.setupKudu(false, function(kuduApi): void {
+    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );

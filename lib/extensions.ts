@@ -11,13 +11,13 @@ export interface SetExtensionResult {
 }
 
 export interface ExtensionsBase {
-  list: (filter: string) => Promise<ApiResponse<Extension[]>>;
+  list: (filter?: string) => Promise<ApiResponse<Extension[]>>;
   get: (id: string) => Promise<ApiResponse<Extension>>;
 }
 
 export interface SiteExtensions extends ExtensionsBase {
   del: (id: string) => Promise<ApiResponse<void>>;
-  set: (id: string, payload: {}) => Promise<ApiResponse<void>>;
+  set: (id: string, payload: {}) => Promise<ApiResponse<SetExtensionResult>>;
 }
 
 export interface ExtensionsApi {
@@ -85,19 +85,24 @@ export default function extensions(
           );
         });
       },
-      set: function set(id: string, payload: {}): Promise<ApiResponse<void>> {
+      set: function set(
+        id: string,
+        payload: {}
+      ): Promise<ApiResponse<SetExtensionResult>> {
         var options = {
           uri: "/api/siteextensions/" + encodeURIComponent(id),
           json: payload
         };
         var action = "installing or updating extension with id " + id;
 
-        return new Promise<ApiResponse<void>>((resolve, reject) => {
-          request.put(
-            options,
-            utils.createPromiseCallback(action, resolve, reject)
-          );
-        });
+        return new Promise<ApiResponse<SetExtensionResult>>(
+          (resolve, reject) => {
+            request.put(
+              options,
+              utils.createPromiseCallback(action, resolve, reject)
+            );
+          }
+        );
       }
     }
   };

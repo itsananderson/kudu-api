@@ -6,15 +6,26 @@ export interface DeploymentApi {
   list: () => Promise<ApiResponse<Deployment[]>>;
   get: (id: string) => Promise<ApiResponse<Deployment>>;
   del: (id: string) => Promise<ApiResponse<void>>;
-  log: (id: string) => Promise<ApiResponse<string[]>>;
-  logDetails: (id: string, entryId: string) => Promise<ApiResponse<string>>;
+  log: (id: string) => Promise<ApiResponse<DeploymentLogEntry[]>>;
+  logDetails: (
+    id: string,
+    entryId: string
+  ) => Promise<ApiResponse<DeploymentLogEntry>>;
   deploy: (repoUrl: string) => Promise<ApiResponse<void>>;
-  redeploy: (id: string, payload: {}) => Promise<ApiResponse<void>>;
+  redeploy: (id: string, payload?: {}) => Promise<ApiResponse<void>>;
 }
 
 export interface Deployment {
   id: string;
   active: boolean;
+}
+
+export interface DeploymentLogEntry {
+  log_time: string;
+  id: string;
+  message: string;
+  type: number;
+  details_url: null | string;
 }
 
 export default function deployment(
@@ -66,25 +77,27 @@ export default function deployment(
       });
     },
 
-    log: function log(id: string): Promise<ApiResponse<string[]>> {
+    log: function log(id: string): Promise<ApiResponse<DeploymentLogEntry[]>> {
       var options = {
         uri: "/api/deployments/" + encodeURIComponent(id) + "/log",
         json: true
       };
       var action = "listing logs for deployment with id " + id;
 
-      return new Promise<ApiResponse<string[]>>((resolve, reject) => {
-        request(
-          options,
-          utils.createPromiseCallback<string[]>(action, resolve, reject)
-        );
-      });
+      return new Promise<ApiResponse<DeploymentLogEntry[]>>(
+        (resolve, reject) => {
+          request(
+            options,
+            utils.createPromiseCallback(action, resolve, reject)
+          );
+        }
+      );
     },
 
     logDetails: function logDetails(
       id: string,
       entryId: string
-    ): Promise<ApiResponse<string>> {
+    ): Promise<ApiResponse<DeploymentLogEntry>> {
       var options = {
         uri:
           "/api/deployments/" +
@@ -96,11 +109,8 @@ export default function deployment(
       var action =
         "getting log details with log id " + id + " and entry id " + entryId;
 
-      return new Promise<ApiResponse<string>>((resolve, reject) => {
-        request(
-          options,
-          utils.createPromiseCallback<string>(action, resolve, reject)
-        );
+      return new Promise<ApiResponse<DeploymentLogEntry>>((resolve, reject) => {
+        request(options, utils.createPromiseCallback(action, resolve, reject));
       });
     },
 

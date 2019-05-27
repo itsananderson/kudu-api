@@ -1,8 +1,9 @@
 import * as assert from "assert";
 
 import * as testUtils from "./test-utils";
+import { KuduApi } from "../index";
 
-var api;
+let api: KuduApi;
 
 describe("command", function(): void {
   this.timeout(30000);

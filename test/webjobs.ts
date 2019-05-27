@@ -1,10 +1,10 @@
 import * as assert from "assert";
 import * as fs from "fs";
-import * as retry from "retry";
 
 import * as testUtils from "./test-utils";
+import { KuduApi } from "../index";
 
-var api;
+var api: KuduApi;
 
 var triggeredFiles = {
   "run.cmd": "echo hello world %*"
@@ -20,7 +20,7 @@ describe("webjobs", function(): void {
   before(
     testUtils.setupKudu(
       false,
-      (kuduApi): void => {
+      (kuduApi: KuduApi): void => {
         api = kuduApi;
       }
     )

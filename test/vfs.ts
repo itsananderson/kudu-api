@@ -2,8 +2,9 @@ import * as assert from "assert";
 import * as fs from "fs";
 
 import * as testUtils from "./test-utils";
+import { KuduApi } from "../index";
 
-var api;
+let api: KuduApi;
 
 describe("vfs", function(): void {
   this.timeout(5000);
@@ -11,7 +12,7 @@ describe("vfs", function(): void {
   var localPath = testUtils.artifactPath("test1.txt");
 
   before(
-    testUtils.setupKudu(false, function(kuduApi): void {
+    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );
@@ -70,7 +71,8 @@ describe("vfs", function(): void {
 
   it("can upload a file with a matching etag", async function(): Promise<void> {
     const response = await api.vfs.getFile("site/wwwroot/test.txt");
-    var etag = response.rawResponse.headers.etag;
+    let etagHeader = response.rawResponse.headers.etag;
+    let etag = Array.isArray(etagHeader) ? etagHeader[0] : etagHeader;
     await api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", etag);
   });
 

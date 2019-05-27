@@ -4,8 +4,8 @@ import { ApiResponse } from "./types";
 
 export interface ScmApi {
   info: () => Promise<ApiResponse<ScmInfo>>;
-  clean: () => void;
-  del: () => void;
+  clean: () => Promise<ApiResponse<void>>;
+  del: () => Promise<ApiResponse<void>>;
 }
 
 export interface ScmInfo {

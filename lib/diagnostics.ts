@@ -2,7 +2,7 @@ import * as utils from "./utils";
 import { ApiResponse } from "./types";
 
 export type DiagnosticSettings = {
-  [key: string]: string;
+  [key: string]: string | boolean;
 };
 
 export interface DiagnosticsApi {

@@ -3,7 +3,7 @@ import { createPromiseCallback } from "./utils";
 import { ApiResponse } from "./types";
 
 export interface Command {
-  exec: (command: string, dir: string) => void;
+  exec: (command: string, dir?: string) => Promise<ApiResponse<ExecResult>>;
 }
 
 export interface ExecResult {

@@ -3,7 +3,7 @@ import { RequestAPI, Request, CoreOptions, RequiredUriUrl } from "request";
 import { ApiResponse } from "./types";
 
 interface SshKey {
-  get: (generate: boolean) => Promise<ApiResponse<string>>;
+  get: (generate?: boolean) => Promise<ApiResponse<string>>;
 }
 
 export default function sshkey(
