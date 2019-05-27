@@ -1,12 +1,13 @@
 import { Response } from "request";
 import { ApiResponse } from "./types";
 
-export function resolveHttpError(response, message): Error | undefined {
+export function resolveHttpError(
+  response: Response,
+  message: string
+): Error | undefined {
   if (response.statusCode < 400) {
     return;
   }
-
-  message = message ? message + " " : "";
 
   message +=
     "Status code " +
