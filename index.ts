@@ -30,20 +30,19 @@ export interface KuduApi {
   webjobs: ReturnType<typeof webjobs>;
 }
 
-export default function api(options): KuduApi {
-  // Backward compat for old method signature
-  if (typeof options === "string") {
-    options = {
-      website: options,
-      username: arguments[1],
-      password: arguments[2]
-    };
-  }
+export interface KuduOptions {
+  domain?: string;
+  website: string;
+  username?: string;
+  password?: string;
+  basic?: string;
+}
 
-  //option: domain - in case the kudu api doesn't run on azurewebsites
+export default function api(options: KuduOptions): KuduApi {
+  // option: domain - in case the kudu api doesn't run on azurewebsites
   var domain = options.domain || "scm.azurewebsites.net";
 
-  //options: website, username, password, basic (hashed)
+  // options: website, username, password, basic (hashed)
   var website = options.website;
   var headers: {
     Authorization?: string;

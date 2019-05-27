@@ -4,7 +4,8 @@ import * as path from "path";
 import * as aps from "azure-publish-settings";
 import * as JSZip from "jszip";
 
-import kuduApi from "../";
+import kuduApi from "../index";
+import { KuduApi, KuduOptions } from "../index";
 
 var artifactRoot = path.join(__dirname, "artifacts");
 
@@ -22,7 +23,11 @@ export function artifactPath(relativePath): string {
   return path.join(artifactRoot, relativePath);
 }
 
-export function createZipFile(localPath, files, cb): void {
+export function createZipFile(
+  localPath: string,
+  files: { [source: string]: string },
+  cb: (err: any) => void
+): void {
   var generateOptions = {
     type: "nodebuffer",
     streamFiles: true
@@ -42,29 +47,26 @@ export function createZipFile(localPath, files, cb): void {
 }
 
 export function createZipFileAsync(localPath, files): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-        createZipFile(localPath, files, (err): void => {
-            if (err) {
-                reject(err);
-                return
-            }
+  return new Promise<void>((resolve, reject) => {
+    createZipFile(
+      localPath,
+      files,
+      (err): void => {
+        if (err) {
+          reject(err);
+          return;
+        }
 
-            resolve();
-        });
-    });
-}
-
-interface Credentials {
-  website: string;
-  username: string;
-  password: string;
-  domain: string;
+        resolve();
+      }
+    );
+  });
 }
 
 export function ensureCredentials(
   basic: boolean,
-  credentials: Credentials
-): Credentials | { website: string; basic: string } {
+  credentials: KuduOptions
+): KuduOptions {
   if (!basic) {
     return credentials;
   }
@@ -79,7 +81,10 @@ export function ensureCredentials(
   };
 }
 
-export function setupKudu(basic, cb): (done) => void {
+export function setupKudu(
+  basic: boolean,
+  cb: (api: KuduApi) => void
+): (done: (err?: any) => void) => void {
   if (typeof basic === "function") {
     cb = basic;
     basic = false;
@@ -87,17 +92,17 @@ export function setupKudu(basic, cb): (done) => void {
 
   return function(done): void {
     var env = process.env;
-    var credentials;
+    let options: KuduOptions;
 
     if (env.WEBSITE && env.USERNAME && env.PASSWORD) {
-      credentials = ensureCredentials(basic, {
+      options = ensureCredentials(basic, {
         website: env.WEBSITE,
         username: env.USERNAME,
         password: env.PASSWORD,
         domain: env.DOMAIN
       });
 
-      cb(kuduApi(credentials));
+      cb(kuduApi(options));
 
       return done();
     }
@@ -120,8 +125,8 @@ export function setupKudu(basic, cb): (done) => void {
       // Put site name into an environment variable for the tests that need it
       env.WEBSITE = settings.name;
 
-      credentials = ensureCredentials(basic, settings.kudu);
-      cb(kuduApi(credentials));
+      options = ensureCredentials(basic, settings.kudu);
+      cb(kuduApi(options));
 
       done();
     });
