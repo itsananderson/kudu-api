@@ -450,7 +450,7 @@ Because the tests integrate against a Azure Kudu api, you'll need to configure t
 - `USERNAME`: The [Azure Deployment Credentials](https://github.com/projectkudu/kudu/wiki/Deployment-credentials) user.
 - `PASSWORD`: The [Azure Deployment Credentials](https://github.com/projectkudu/kudu/wiki/Deployment-credentials) password.
 
-You can either provie these values as environment variables, or you can simply download the PublishSettings for your website, and place the PublishSettings file in `test/test.PublishSettings`.
+You can either provide these values as environment variables, or you can simply download the PublishSettings for your website, and place the PublishSettings file in `test/test.PublishSettings`.
 
 ## Linting
 
