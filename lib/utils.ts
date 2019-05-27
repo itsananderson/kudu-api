@@ -21,21 +21,6 @@ export function resolveHttpError(response, message): Error | undefined {
   return error;
 }
 
-export function createCallback(action, cb): (err, response) => void {
-  return function(err, response): void {
-    err = err || resolveHttpError(response, "Error " + action + ".");
-
-    if (err) {
-      return cb(err);
-    }
-
-    cb(null, {
-      data: response.body,
-      response: response
-    });
-  };
-}
-
 export function createPromiseCallback<P>(
   action: string,
   resolve: (response: ApiResponse<P>) => void,
