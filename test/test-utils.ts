@@ -9,7 +9,7 @@ import { KuduApi, KuduOptions } from "../index";
 
 var artifactRoot = path.join(__dirname, "artifacts");
 
-export function ensureArtifacts(done): void {
+export function ensureArtifacts(done: (err?: any) => void): void {
   fs.mkdir(artifactRoot, function(err): void {
     if (err && err.code !== "EEXIST") {
       return done(err);
@@ -19,7 +19,7 @@ export function ensureArtifacts(done): void {
   });
 }
 
-export function artifactPath(relativePath): string {
+export function artifactPath(relativePath: string): string {
   return path.join(artifactRoot, relativePath);
 }
 
@@ -46,7 +46,10 @@ export function createZipFile(
     .on("finish", cb);
 }
 
-export function createZipFileAsync(localPath, files): Promise<void> {
+export function createZipFileAsync(
+  localPath: string,
+  files: { [key: string]: string }
+): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     createZipFile(
       localPath,
@@ -109,7 +112,7 @@ export function setupKudu(
 
     var settingsPath = path.join(__dirname, "test.PublishSettings");
 
-    aps.read(settingsPath, function(err, settings): void {
+    aps.read(settingsPath, function(err: any, settings): void {
       if (err) {
         if (err.code === "ENOENT") {
           return done(

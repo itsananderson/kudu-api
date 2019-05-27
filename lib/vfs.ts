@@ -5,7 +5,7 @@ import { RequestAPI, Request, CoreOptions, RequiredUriUrl } from "request";
 import * as utils from "./utils";
 import { ApiResponse } from "./types";
 
-function ensureTrailingSlash(path): string {
+function ensureTrailingSlash(path: string): string {
   if ("/" !== path[path.length - 1]) {
     path += "/";
   }

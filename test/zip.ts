@@ -7,7 +7,7 @@ let api: KuduApi;
 
 var localZipPath = testUtils.artifactPath("test.zip");
 
-function deleteLocalZip(done): void {
+function deleteLocalZip(done: () => void): void {
   fs.unlink(localZipPath, function(): void {
     // Ignore errors
     done();

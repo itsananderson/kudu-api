@@ -5,7 +5,7 @@ import * as utils from "./utils";
 import { ApiResponse } from "./types";
 import { RequestAPI, Request, CoreOptions, RequiredUriUrl } from "request";
 
-function createUploadHeaders(localPath): { [key: string]: string } {
+function createUploadHeaders(localPath: string): { [key: string]: string } {
   var fileName = path.basename(localPath);
   var contentType =
     path.extname(localPath).toLowerCase() === ".zip"

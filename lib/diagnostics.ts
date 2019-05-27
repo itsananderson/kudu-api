@@ -1,5 +1,6 @@
 import * as utils from "./utils";
 import { ApiResponse } from "./types";
+import { RequestAPI, Request, CoreOptions, RequiredUriUrl } from "request";
 
 export type DiagnosticSettings = {
   [key: string]: string | boolean;
@@ -12,7 +13,9 @@ export interface DiagnosticsApi {
   set: (settings: DiagnosticSettings) => Promise<ApiResponse<void>>;
 }
 
-export default function diagnostics(request): DiagnosticsApi {
+export default function diagnostics(
+  request: RequestAPI<Request, CoreOptions, RequiredUriUrl>
+): DiagnosticsApi {
   return {
     list: function list(): Promise<ApiResponse<DiagnosticSettings>> {
       var options = {
