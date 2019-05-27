@@ -28,12 +28,12 @@ export function createZipFile(
   files: { [source: string]: string },
   cb: (err: any) => void
 ): void {
-  var generateOptions = {
+  let generateOptions: JSZip.JSZipGeneratorOptions<"nodebuffer"> = {
     type: "nodebuffer",
     streamFiles: true
   };
 
-  var zip = new JSZip();
+  let zip = new JSZip();
 
   Object.keys(files).forEach(function(key): void {
     zip.file(key, files[key]);
