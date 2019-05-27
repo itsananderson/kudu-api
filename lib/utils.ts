@@ -13,7 +13,7 @@ export function resolveHttpError(response, message): Error | undefined {
     response.statusCode +
     " (" +
     response.statusMessage +
-    "). See the response property for details.";
+    "). See the rawResponse property for details.";
 
   var error: Error & { rawResponse?: Response } = new Error(message);
   error.rawResponse = response;
