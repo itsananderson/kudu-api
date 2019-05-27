@@ -1,34 +1,43 @@
-export function resolveHttpError(response, message): Error | undefined {
+import { Response } from "request";
+import { ApiResponse } from "./types";
+
+export function resolveHttpError(
+  response: Response,
+  message: string
+): Error | undefined {
   if (response.statusCode < 400) {
     return;
   }
-
-  message = message ? message + " " : "";
 
   message +=
     "Status code " +
     response.statusCode +
     " (" +
     response.statusMessage +
-    "). See the response property for details.";
+    "). See the rawResponse property for details.";
 
-  var error: Error & { response?: string } = new Error(message);
-  error.response = response;
+  var error: Error & { rawResponse?: Response } = new Error(message);
+  error.rawResponse = response;
 
   return error;
 }
 
-export function createCallback(action, cb): (err, response) => void {
+export function createPromiseCallback<P>(
+  action: string,
+  resolve: (response: ApiResponse<P>) => void,
+  reject: (err: {}) => void,
+  transformPayload: (response: Response, payload: any) => P = (_, p) => p
+): (err: Error, response: Response) => void {
   return function(err, response): void {
     err = err || resolveHttpError(response, "Error " + action + ".");
 
     if (err) {
-      return cb(err);
+      return reject(err);
     }
 
-    cb(null, {
-      data: response.body,
-      response: response
+    resolve({
+      payload: transformPayload(response, response.body),
+      rawResponse: response
     });
   };
 }

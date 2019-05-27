@@ -1,17 +1,16 @@
 import * as utils from "./utils";
+import { ApiResponse } from "./types";
+import { RequestAPI, Request, CoreOptions, RequiredUriUrl } from "request";
 
 interface Logs {
-  recent: (query, cb) => void;
+  recent: (query?: {}) => Promise<ApiResponse<string[]>>;
 }
 
-export default function logs(request): Logs {
+export default function logs(
+  request: RequestAPI<Request, CoreOptions, RequiredUriUrl>
+): Logs {
   return {
-    recent: function recent(query, cb): void {
-      if (typeof query === "function") {
-        cb = query;
-        query = {};
-      }
-
+    recent: function recent(query = {}): Promise<ApiResponse<string[]>> {
       var options = {
         uri: "/api/logs/recent",
         qs: query,
@@ -19,7 +18,9 @@ export default function logs(request): Logs {
       };
       var action = "retrieving application logs";
 
-      request(options, utils.createCallback(action, cb));
+      return new Promise<ApiResponse<string[]>>((resolve, reject) => {
+        request(options, utils.createPromiseCallback(action, resolve, reject));
+      });
     }
   };
 }

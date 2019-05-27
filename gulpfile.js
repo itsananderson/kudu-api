@@ -32,11 +32,7 @@ gulp.task("build:copy-assets", function() {
 });
 
 gulp.task("build:typescript", function() {
-  var tsResult = gulp.src(allSources).pipe(
-    ts({
-      declaration: true
-    })
-  );
+  var tsResult = gulp.src(allSources).pipe(ts.createProject("tsconfig.json")());
   return merge([
     tsResult.dts.pipe(gulp.dest(tsDestPath("definitions"))),
     tsResult.js.pipe(gulp.dest(tsDestPath("dist")))

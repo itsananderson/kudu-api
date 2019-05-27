@@ -1,8 +1,11 @@
 import * as fs from "fs";
 
-import * as utils from "./utils";
+import { RequestAPI, Request, CoreOptions, RequiredUriUrl } from "request";
 
-function ensureTrailingSlash(path): void {
+import * as utils from "./utils";
+import { ApiResponse } from "./types";
+
+function ensureTrailingSlash(path: string): string {
   if ("/" !== path[path.length - 1]) {
     path += "/";
   }
@@ -10,25 +13,35 @@ function ensureTrailingSlash(path): void {
   return path;
 }
 
-export interface VFS {
-  getFile: (path, cb) => void;
-  listFiles: (path, cb) => void;
-  uploadFile: (localPath, destPath, etag, cb) => void;
-  createDirectory: (path, cb) => void;
-  deleteFile: (path, etag, cb) => void;
-  deleteDirectory: (path, cb) => void;
+export interface VfsApi {
+  getFile: (path: string) => Promise<ApiResponse<string>>;
+  listFiles: (path: string) => Promise<ApiResponse<string[]>>;
+  uploadFile: (
+    localPath: string,
+    destPath: string,
+    etag?: string
+  ) => Promise<ApiResponse<void>>;
+  createDirectory: (path: string) => Promise<ApiResponse<void>>;
+  deleteFile: (path: string, etag?: string) => Promise<ApiResponse<void>>;
+  deleteDirectory: (path: string) => Promise<ApiResponse<void>>;
 }
 
-export default function vfs(request): VFS {
+export default function vfs(
+  request: RequestAPI<Request, CoreOptions, RequiredUriUrl>
+): VfsApi {
   return {
-    getFile: function getFile(path, cb): void {
+    getFile: function getFile(path: string): Promise<ApiResponse<string>> {
       var url = "/api/vfs/" + path;
       var action = "getting file with path " + path;
 
-      request(url, utils.createCallback(action, cb));
+      return new Promise<ApiResponse<string>>((resolve, reject) => {
+        request(url, utils.createPromiseCallback(action, resolve, reject));
+      });
     },
 
-    listFiles: function listFiles(path, cb): void {
+    listFiles: function listFiles(
+      path: string
+    ): Promise<ApiResponse<string[]>> {
       path = ensureTrailingSlash(path);
 
       var options = {
@@ -37,15 +50,16 @@ export default function vfs(request): VFS {
       };
       var action = "listing files with path " + path;
 
-      request(options, utils.createCallback(action, cb));
+      return new Promise<ApiResponse<string[]>>((resolve, reject) => {
+        request(options, utils.createPromiseCallback(action, resolve, reject));
+      });
     },
 
-    uploadFile: function uploadFile(localPath, destPath, etag, cb): void {
-      if (typeof etag === "function") {
-        cb = etag;
-        etag = "*";
-      }
-
+    uploadFile: function uploadFile(
+      localPath: string,
+      destPath: string,
+      etag: string = "*"
+    ): Promise<ApiResponse<void>> {
       var options = {
         uri: "/api/vfs/" + destPath,
         headers: {
@@ -54,26 +68,33 @@ export default function vfs(request): VFS {
       };
       var action = "uploading file to destination " + destPath;
 
-      fs.createReadStream(localPath).pipe(
-        request.put(options, utils.createCallback(action, cb))
-      );
+      return new Promise<ApiResponse<void>>((resolve, reject) => {
+        fs.createReadStream(localPath).pipe(
+          request.put(
+            options,
+            utils.createPromiseCallback(action, resolve, reject)
+          )
+        );
+      });
     },
 
-    createDirectory: function createDirectory(path, cb): void {
+    createDirectory: function createDirectory(
+      path: string
+    ): Promise<ApiResponse<void>> {
       path = ensureTrailingSlash(path);
 
       var url = "/api/vfs/" + path;
       var action = "creating directory with path " + path;
 
-      request.put(url, utils.createCallback(action, cb));
+      return new Promise<ApiResponse<void>>((resolve, reject) => {
+        request.put(url, utils.createPromiseCallback(action, resolve, reject));
+      });
     },
 
-    deleteFile: function deleteFile(path, etag, cb): void {
-      if (typeof etag === "function") {
-        cb = etag;
-        etag = "*";
-      }
-
+    deleteFile: function deleteFile(
+      path: string,
+      etag: string = "*"
+    ): Promise<ApiResponse<void>> {
       var options = {
         uri: "/api/vfs/" + path,
         headers: {
@@ -82,16 +103,25 @@ export default function vfs(request): VFS {
       };
       var action = "deleting file with path " + path;
 
-      request.del(options, utils.createCallback(action, cb));
+      return new Promise<ApiResponse<void>>((resolve, reject) => {
+        request.del(
+          options,
+          utils.createPromiseCallback(action, resolve, reject)
+        );
+      });
     },
 
-    deleteDirectory: function deleteDirectory(path, cb): void {
+    deleteDirectory: function deleteDirectory(
+      path: string
+    ): Promise<ApiResponse<void>> {
       path = ensureTrailingSlash(path);
 
       var url = "/api/vfs/" + path;
       var action = "deleting directory with path " + path;
 
-      request.del(url, utils.createCallback(action, cb));
+      return new Promise<ApiResponse<void>>((resolve, reject) => {
+        request.del(url, utils.createPromiseCallback(action, resolve, reject));
+      });
     }
   };
 }

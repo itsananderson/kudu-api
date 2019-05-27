@@ -1,12 +1,10 @@
 {
-    "compilerOptions": {
-        "outDir": "./dist"
-    },
-    "include": [
-        "*.ts",
-        "lib/*.ts",
-        "lib/**/*.ts",
-        "test/*.ts",
-        "test/**/*.ts"
-    ]
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": { "*": ["types/*"] },
+    "outDir": "./dist",
+    "noImplicitAny": true,
+    "declaration": true
+  },
+  "include": ["*.ts", "lib/*.ts", "lib/**/*.ts", "test/*.ts", "test/**/*.ts"]
 }

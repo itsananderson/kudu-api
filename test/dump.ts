@@ -2,18 +2,19 @@ import * as assert from "assert";
 import * as fs from "fs";
 
 import * as testUtils from "./test-utils";
+import { KuduApi } from "../index";
 
-var api;
+let api: KuduApi;
 
 describe("dump", function(): void {
   this.timeout(30 * 1000);
 
-  var localPath = testUtils.artifactPath("dump1.zip");
+  let localPath: string = testUtils.artifactPath("dump1.zip");
 
   before(testUtils.ensureArtifacts);
 
   before(
-    testUtils.setupKudu(false, function(kuduApi): void {
+    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );
@@ -25,18 +26,12 @@ describe("dump", function(): void {
     });
   });
 
-  it("can retrieve dump", function(done): void {
-    api.dump.download(localPath, function(err): void {
-      if (err) {
-        done(err);
-        return;
-      }
+  it("can retrieve dump", async function(): Promise<void> {
+    await api.dump.download(localPath);
 
-      fs.exists(localPath, function(exists): void {
-        assert(exists, "Downloaded dump file exists");
-
-        done();
-      });
-    });
+    assert(
+      await new Promise(resolve => fs.exists(localPath, resolve)),
+      "Downloaded dump file should exist"
+    );
   });
 });

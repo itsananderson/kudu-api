@@ -2,8 +2,9 @@ import * as assert from "assert";
 import * as fs from "fs";
 
 import * as testUtils from "./test-utils";
+import { KuduApi } from "../index";
 
-var api;
+let api: KuduApi;
 
 describe("vfs", function(): void {
   this.timeout(5000);
@@ -11,7 +12,7 @@ describe("vfs", function(): void {
   var localPath = testUtils.artifactPath("test1.txt");
 
   before(
-    testUtils.setupKudu(false, function(kuduApi): void {
+    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );
@@ -22,8 +23,8 @@ describe("vfs", function(): void {
     fs.writeFile(localPath, "test\n", done);
   });
 
-  before(function(done): void {
-    api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", done);
+  before(async function(): Promise<void> {
+    await api.vfs.uploadFile(localPath, "site/wwwroot/test.txt");
   });
 
   after(function(done): void {
@@ -33,79 +34,61 @@ describe("vfs", function(): void {
     });
   });
 
-  it("can get a file", function(done): void {
-    api.vfs.getFile("site/wwwroot/test.txt", function(err, result): void {
-      if (err) {
-        return done(err);
-      }
+  it("can get a file", async function(): Promise<void> {
+    const response = await api.vfs.getFile("site/wwwroot/test.txt");
 
-      assert.equal(
-        result.data.trim(),
-        "test",
-        "Trimmed file content should be 'test'"
-      );
-      done();
-    });
+    assert.equal(
+      response.payload.trim(),
+      "test",
+      "Trimmed file content should be 'test'"
+    );
   });
 
-  it("can list files", function(done): void {
-    api.vfs.listFiles("site/wwwroot", function(err, result): void {
-      if (err) {
-        return done(err);
-      }
-
-      assert.equal(
-        typeof result.data.length,
-        "number",
-        "File list should be an array with valid length"
-      );
-      done();
-    });
+  it("can list files", async function(): Promise<void> {
+    const response = await api.vfs.listFiles("site/wwwroot");
+    assert(Array.isArray(response.payload), "File list should be an array");
   });
 
-  it("can upload file", function(done): void {
-    api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", done);
+  it("can upload file", async function(): Promise<void> {
+    await api.vfs.uploadFile(localPath, "site/wwwroot/test.txt");
   });
 
-  it("can validate an etag when uploading file", function(done): void {
-    api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", "foo", function(
-      err
-    ): void {
+  it("can validate an etag when uploading file", async function(): Promise<
+    void
+  > {
+    try {
+      await api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", "foo");
+      assert.fail("Uploading with a mismatched etag throw an exception");
+    } catch (err) {
       assert(err, "Should error with mismatched etag");
-      done();
-    });
-  });
-
-  it("can upload a file with a matching etag", function(done): void {
-    api.vfs.getFile("site/wwwroot/test.txt", function(err, result): void {
-      if (err) {
-        return done(err);
-      }
-
-      var etag = result.response.headers.etag;
-      api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", etag, done);
-    });
-  });
-
-  it("can create directories", function(done): void {
-    api.vfs.createDirectory("site/wwwroot/test1/test2", done);
-  });
-
-  it("can delete a file", function(done): void {
-    api.vfs.deleteFile("site/wwwroot/test.txt", function(err, result): void {
-      if (err) {
-        return done(err);
-      }
-
-      assert(
-        result.response.statusCode < 400,
-        "Deletion response status code should not be in the error range."
+      assert.equal(
+        err.rawResponse.statusCode,
+        412,
+        "Status code should indicate an etag error"
       );
-      done();
-    });
+    }
   });
 
-  it("can delete a directory", function(done): void {
-    api.vfs.deleteDirectory("site/wwwroot/test1/test2", done);
+  it("can upload a file with a matching etag", async function(): Promise<void> {
+    const response = await api.vfs.getFile("site/wwwroot/test.txt");
+    let etagHeader = response.rawResponse.headers.etag;
+    let etag = Array.isArray(etagHeader) ? etagHeader[0] : etagHeader;
+    await api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", etag);
+  });
+
+  it("can create directories", async function(): Promise<void> {
+    await api.vfs.createDirectory("site/wwwroot/test1/test2");
+  });
+
+  it("can delete a file", async function(): Promise<void> {
+    const response = await api.vfs.deleteFile("site/wwwroot/test.txt");
+    assert(
+      response.rawResponse.statusCode < 400,
+      "Deletion response status code should not be in the error range."
+    );
+  });
+
+  it("can delete a directory", async function(): Promise<void> {
+    await api.vfs.deleteDirectory("site/wwwroot/test1/test2");
   });
 });

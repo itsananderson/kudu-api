@@ -1,50 +1,68 @@
 import * as utils from "./utils";
+import { ApiResponse } from "./types";
+import { RequestAPI, Request, CoreOptions, RequiredUriUrl } from "request";
+
+export interface Extension {
+  id: string;
+}
+
+export interface SetExtensionResult {
+  provisioningState: string;
+}
 
 export interface ExtensionsBase {
-  list: (filter, cb) => void;
-  get: (id, cb) => void;
+  list: (filter?: string) => Promise<ApiResponse<Extension[]>>;
+  get: (id: string) => Promise<ApiResponse<Extension>>;
 }
 
 export interface SiteExtensions extends ExtensionsBase {
-  del: (id, cb) => void;
-  set: (id, payload, cb) => void;
+  del: (id: string) => Promise<ApiResponse<void>>;
+  set: (id: string, payload: {}) => Promise<ApiResponse<SetExtensionResult>>;
 }
 
-export interface Extensions {
+export interface ExtensionsApi {
   feed: ExtensionsBase;
   site: SiteExtensions;
 }
 
-export default function extensions(request): Extensions {
-  function extension(baseUrl): ExtensionsBase {
+export default function extensions(
+  request: RequestAPI<Request, CoreOptions, RequiredUriUrl>
+): ExtensionsApi {
+  function extension(baseUrl: string): ExtensionsBase {
     return {
-      list: function list(filter, cb): void {
-        var query = { filter: undefined };
+      list: function list(
+        filter: string = undefined
+      ): Promise<ApiResponse<Extension[]>> {
+        const query = { filter };
 
-        if (typeof filter === "function") {
-          cb = filter;
-        } else if (filter) {
-          query.filter = filter;
-        }
-
-        var options = {
+        const options = {
           uri: baseUrl,
           qs: query,
           json: true
         };
-        var action = "listing extensions";
+        const action = "listing extensions";
 
-        request(options, utils.createCallback(action, cb));
+        return new Promise<ApiResponse<Extension[]>>((resolve, reject) => {
+          request(
+            options,
+            utils.createPromiseCallback(action, resolve, reject)
+          );
+        });
       },
 
-      get: function get(id, cb): void {
+      get: function get(id: string): Promise<ApiResponse<Extension>> {
         var options = {
           uri: baseUrl + "/" + encodeURIComponent(id),
           json: true
         };
         var action = "getting extension with id " + id;
 
-        request(options, utils.createCallback(action, cb));
+        return new Promise<ApiResponse<Extension>>((resolve, reject) => {
+          request(
+            options,
+            utils.createPromiseCallback(action, resolve, reject)
+          );
+        });
       }
     };
   }
@@ -53,23 +71,38 @@ export default function extensions(request): Extensions {
     feed: extension("/api/extensionfeed"),
     site: {
       ...extension("/api/siteextensions"),
-      del: function del(id, cb): void {
+      del: function del(id: string): Promise<ApiResponse<void>> {
         var options = {
           uri: "/api/siteextensions/" + encodeURIComponent(id),
           json: true
         };
         var action = "deleting extension with id " + id;
 
-        request.del(options, utils.createCallback(action, cb));
+        return new Promise<ApiResponse<void>>((resolve, reject) => {
+          request.del(
+            options,
+            utils.createPromiseCallback(action, resolve, reject)
+          );
+        });
       },
-      set: function set(id, payload, cb): void {
+      set: function set(
+        id: string,
+        payload: {}
+      ): Promise<ApiResponse<SetExtensionResult>> {
         var options = {
           uri: "/api/siteextensions/" + encodeURIComponent(id),
           json: payload
         };
         var action = "installing or updating extension with id " + id;
 
-        request.put(options, utils.createCallback(action, cb));
+        return new Promise<ApiResponse<SetExtensionResult>>(
+          (resolve, reject) => {
+            request.put(
+              options,
+              utils.createPromiseCallback(action, resolve, reject)
+            );
+          }
+        );
       }
     }
   };

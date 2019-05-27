@@ -1,120 +1,91 @@
 import * as assert from "assert";
 
 import * as testUtils from "./test-utils";
+import { KuduApi } from "../index";
 
-var api;
+var api: KuduApi;
 
 describe("diagnostics", function(): void {
   this.timeout(5000);
 
   before(
-    testUtils.setupKudu(false, function(kuduApi): void {
+    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );
 
-  it("can retrieve all diagnostics settings", function(done): void {
-    api.diagnostics.list(function(err, result): void {
-      if (err) {
-        return done(err);
-      }
+  it("can retrieve all diagnostics settings", async function(): Promise<void> {
+    const response = await api.diagnostics.list();
 
-      var keys = Object.keys(result.data);
-      assert.notEqual(
-        keys.indexOf("AzureDriveEnabled"),
-        -1,
-        "Contains AzureDriveEnabled key"
-      );
-      done();
-    });
+    var keys = Object.keys(response.payload);
+    assert.notEqual(
+      keys.indexOf("AzureDriveEnabled"),
+      -1,
+      "Contains AzureDriveEnabled key"
+    );
   });
 
-  it("can retrieve a single diagnostics setting", function(done): void {
-    api.diagnostics.get("AzureDriveEnabled", function(err, result): void {
-      if (err) {
-        return done(err);
-      }
+  it("can retrieve a single diagnostics setting", async function(): Promise<
+    void
+  > {
+    const response = await api.diagnostics.get("AzureDriveEnabled");
 
-      var setting = result.data;
+    var setting = response.payload;
 
-      assert.notStrictEqual(
-        setting,
-        undefined,
-        "AzureDriveEnabled setting is not undefined"
-      );
-      assert.notStrictEqual(
-        setting,
-        null,
-        "AzureDriveEnabled setting is not null"
-      );
-      assert.notStrictEqual(
-        setting,
-        "",
-        "AzureDriveEnabled setting is not an empty string"
-      );
-      done();
-    });
+    assert.notStrictEqual(
+      setting,
+      undefined,
+      "AzureDriveEnabled setting is not undefined"
+    );
+    assert.notStrictEqual(
+      setting,
+      null,
+      "AzureDriveEnabled setting is not null"
+    );
+    assert.notStrictEqual(
+      setting,
+      "",
+      "AzureDriveEnabled setting is not an empty string"
+    );
   });
 
-  it("can update diagnotics settings", function(done): void {
-    api.diagnostics.set({ AzureDriveEnabled: true }, function(err): void {
-      if (err) {
-        return done(err);
-      }
+  it("can update diagnotics settings", async function(): Promise<void> {
+    await api.diagnostics.set({ AzureDriveEnabled: true });
 
-      api.diagnostics.get("AzureDriveEnabled", function(err, result): void {
-        if (err) {
-          return done(err);
-        }
+    const response = await api.diagnostics.get("AzureDriveEnabled");
 
-        assert.equal(result.data, true);
-        done();
-      });
-    });
+    assert(response.payload, "Setting should be enabled");
   });
 
-  it("can delete a setting", function(done): void {
-    api.diagnostics.set({ testSetting: true }, function(err): void {
-      if (err) {
-        return done(err);
-      }
+  it("can delete a setting", async function(): Promise<void> {
+    await api.diagnostics.set({ testSetting: true });
 
-      api.diagnostics.list(function(err, result): void {
-        if (err) {
-          return done(err);
-        }
+    const response = await api.diagnostics.list();
+    const oldSettings = response.payload;
 
-        var oldSettings = result.data;
+    await api.diagnostics.del("testSetting");
 
-        api.diagnostics.del("testSetting", function(err): void {
-          if (err) {
-            return done(err);
-          }
+    const response2 = await api.diagnostics.list();
 
-          api.diagnostics.list(function(err, result): void {
-            if (err) {
-              return done(err);
-            }
-
-            var oldKeys = Object.keys(oldSettings);
-            var newKeys = Object.keys(result.data);
-            assert.equal(
-              newKeys.length,
-              oldKeys.length - 1,
-              "Settings key count should be old count minus 1"
-            );
-            done();
-          });
-        });
-      });
-    });
+    var oldKeys = Object.keys(oldSettings);
+    var newKeys = Object.keys(response2.payload);
+    assert.equal(
+      newKeys.length,
+      oldKeys.length - 1,
+      "Settings key count should be old count minus 1"
+    );
   });
 
-  it("gracefully handles missing key", function(done): void {
-    api.diagnostics.get("foo", function(err, result): void {
-      assert(err, "Should error for missing key");
-      assert(!result, "When error is returned, result should be null");
-      done();
-    });
+  it("gracefully handles missing key", async function(): Promise<void> {
+    try {
+      await api.diagnostics.get("foo");
+      assert.fail("Should fail to fetch a missing key");
+    } catch (err) {
+      assert.equal(
+        err.rawResponse.statusCode,
+        404,
+        "Should get a 404 when fetching a missing key"
+      );
+    }
   });
 });

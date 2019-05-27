@@ -1,105 +1,61 @@
 import * as assert from "assert";
 
 import * as testUtils from "./test-utils";
+import { KuduApi } from "../index";
 
-var api;
+let api: KuduApi;
 
 describe("settings", function(): void {
   this.timeout(5000);
 
   before(
-    testUtils.setupKudu(false, function(kuduApi): void {
+    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );
 
-  before(function(done): void {
-    api.settings.set({ test_setting: "test" }, done);
+  before(async function(): Promise<void> {
+    await api.settings.set({ test_setting: "test" });
   });
 
-  it("can retrieve all settings", function(done): void {
-    api.settings.list(function(err, result): void {
-      if (err) {
-        return done(err);
-      }
-
-      assert.equal(
-        result.data.WEBSITE_SITE_NAME,
-        process.env.WEBSITE,
-        "Website sitname should match"
-      );
-      done();
-    });
+  it("can retrieve all settings", async function(): Promise<void> {
+    const response = await api.settings.list();
+    assert.equal(
+      response.payload.WEBSITE_SITE_NAME,
+      process.env.WEBSITE,
+      "Website sitname should match"
+    );
   });
 
-  it("can retrieve a single setting", function(done): void {
-    api.settings.get("WEBSITE_SITE_NAME", function(err, result): void {
-      if (err) {
-        return done(err);
-      }
-
-      assert.equal(result.data, process.env.WEBSITE);
-      done();
-    });
+  it("can retrieve a single setting", async function(): Promise<void> {
+    const response = await api.settings.get("WEBSITE_SITE_NAME");
+    assert.equal(response.payload, process.env.WEBSITE);
   });
 
-  it("can update settings", function(done): void {
-    api.settings.get("test_setting", function(err, result): void {
-      if (err) {
-        return done(err);
-      }
+  it("can update settings", async function(): Promise<void> {
+    const response = await api.settings.get("test_setting");
+    assert.equal(response.payload, "test");
 
-      assert.equal(result.data, "test");
+    await api.settings.set({ test_setting: "test1" });
 
-      api.settings.set({ test_setting: "test1" }, function(err): void {
-        if (err) {
-          return done(err);
-        }
-
-        api.settings.get("test_setting", function(err, result): void {
-          if (err) {
-            return done(err);
-          }
-
-          assert.equal(result.data, "test1");
-          done();
-        });
-      });
-    });
+    const response2 = await api.settings.get("test_setting");
+    assert.equal(response2.payload, "test1");
   });
 
-  it("can delete a setting", function(done): void {
+  it("can delete a setting", async function(): Promise<void> {
     this.timeout(10 * 1000);
 
-    api.settings.set({ test_setting: "test" }, function(err): void {
-      if (err) {
-        return done(err);
-      }
+    await api.settings.set({ test_setting: "test" });
+    const oldSettings = (await api.settings.list()).payload;
 
-      api.settings.list(function(err, result): void {
-        if (err) {
-          return done(err);
-        }
+    await api.settings.del("test_setting");
 
-        var oldSettings = result.data;
-
-        api.settings.del("test_setting", function(err): void {
-          if (err) {
-            return done(err);
-          }
-
-          api.settings.list(function(err, result): void {
-            var oldKeys = Object.keys(oldSettings);
-            var newKeys = Object.keys(result.data);
-            assert.equal(
-              newKeys.length,
-              oldKeys.length - 1,
-              "New keys count should be old count minus 1"
-            );
-            done();
-          });
-        });
-      });
-    });
+    const oldKeys = Object.keys(oldSettings);
+    const newKeys = Object.keys((await api.settings.list()).payload);
+    assert.equal(
+      newKeys.length,
+      oldKeys.length - 1,
+      "New keys count should be old count minus 1"
+    );
   });
 });

@@ -1,8 +1,9 @@
 import * as assert from "assert";
 
 import * as testUtils from "./test-utils";
+import { KuduApi } from "../index";
 
-var api;
+let api: KuduApi;
 
 describe("command", function(): void {
   this.timeout(30000);
@@ -13,40 +14,31 @@ describe("command", function(): void {
     })
   );
 
-  it("can execute a command", function(done): void {
-    api.command.exec("echo hello world", "site", function(err, result): void {
-      if (err) {
-        return done(err);
-      }
+  it("can execute a command", async function(): Promise<void> {
+    const response = await api.command.exec("echo hello world", "site");
+    const payload = response.payload;
 
-      var data = result.data;
-
-      assert.equal(data.Error, "", "Error should be empty");
-      assert.equal(
-        data.Output,
-        "hello world\r\n",
-        "Output should be 'hello world\\r\\n'"
-      );
-      assert.equal(data.ExitCode, 0, "Exit code should be 0");
-      done();
-    });
+    assert.equal(payload.Error, "", "Error should be empty");
+    assert.equal(
+      payload.Output,
+      "hello world\r\n",
+      "Output should be 'hello world\\r\\n'"
+    );
+    assert.equal(payload.ExitCode, 0, "Exit code should be 0");
   });
 
-  it("can execute a command with a default dir", function(done): void {
-    api.command
-      .execAsync("echo %CD%")
-      .then(function(result): void {
-        var data = result.data;
+  it("can execute a command with a default dir", async function(): Promise<
+    void
+  > {
+    const response = await api.command.exec("echo %CD%");
+    var payload = response.payload;
 
-        assert.equal(data.Error, "", "Error should be empty");
-        assert.equal(
-          data.Output,
-          "D:\\home\r\n",
-          "Output should be 'D:\\home\\r\\n'"
-        );
-        assert.equal(data.ExitCode, 0, "Exit code should be 0");
-        done();
-      })
-      .catch(done);
+    assert.equal(payload.Error, "", "Error should be empty");
+    assert.equal(
+      payload.Output,
+      "D:\\home\r\n",
+      "Output should be 'D:\\home\\r\\n'"
+    );
+    assert.equal(payload.ExitCode, 0, "Exit code should be 0");
   });
 });

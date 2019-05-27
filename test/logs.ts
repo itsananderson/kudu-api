@@ -1,43 +1,32 @@
 import * as assert from "assert";
 
 import * as testUtils from "./test-utils";
+import { KuduApi } from "../index";
 
-var api;
+let api: KuduApi;
 
 describe("logs", function(): void {
   this.timeout(5000);
 
   before(
-    testUtils.setupKudu(false, function(kuduApi): void {
+    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );
 
-  it("can retrieve recent logs", function(done): void {
-    api.logs.recent(function(err, result): void {
-      if (err) {
-        done(err);
-        return;
-      }
-
-      assert(Array.isArray(result.data), "logs should be an array");
-      done();
-    });
+  it("can retrieve recent logs", async function(): Promise<void> {
+    const response = await api.logs.recent();
+    assert(Array.isArray(response.payload), "logs should be an array");
   });
 
-  it("can retrieve custom number of recent logs", function(done): void {
+  it("can retrieve custom number of recent logs", async function(): Promise<
+    void
+  > {
     var query = {
       top: 500
     };
 
-    api.logs.recent(query, function(err, result): void {
-      if (err) {
-        done(err);
-        return;
-      }
-
-      assert(Array.isArray(result.data), "logs should be an array");
-      done();
-    });
+    const response = await api.logs.recent(query);
+    assert(Array.isArray(response.payload), "logs should be an array");
   });
 });

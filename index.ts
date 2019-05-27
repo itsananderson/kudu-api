@@ -1,5 +1,4 @@
 import * as request from "request";
-import * as bluebird from "bluebird";
 
 import scm from "./lib/scm";
 import command from "./lib/command";
@@ -15,32 +14,35 @@ import logs from "./lib/logs";
 import extensions from "./lib/extensions";
 import webjobs from "./lib/webjobs";
 
-function promisifyApi(target): any {
-  Object.keys(target).forEach(function(key): void {
-    bluebird.promisifyAll(target[key]);
-  });
-
-  Object.keys(target.extensions).forEach(function(key): void {
-    bluebird.promisifyAll(target.extensions[key]);
-  });
-
-  return target;
+export interface KuduApi {
+  scm: ReturnType<typeof scm>;
+  command: ReturnType<typeof command>;
+  vfs: ReturnType<typeof vfs>;
+  zip: ReturnType<typeof zip>;
+  deployment: ReturnType<typeof deployment>;
+  sshkey: ReturnType<typeof sshkey>;
+  environment: ReturnType<typeof environment>;
+  settings: ReturnType<typeof settings>;
+  dump: ReturnType<typeof dump>;
+  diagnostics: ReturnType<typeof diagnostics>;
+  logs: ReturnType<typeof logs>;
+  extensions: ReturnType<typeof extensions>;
+  webjobs: ReturnType<typeof webjobs>;
 }
 
-export default function api(options): any {
-  // Backward compat for old method signature
-  if (typeof options === "string") {
-    options = {
-      website: options,
-      username: arguments[1],
-      password: arguments[2]
-    };
-  }
+export interface KuduOptions {
+  domain?: string;
+  website: string;
+  username?: string;
+  password?: string;
+  basic?: string;
+}
 
-  //option: domain - in case the kudu api doesn't run on azurewebsites
+export default function api(options: KuduOptions): KuduApi {
+  // option: domain - in case the kudu api doesn't run on azurewebsites
   var domain = options.domain || "scm.azurewebsites.net";
 
-  //options: website, username, password, basic (hashed)
+  // options: website, username, password, basic (hashed)
   var website = options.website;
   var headers: {
     Authorization?: string;
@@ -61,7 +63,7 @@ export default function api(options): any {
     headers: headers
   });
 
-  return promisifyApi({
+  return {
     scm: scm(r),
     command: command(r),
     vfs: vfs(r),
@@ -75,5 +77,5 @@ export default function api(options): any {
     logs: logs(r),
     extensions: extensions(r),
     webjobs: webjobs(r)
-  });
+  };
 }

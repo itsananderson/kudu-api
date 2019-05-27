@@ -1,140 +1,95 @@
 import * as assert from "assert";
 
 import * as testUtils from "./test-utils";
+import { Extension } from "../lib/extensions";
+import { KuduApi } from "../index";
 
-var api;
+let api: KuduApi;
 
 describe("extensions", function(): void {
   this.timeout(5000);
 
-  var availableExtensions;
+  let availableExtensions: Extension[];
 
   before(
-    testUtils.setupKudu(false, function(kuduApi): void {
+    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );
 
-  before(function(done): void {
-    api.extensions.feed.list(function(err, result): void {
-      if (err) {
-        done(err);
-        return;
-      }
-
-      availableExtensions = result.data;
-      done();
-    });
+  before(async function(): Promise<void> {
+    const response = await api.extensions.feed.list();
+    availableExtensions = response.payload;
   });
 
-  it("can filter feed extensions", function(done): void {
-    api.extensions.feed.list("filecounter", function(err, result): void {
-      if (err) {
-        done(err);
-        return;
-      }
-
-      assert(
-        result.data.length < availableExtensions.length,
-        "Available extensions should be filtered"
-      );
-      done();
-    });
+  it("can filter feed extensions", async function(): Promise<void> {
+    const response = await api.extensions.feed.list("filecounter");
+    assert(
+      response.payload.length < availableExtensions.length,
+      "Available extensions should be filtered"
+    );
   });
 
-  it("can get a specific feed extension", function(done): void {
-    api.extensions.feed.get("filecounter", function(err, result): void {
-      if (err) {
-        done(err);
-        return;
-      }
-
-      assert(result.data, "Queried extension exists");
-      done();
-    });
+  it("can get a specific feed extension", async function(): Promise<void> {
+    const response = await api.extensions.feed.get("filecounter");
+    assert(response.payload, "Queried extension exists");
   });
 
-  it("can list installed extensions", function(done): void {
-    api.extensions.site.list(function(err, result): void {
-      if (err) {
-        done(err);
-        return;
-      }
+  it("can list installed extensions", async function(): Promise<void> {
+    const response = await api.extensions.site.list();
 
-      assert(
-        Array.isArray(result.data),
-        "Installed extensions should be an array"
-      );
-      done();
-    });
+    assert(
+      Array.isArray(response.payload),
+      "Installed extensions should be an array"
+    );
   });
 
-  it("can filter installed extensions", function(done): void {
-    api.extensions.site.list("filecounter", function(err, result): void {
-      if (err) {
-        done(err);
-        return;
-      }
-
-      assert(
-        Array.isArray(result.data),
-        "Installed extensions should be filterable"
-      );
-      done();
-    });
+  it("can filter installed extensions", async function(): Promise<void> {
+    const response = await api.extensions.site.list("filecounter");
+    assert(
+      Array.isArray(response.payload),
+      "Installed extensions should be filterable"
+    );
   });
 
-  it("can add or update a package", function(done): void {
+  it("can add or update a package", async function(): Promise<void> {
     this.timeout(10 * 1000);
 
-    api.extensions.feed
-      .getAsync("filecounter")
-      .then(function(result): void {
-        return api.extensions.site.setAsync(result.data.id, result.data);
-      })
-      .then(function(result): void {
-        assert.equal(
-          result.data.provisioningState,
-          "Succeeded",
-          "Should have successfully provisioned"
-        );
-        done();
-      })
-      .catch(done);
+    const getResponse = await api.extensions.feed.get("filecounter");
+
+    const setResponse = await api.extensions.site.set(
+      getResponse.payload.id,
+      getResponse.payload
+    );
+    assert.equal(
+      setResponse.payload.provisioningState,
+      "Succeeded",
+      "Should have successfully provisioned"
+    );
   });
 
-  it("can delete a package", function(done): void {
+  it("can delete a package", async function(): Promise<void> {
     this.timeout(30 * 1000);
-    var oldExtensions;
 
-    api.extensions.feed
-      .getAsync("filecounter")
-      .then(function(result): Promise<{}> {
-        return api.extensions.site.setAsync(result.data.id, result.data);
-      })
-      .then(function(result): Promise<{}[]> {
-        assert(result.data);
+    const response = await api.extensions.feed.get("filecounter");
+    const response2 = await api.extensions.site.set(
+      response.payload.id,
+      response.payload
+    );
 
-        return api.extensions.site.listAsync();
-      })
-      .then(function(result): Promise<{}> {
-        oldExtensions = result.data;
+    assert(response2.payload);
 
-        return api.extensions.site.delAsync("filecounter");
-      })
-      .then(function(result): Promise<{}> {
-        assert(result.data);
+    const listResponse = await api.extensions.site.list();
+    const oldExtensions = listResponse.payload;
 
-        return api.extensions.site.listAsync();
-      })
-      .then(function(result): void {
-        assert.equal(
-          result.data.length,
-          oldExtensions.length - 1,
-          "Should be one less extension installed"
-        );
-        done();
-      })
-      .catch(done);
+    const deleteResponse = await api.extensions.site.del("filecounter");
+    assert(deleteResponse.payload);
+
+    const listResponse2 = await api.extensions.site.list();
+    assert.equal(
+      listResponse2.payload.length,
+      oldExtensions.length - 1,
+      "Should be one less extension installed"
+    );
   });
 });
