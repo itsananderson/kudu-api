@@ -11,7 +11,7 @@ var gitUrl2 =
   "https://github.com/itsananderson/kudu-api-website.git#1f19ea3b8e68397b6f7c290378526ef37975105d";
 
 describe("deployment", function(): void {
-  this.timeout(5000);
+  this.timeout(10 * 1000);
 
   var deploymentList: Deployment[];
 
