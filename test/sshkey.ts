@@ -13,17 +13,13 @@ describe("sshkey", function(): void {
     })
   );
 
-  it("can generate a new key if none exists", function(done): void {
-    api.sshkey.get(true, function(err, result): void {
-      assert(/^ssh-rsa/.test(result.data), "Should be a valid key");
-      done(err);
-    });
+  it("can generate a new key if none exists", async function(): Promise<void> {
+    const response = await api.sshkey.get(true);
+    assert(/^ssh-rsa/.test(response.payload), "Should be a valid key");
   });
 
-  it("can download key", function(done): void {
-    api.sshkey.get(function(err, result): void {
-      assert(/^ssh-rsa/.test(result.data), "Should be a valid key");
-      done(err);
-    });
+  it("can download key", async function(): Promise<void> {
+    const response = await api.sshkey.get();
+    assert(/^ssh-rsa/.test(response.payload), "Should be a valid key");
   });
 });

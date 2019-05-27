@@ -1,19 +1,17 @@
 import * as utils from "./utils";
+import { RequestAPI, Request, CoreOptions, RequiredUriUrl } from "request";
+import { ApiResponse } from "./types";
 
 interface SshKey {
-  get: (generate, cb) => void;
+  get: (generate: boolean) => Promise<ApiResponse<string>>;
 }
 
-export default function sshkey(request): SshKey {
+export default function sshkey(
+  request: RequestAPI<Request, CoreOptions, RequiredUriUrl>
+): SshKey {
   return {
-    get: function get(generate, cb): void {
-      var query = { ensurePublicKey: undefined };
-
-      if (typeof generate === "function") {
-        cb = generate;
-      } else if (generate) {
-        query.ensurePublicKey = 1;
-      }
+    get: function get(generate: boolean = false): Promise<ApiResponse<string>> {
+      var query = { ensurePublicKey: generate ? 1 : undefined };
 
       var options = {
         uri: "/api/sshkey/",
@@ -22,7 +20,9 @@ export default function sshkey(request): SshKey {
       };
       var action = "getting SSH key";
 
-      request(options, utils.createCallback(action, cb));
+      return new Promise<ApiResponse<string>>((resolve, reject) => {
+        request(options, utils.createPromiseCallback(action, resolve, reject));
+      });
     }
   };
 }
