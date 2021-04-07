@@ -6,11 +6,12 @@ import * as JSZip from "jszip";
 
 import kuduApi from "../index";
 import { KuduApi, KuduOptions } from "../index";
+import { Settings as AzurePublishSettings } from "../types/azure-publish-settings";
 
-var artifactRoot = path.join(__dirname, "artifacts");
+const artifactRoot = path.join(__dirname, "artifacts");
 
-export function ensureArtifacts(done: (err?: any) => void): void {
-  fs.mkdir(artifactRoot, function(err): void {
+export function ensureArtifacts(done: (err?: unknown) => void): void {
+  fs.mkdir(artifactRoot, function (err): void {
     if (err && err.code !== "EEXIST") {
       return done(err);
     }
@@ -26,16 +27,16 @@ export function artifactPath(relativePath: string): string {
 export function createZipFile(
   localPath: string,
   files: { [source: string]: string },
-  cb: (err: any) => void
+  cb: (err: unknown) => void
 ): void {
-  let generateOptions: JSZip.JSZipGeneratorOptions<"nodebuffer"> = {
+  const generateOptions: JSZip.JSZipGeneratorOptions<"nodebuffer"> = {
     type: "nodebuffer",
-    streamFiles: true
+    streamFiles: true,
   };
 
-  let zip = new JSZip();
+  const zip = new JSZip();
 
-  Object.keys(files).forEach(function(key): void {
+  Object.keys(files).forEach(function (key): void {
     zip.file(key, files[key]);
   });
 
@@ -51,18 +52,14 @@ export function createZipFileAsync(
   files: { [key: string]: string }
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    createZipFile(
-      localPath,
-      files,
-      (err): void => {
-        if (err) {
-          reject(err);
-          return;
-        }
-
-        resolve();
+    createZipFile(localPath, files, (err): void => {
+      if (err) {
+        reject(err);
+        return;
       }
-    );
+
+      resolve();
+    });
   });
 }
 
@@ -74,27 +71,27 @@ export function ensureCredentials(
     return credentials;
   }
 
-  var basicCredentials = new Buffer(
+  const basicCredentials = new Buffer(
     credentials.username + ":" + credentials.password
   ).toString("base64");
 
   return {
     website: credentials.website,
-    basic: basicCredentials
+    basic: basicCredentials,
   };
 }
 
 export function setupKudu(
   basic: boolean,
   cb: (api: KuduApi) => void
-): (done: (err?: any) => void) => void {
+): (done: (err?: unknown) => void) => void {
   if (typeof basic === "function") {
     cb = basic;
     basic = false;
   }
 
-  return function(done): void {
-    var env = process.env;
+  return function (done): void {
+    const env = process.env;
     let options: KuduOptions;
 
     if (env.WEBSITE && env.USERNAME && env.PASSWORD) {
@@ -102,7 +99,7 @@ export function setupKudu(
         website: env.WEBSITE,
         username: env.USERNAME,
         password: env.PASSWORD,
-        domain: env.DOMAIN
+        domain: env.DOMAIN,
       });
 
       cb(kuduApi(options));
@@ -110,28 +107,35 @@ export function setupKudu(
       return done();
     }
 
-    var settingsPath = path.join(__dirname, "test.PublishSettings");
+    const settingsPath = path.join(__dirname, "test.PublishSettings");
 
-    aps.read(settingsPath, function(err: any, settings): void {
-      if (err) {
-        if (err.code === "ENOENT") {
-          return done(
-            new Error(
-              'A "test.PublishSettings" file was not found in the test directory. Please provide one or add WEBSITE, USERNAME and PASSWORD environment variables to enable kudu-api testing.'
-            )
-          );
+    aps.read(
+      settingsPath,
+      function (err: unknown, settings: AzurePublishSettings): void {
+        if (err) {
+          console.log(err);
+          if (err instanceof Object) {
+            const typedError = err as { code?: string };
+            if (typedError.code && typedError.code === "ENOENT") {
+              return done(
+                new Error(
+                  'A "test.PublishSettings" file was not found in the test directory. Please provide one or add WEBSITE, USERNAME and PASSWORD environment variables to enable kudu-api testing.'
+                )
+              );
+            }
+          }
+
+          return done(err);
         }
 
-        return done(err);
+        // Put site name into an environment variable for the tests that need it
+        env.WEBSITE = settings.name;
+
+        options = ensureCredentials(basic, settings.kudu);
+        cb(kuduApi(options));
+
+        done();
       }
-
-      // Put site name into an environment variable for the tests that need it
-      env.WEBSITE = settings.name;
-
-      options = ensureCredentials(basic, settings.kudu);
-      cb(kuduApi(options));
-
-      done();
-    });
+    );
   };
 }

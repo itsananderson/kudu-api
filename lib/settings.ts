@@ -14,9 +14,9 @@ export default function settings(
 ): Settings {
   return {
     list: function list(): Promise<ApiResponse<{ [key: string]: string }>> {
-      var options = {
+      const options = {
         uri: "/api/settings",
-        json: true
+        json: true,
       };
 
       return new Promise<ApiResponse<{ [key: string]: string }>>(
@@ -30,11 +30,11 @@ export default function settings(
     },
 
     get: function get(key: string): Promise<ApiResponse<string>> {
-      var options = {
+      const options = {
         uri: "/api/settings/" + encodeURIComponent(key),
-        json: true
+        json: true,
       };
-      var action = "getting setting with key " + key;
+      const action = "getting setting with key " + key;
 
       return new Promise<ApiResponse<string>>((resolve, reject) => {
         request(options, utils.createPromiseCallback(action, resolve, reject));
@@ -42,8 +42,8 @@ export default function settings(
     },
 
     del: function del(key: string): Promise<ApiResponse<void>> {
-      var url = "/api/settings/" + encodeURIComponent(key);
-      var action = "deleting setting with key " + key;
+      const url = "/api/settings/" + encodeURIComponent(key);
+      const action = "deleting setting with key " + key;
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.del(url, utils.createPromiseCallback(action, resolve, reject));
@@ -53,11 +53,11 @@ export default function settings(
     set: function set(settings: {
       [key: string]: string;
     }): Promise<ApiResponse<void>> {
-      var options = {
+      const options = {
         uri: "/api/settings/",
-        json: settings
+        json: settings,
       };
-      var action = "updating settings";
+      const action = "updating settings";
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.post(
@@ -65,6 +65,6 @@ export default function settings(
           utils.createPromiseCallback(action, resolve, reject)
         );
       });
-    }
+    },
   };
 }

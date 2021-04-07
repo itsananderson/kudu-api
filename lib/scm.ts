@@ -18,9 +18,9 @@ export default function scm(
 ): ScmApi {
   return {
     info: function info(): Promise<ApiResponse<ScmInfo>> {
-      var options = {
+      const options = {
         uri: "/api/scm/info",
-        json: true
+        json: true,
       };
 
       const action = "getting information about the repository";
@@ -47,6 +47,6 @@ export default function scm(
           utils.createPromiseCallback(action, resolve, reject)
         );
       });
-    }
+    },
   };
 }

@@ -6,7 +6,7 @@ import {
   Request,
   Response,
   CoreOptions,
-  RequiredUriUrl
+  RequiredUriUrl,
 } from "request";
 
 interface Zip {
@@ -22,25 +22,25 @@ export default function zip(
       fromPath: string,
       toPath: string
     ): Promise<ApiResponse<void>> {
-      var url = "/api/zip/" + fromPath;
-      var action = "downloading zip file from " + fromPath;
+      const url = "/api/zip/" + fromPath;
+      const action = "downloading zip file from " + fromPath;
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
-        var callbackWrapper = utils.createPromiseCallback(
+        const callbackWrapper = utils.createPromiseCallback(
           action,
           resolve,
           reject
         );
         let response: Response;
         request(url)
-          .on("response", function(res): void {
+          .on("response", function (res): void {
             response = res;
           })
-          .on("error", function(err): void {
+          .on("error", function (err): void {
             callbackWrapper(err, response);
           })
           .pipe(fs.createWriteStream(toPath))
-          .on("close", function(): void {
+          .on("close", function (): void {
             callbackWrapper(null, response);
           });
       });
@@ -50,14 +50,14 @@ export default function zip(
       fromPath: string,
       toPath: string
     ): Promise<ApiResponse<void>> {
-      var url = "/api/zip/" + toPath;
-      var action = "uploading zip file to " + toPath;
+      const url = "/api/zip/" + toPath;
+      const action = "uploading zip file to " + toPath;
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         fs.createReadStream(fromPath).pipe(
           request.put(url, utils.createPromiseCallback(action, resolve, reject))
         );
       });
-    }
+    },
   };
 }

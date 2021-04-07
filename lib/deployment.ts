@@ -12,7 +12,10 @@ export interface DeploymentApi {
     entryId: string
   ) => Promise<ApiResponse<DeploymentLogEntry>>;
   deploy: (repoUrl: string) => Promise<ApiResponse<void>>;
-  redeploy: (id: string, payload?: {}) => Promise<ApiResponse<void>>;
+  redeploy: (
+    id: string,
+    payload?: Record<string, unknown>
+  ) => Promise<ApiResponse<void>>;
 }
 
 export interface Deployment {
@@ -33,9 +36,9 @@ export default function deployment(
 ): DeploymentApi {
   return {
     list: function list(): Promise<ApiResponse<Deployment[]>> {
-      var options = {
+      const options = {
         uri: "/api/deployments/",
-        json: true
+        json: true,
       };
 
       return new Promise<ApiResponse<Deployment[]>>((resolve, reject) => {
@@ -51,11 +54,11 @@ export default function deployment(
     },
 
     get: function get(id): Promise<ApiResponse<Deployment>> {
-      var options = {
+      const options = {
         uri: "/api/deployments/" + encodeURIComponent(id),
-        json: true
+        json: true,
       };
-      var action = "getting deployment with id " + id;
+      const action = "getting deployment with id " + id;
 
       return new Promise<ApiResponse<Deployment>>((resolve, reject) => {
         request(
@@ -66,8 +69,8 @@ export default function deployment(
     },
 
     del: function del(id): Promise<ApiResponse<void>> {
-      var url = "/api/deployments/" + encodeURIComponent(id);
-      var action = "deleting deployment with id " + id;
+      const url = "/api/deployments/" + encodeURIComponent(id);
+      const action = "deleting deployment with id " + id;
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.del(
@@ -78,11 +81,11 @@ export default function deployment(
     },
 
     log: function log(id: string): Promise<ApiResponse<DeploymentLogEntry[]>> {
-      var options = {
+      const options = {
         uri: "/api/deployments/" + encodeURIComponent(id) + "/log",
-        json: true
+        json: true,
       };
-      var action = "listing logs for deployment with id " + id;
+      const action = "listing logs for deployment with id " + id;
 
       return new Promise<ApiResponse<DeploymentLogEntry[]>>(
         (resolve, reject) => {
@@ -98,15 +101,15 @@ export default function deployment(
       id: string,
       entryId: string
     ): Promise<ApiResponse<DeploymentLogEntry>> {
-      var options = {
+      const options = {
         uri:
           "/api/deployments/" +
           encodeURIComponent(id) +
           "/log/" +
           encodeURIComponent(entryId),
-        json: true
+        json: true,
       };
-      var action =
+      const action =
         "getting log details with log id " + id + " and entry id " + entryId;
 
       return new Promise<ApiResponse<DeploymentLogEntry>>((resolve, reject) => {
@@ -115,14 +118,14 @@ export default function deployment(
     },
 
     deploy: function deploy(repoUrl: string): Promise<ApiResponse<void>> {
-      var options = {
+      const options = {
         uri: "/deploy/",
         json: {
           format: "basic",
-          url: repoUrl
-        }
+          url: repoUrl,
+        },
       };
-      var action = "triggering a deployment from the repository " + repoUrl;
+      const action = "triggering a deployment from the repository " + repoUrl;
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.post(
@@ -134,13 +137,13 @@ export default function deployment(
 
     redeploy: function redeploy(
       id: string,
-      payload: {}
+      payload: Record<string, unknown>
     ): Promise<ApiResponse<void>> {
-      var options = {
+      const options = {
         uri: "/api/deployments/" + encodeURIComponent(id),
-        json: payload || {}
+        json: payload || {},
       };
-      var action = "triggering a redeployment with id " + id;
+      const action = "triggering a redeployment with id " + id;
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.put(
@@ -148,6 +151,6 @@ export default function deployment(
           utils.createPromiseCallback<void>(action, resolve, reject)
         );
       });
-    }
+    },
   };
 }

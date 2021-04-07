@@ -16,7 +16,7 @@ export function resolveHttpError(
     response.statusMessage +
     "). See the rawResponse property for details.";
 
-  var error: Error & { rawResponse?: Response } = new Error(message);
+  const error: Error & { rawResponse?: Response } = new Error(message);
   error.rawResponse = response;
 
   return error;
@@ -25,10 +25,11 @@ export function resolveHttpError(
 export function createPromiseCallback<P>(
   action: string,
   resolve: (response: ApiResponse<P>) => void,
-  reject: (err: {}) => void,
-  transformPayload: (response: Response, payload: any) => P = (_, p) => p
+  reject: (err: unknown) => void,
+  transformPayload: (response: Response, payload: unknown) => P = (_, p) =>
+    p as P
 ): (err: Error, response: Response) => void {
-  return function(err, response): void {
+  return function (err, response): void {
     err = err || resolveHttpError(response, "Error " + action + ".");
 
     if (err) {
@@ -37,7 +38,7 @@ export function createPromiseCallback<P>(
 
     resolve({
       payload: transformPayload(response, response.body),
-      rawResponse: response
+      rawResponse: response,
     });
   };
 }

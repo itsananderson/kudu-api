@@ -40,11 +40,11 @@ export interface KuduOptions {
 
 export default function api(options: KuduOptions): KuduApi {
   // option: domain - in case the kudu api doesn't run on azurewebsites
-  var domain = options.domain || "scm.azurewebsites.net";
+  const domain = options.domain || "scm.azurewebsites.net";
 
   // options: website, username, password, basic (hashed)
-  var website = options.website;
-  var headers: {
+  const website = options.website;
+  const headers: {
     Authorization?: string;
   } = {};
 
@@ -58,9 +58,9 @@ export default function api(options: KuduOptions): KuduApi {
     headers.Authorization = "Basic " + options.basic;
   }
 
-  var r = request.defaults({
+  const r = request.defaults({
     baseUrl: "https://" + website + "." + domain + "/",
-    headers: headers
+    headers: headers,
   });
 
   return {
@@ -76,6 +76,6 @@ export default function api(options: KuduOptions): KuduApi {
     diagnostics: diagnostics(r),
     logs: logs(r),
     extensions: extensions(r),
-    webjobs: webjobs(r)
+    webjobs: webjobs(r),
   };
 }

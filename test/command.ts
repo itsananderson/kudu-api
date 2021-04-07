@@ -5,16 +5,16 @@ import { KuduApi } from "../index";
 
 let api: KuduApi;
 
-describe("command", function(): void {
+describe("command", function (): void {
   this.timeout(30000);
 
   before(
-    testUtils.setupKudu(false, function(kuduApi): void {
+    testUtils.setupKudu(false, function (kuduApi): void {
       api = kuduApi;
     })
   );
 
-  it("can execute a command", async function(): Promise<void> {
+  it("can execute a command", async function (): Promise<void> {
     const response = await api.command.exec("echo hello world", "site");
     const payload = response.payload;
 
@@ -27,11 +27,9 @@ describe("command", function(): void {
     assert.equal(payload.ExitCode, 0, "Exit code should be 0");
   });
 
-  it("can execute a command with a default dir", async function(): Promise<
-    void
-  > {
+  it("can execute a command with a default dir", async function (): Promise<void> {
     const response = await api.command.exec("echo %CD%");
-    var payload = response.payload;
+    const payload = response.payload;
 
     assert.equal(payload.Error, "", "Error should be empty");
     assert.equal(

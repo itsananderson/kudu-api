@@ -17,18 +17,18 @@ export default function command(
 ): Command {
   return {
     exec: function exec(command, dir = ""): Promise<ApiResponse<ExecResult>> {
-      var options = {
+      const options = {
         uri: "/api/command",
         json: {
           command: command,
-          dir: dir
-        }
+          dir: dir,
+        },
       };
-      var action = "executing command " + command;
+      const action = "executing command " + command;
 
       return new Promise<ApiResponse<ExecResult>>((resolve, reject) => {
         request.post(options, createPromiseCallback(action, resolve, reject));
       });
-    }
+    },
   };
 }

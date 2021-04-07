@@ -31,8 +31,8 @@ export default function vfs(
 ): VfsApi {
   return {
     getFile: function getFile(path: string): Promise<ApiResponse<string>> {
-      var url = "/api/vfs/" + path;
-      var action = "getting file with path " + path;
+      const url = "/api/vfs/" + path;
+      const action = "getting file with path " + path;
 
       return new Promise<ApiResponse<string>>((resolve, reject) => {
         request(url, utils.createPromiseCallback(action, resolve, reject));
@@ -44,11 +44,11 @@ export default function vfs(
     ): Promise<ApiResponse<string[]>> {
       path = ensureTrailingSlash(path);
 
-      var options = {
+      const options = {
         uri: "/api/vfs/" + path,
-        json: true
+        json: true,
       };
-      var action = "listing files with path " + path;
+      const action = "listing files with path " + path;
 
       return new Promise<ApiResponse<string[]>>((resolve, reject) => {
         request(options, utils.createPromiseCallback(action, resolve, reject));
@@ -58,15 +58,15 @@ export default function vfs(
     uploadFile: function uploadFile(
       localPath: string,
       destPath: string,
-      etag: string = "*"
+      etag = "*"
     ): Promise<ApiResponse<void>> {
-      var options = {
+      const options = {
         uri: "/api/vfs/" + destPath,
         headers: {
-          "If-Match": etag
-        }
+          "If-Match": etag,
+        },
       };
-      var action = "uploading file to destination " + destPath;
+      const action = "uploading file to destination " + destPath;
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         fs.createReadStream(localPath).pipe(
@@ -83,8 +83,8 @@ export default function vfs(
     ): Promise<ApiResponse<void>> {
       path = ensureTrailingSlash(path);
 
-      var url = "/api/vfs/" + path;
-      var action = "creating directory with path " + path;
+      const url = "/api/vfs/" + path;
+      const action = "creating directory with path " + path;
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.put(url, utils.createPromiseCallback(action, resolve, reject));
@@ -93,15 +93,15 @@ export default function vfs(
 
     deleteFile: function deleteFile(
       path: string,
-      etag: string = "*"
+      etag = "*"
     ): Promise<ApiResponse<void>> {
-      var options = {
+      const options = {
         uri: "/api/vfs/" + path,
         headers: {
-          "If-Match": etag
-        }
+          "If-Match": etag,
+        },
       };
-      var action = "deleting file with path " + path;
+      const action = "deleting file with path " + path;
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.del(
@@ -116,12 +116,12 @@ export default function vfs(
     ): Promise<ApiResponse<void>> {
       path = ensureTrailingSlash(path);
 
-      var url = "/api/vfs/" + path;
-      var action = "deleting directory with path " + path;
+      const url = "/api/vfs/" + path;
+      const action = "deleting directory with path " + path;
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.del(url, utils.createPromiseCallback(action, resolve, reject));
       });
-    }
+    },
   };
 }

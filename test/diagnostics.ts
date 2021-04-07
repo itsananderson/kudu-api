@@ -3,21 +3,21 @@ import * as assert from "assert";
 import * as testUtils from "./test-utils";
 import { KuduApi } from "../index";
 
-var api: KuduApi;
+let api: KuduApi;
 
-describe("diagnostics", function(): void {
+describe("diagnostics", function (): void {
   this.timeout(5000);
 
   before(
-    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
+    testUtils.setupKudu(false, function (kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );
 
-  it("can retrieve all diagnostics settings", async function(): Promise<void> {
+  it("can retrieve all diagnostics settings", async function (): Promise<void> {
     const response = await api.diagnostics.list();
 
-    var keys = Object.keys(response.payload);
+    const keys = Object.keys(response.payload);
     assert.notEqual(
       keys.indexOf("AzureDriveEnabled"),
       -1,
@@ -25,12 +25,10 @@ describe("diagnostics", function(): void {
     );
   });
 
-  it("can retrieve a single diagnostics setting", async function(): Promise<
-    void
-  > {
+  it("can retrieve a single diagnostics setting", async function (): Promise<void> {
     const response = await api.diagnostics.get("AzureDriveEnabled");
 
-    var setting = response.payload;
+    const setting = response.payload;
 
     assert.notStrictEqual(
       setting,
@@ -49,7 +47,7 @@ describe("diagnostics", function(): void {
     );
   });
 
-  it("can update diagnotics settings", async function(): Promise<void> {
+  it("can update diagnotics settings", async function (): Promise<void> {
     await api.diagnostics.set({ AzureDriveEnabled: true });
 
     const response = await api.diagnostics.get("AzureDriveEnabled");
@@ -57,7 +55,7 @@ describe("diagnostics", function(): void {
     assert(response.payload, "Setting should be enabled");
   });
 
-  it("can delete a setting", async function(): Promise<void> {
+  it("can delete a setting", async function (): Promise<void> {
     await api.diagnostics.set({ testSetting: true });
 
     const response = await api.diagnostics.list();
@@ -67,8 +65,8 @@ describe("diagnostics", function(): void {
 
     const response2 = await api.diagnostics.list();
 
-    var oldKeys = Object.keys(oldSettings);
-    var newKeys = Object.keys(response2.payload);
+    const oldKeys = Object.keys(oldSettings);
+    const newKeys = Object.keys(response2.payload);
     assert.equal(
       newKeys.length,
       oldKeys.length - 1,
@@ -76,7 +74,7 @@ describe("diagnostics", function(): void {
     );
   });
 
-  it("gracefully handles missing key", async function(): Promise<void> {
+  it("gracefully handles missing key", async function (): Promise<void> {
     try {
       await api.diagnostics.get("foo");
       assert.fail("Should fail to fetch a missing key");

@@ -10,19 +10,19 @@ export default function sshkey(
   request: RequestAPI<Request, CoreOptions, RequiredUriUrl>
 ): SshKey {
   return {
-    get: function get(generate: boolean = false): Promise<ApiResponse<string>> {
-      var query = { ensurePublicKey: generate ? 1 : undefined };
+    get: function get(generate = false): Promise<ApiResponse<string>> {
+      const query = { ensurePublicKey: generate ? 1 : undefined };
 
-      var options = {
+      const options = {
         uri: "/api/sshkey/",
         qs: query,
-        json: true
+        json: true,
       };
-      var action = "getting SSH key";
+      const action = "getting SSH key";
 
       return new Promise<ApiResponse<string>>((resolve, reject) => {
         request(options, utils.createPromiseCallback(action, resolve, reject));
       });
-    }
+    },
   };
 }
