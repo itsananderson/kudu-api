@@ -6,35 +6,35 @@ import { KuduApi } from "../index";
 
 let api: KuduApi;
 
-describe("vfs", function(): void {
+describe("vfs", function (): void {
   this.timeout(5000);
 
-  var localPath = testUtils.artifactPath("test1.txt");
+  const localPath = testUtils.artifactPath("test1.txt");
 
   before(
-    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
+    testUtils.setupKudu(false, function (kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );
 
   before(testUtils.ensureArtifacts);
 
-  before(function(done): void {
+  before(function (done): void {
     fs.writeFile(localPath, "test\n", done);
   });
 
-  before(async function(): Promise<void> {
+  before(async function (): Promise<void> {
     await api.vfs.uploadFile(localPath, "site/wwwroot/test.txt");
   });
 
-  after(function(done): void {
-    fs.unlink(localPath, function(): void {
+  after(function (done): void {
+    fs.unlink(localPath, function (): void {
       // Ignore errors
       done();
     });
   });
 
-  it("can get a file", async function(): Promise<void> {
+  it("can get a file", async function (): Promise<void> {
     const response = await api.vfs.getFile("site/wwwroot/test.txt");
 
     assert.equal(
@@ -44,18 +44,16 @@ describe("vfs", function(): void {
     );
   });
 
-  it("can list files", async function(): Promise<void> {
+  it("can list files", async function (): Promise<void> {
     const response = await api.vfs.listFiles("site/wwwroot");
     assert(Array.isArray(response.payload), "File list should be an array");
   });
 
-  it("can upload file", async function(): Promise<void> {
+  it("can upload file", async function (): Promise<void> {
     await api.vfs.uploadFile(localPath, "site/wwwroot/test.txt");
   });
 
-  it("can validate an etag when uploading file", async function(): Promise<
-    void
-  > {
+  it("can validate an etag when uploading file", async function (): Promise<void> {
     try {
       await api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", "foo");
       assert.fail("Uploading with a mismatched etag throw an exception");
@@ -69,18 +67,18 @@ describe("vfs", function(): void {
     }
   });
 
-  it("can upload a file with a matching etag", async function(): Promise<void> {
+  it("can upload a file with a matching etag", async function (): Promise<void> {
     const response = await api.vfs.getFile("site/wwwroot/test.txt");
-    let etagHeader = response.rawResponse.headers.etag;
-    let etag = Array.isArray(etagHeader) ? etagHeader[0] : etagHeader;
+    const etagHeader = response.rawResponse.headers.etag;
+    const etag = Array.isArray(etagHeader) ? etagHeader[0] : etagHeader;
     await api.vfs.uploadFile(localPath, "site/wwwroot/test.txt", etag);
   });
 
-  it("can create directories", async function(): Promise<void> {
+  it("can create directories", async function (): Promise<void> {
     await api.vfs.createDirectory("site/wwwroot/test1/test2");
   });
 
-  it("can delete a file", async function(): Promise<void> {
+  it("can delete a file", async function (): Promise<void> {
     const response = await api.vfs.deleteFile("site/wwwroot/test.txt");
     assert(
       response.rawResponse.statusCode < 400,
@@ -88,7 +86,7 @@ describe("vfs", function(): void {
     );
   });
 
-  it("can delete a directory", async function(): Promise<void> {
+  it("can delete a directory", async function (): Promise<void> {
     await api.vfs.deleteDirectory("site/wwwroot/test1/test2");
   });
 });

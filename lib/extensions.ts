@@ -38,7 +38,7 @@ export default function extensions(
         const options = {
           uri: baseUrl,
           qs: query,
-          json: true
+          json: true,
         };
         const action = "listing extensions";
 
@@ -51,11 +51,11 @@ export default function extensions(
       },
 
       get: function get(id: string): Promise<ApiResponse<Extension>> {
-        var options = {
+        const options = {
           uri: baseUrl + "/" + encodeURIComponent(id),
-          json: true
+          json: true,
         };
-        var action = "getting extension with id " + id;
+        const action = "getting extension with id " + id;
 
         return new Promise<ApiResponse<Extension>>((resolve, reject) => {
           request(
@@ -63,7 +63,7 @@ export default function extensions(
             utils.createPromiseCallback(action, resolve, reject)
           );
         });
-      }
+      },
     };
   }
 
@@ -72,11 +72,11 @@ export default function extensions(
     site: {
       ...extension("/api/siteextensions"),
       del: function del(id: string): Promise<ApiResponse<void>> {
-        var options = {
+        const options = {
           uri: "/api/siteextensions/" + encodeURIComponent(id),
-          json: true
+          json: true,
         };
-        var action = "deleting extension with id " + id;
+        const action = "deleting extension with id " + id;
 
         return new Promise<ApiResponse<void>>((resolve, reject) => {
           request.del(
@@ -89,11 +89,11 @@ export default function extensions(
         id: string,
         payload: {}
       ): Promise<ApiResponse<SetExtensionResult>> {
-        var options = {
+        const options = {
           uri: "/api/siteextensions/" + encodeURIComponent(id),
-          json: payload
+          json: payload,
         };
-        var action = "installing or updating extension with id " + id;
+        const action = "installing or updating extension with id " + id;
 
         return new Promise<ApiResponse<SetExtensionResult>>(
           (resolve, reject) => {
@@ -103,7 +103,7 @@ export default function extensions(
             );
           }
         );
-      }
-    }
+      },
+    },
   };
 }

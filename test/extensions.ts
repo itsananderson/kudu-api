@@ -6,23 +6,23 @@ import { KuduApi } from "../index";
 
 let api: KuduApi;
 
-describe("extensions", function(): void {
+describe("extensions", function (): void {
   this.timeout(5000);
 
   let availableExtensions: Extension[];
 
   before(
-    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
+    testUtils.setupKudu(false, function (kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );
 
-  before(async function(): Promise<void> {
+  before(async function (): Promise<void> {
     const response = await api.extensions.feed.list();
     availableExtensions = response.payload;
   });
 
-  it("can filter feed extensions", async function(): Promise<void> {
+  it("can filter feed extensions", async function (): Promise<void> {
     const response = await api.extensions.feed.list("filecounter");
     assert(
       response.payload.length < availableExtensions.length,
@@ -30,12 +30,12 @@ describe("extensions", function(): void {
     );
   });
 
-  it("can get a specific feed extension", async function(): Promise<void> {
+  it("can get a specific feed extension", async function (): Promise<void> {
     const response = await api.extensions.feed.get("filecounter");
     assert(response.payload, "Queried extension exists");
   });
 
-  it("can list installed extensions", async function(): Promise<void> {
+  it("can list installed extensions", async function (): Promise<void> {
     const response = await api.extensions.site.list();
 
     assert(
@@ -44,7 +44,7 @@ describe("extensions", function(): void {
     );
   });
 
-  it("can filter installed extensions", async function(): Promise<void> {
+  it("can filter installed extensions", async function (): Promise<void> {
     const response = await api.extensions.site.list("filecounter");
     assert(
       Array.isArray(response.payload),
@@ -52,7 +52,7 @@ describe("extensions", function(): void {
     );
   });
 
-  it("can add or update a package", async function(): Promise<void> {
+  it("can add or update a package", async function (): Promise<void> {
     this.timeout(10 * 1000);
 
     const getResponse = await api.extensions.feed.get("filecounter");
@@ -68,7 +68,7 @@ describe("extensions", function(): void {
     );
   });
 
-  it("can delete a package", async function(): Promise<void> {
+  it("can delete a package", async function (): Promise<void> {
     this.timeout(30 * 1000);
 
     const response = await api.extensions.feed.get("filecounter");

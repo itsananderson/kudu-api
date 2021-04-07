@@ -6,15 +6,15 @@ import { ApiResponse } from "./types";
 import { RequestAPI, Request, CoreOptions, RequiredUriUrl } from "request";
 
 function createUploadHeaders(localPath: string): { [key: string]: string } {
-  var fileName = path.basename(localPath);
-  var contentType =
+  const fileName = path.basename(localPath);
+  const contentType =
     path.extname(localPath).toLowerCase() === ".zip"
       ? "application/zip"
       : "application/octet-stream";
 
   return {
     "Content-Disposition": "attachment; filename=" + fileName,
-    "Content-Type": contentType
+    "Content-Type": contentType,
   };
 }
 
@@ -91,9 +91,9 @@ export default function webjobs(
 ): WebJobsApi {
   return {
     listAll: function listAll(): Promise<ApiResponse<WebJob[]>> {
-      var options = {
+      const options = {
         uri: "/api/webjobs",
-        json: true
+        json: true,
       };
 
       return new Promise<ApiResponse<WebJob[]>>((resolve, reject) => {
@@ -105,9 +105,9 @@ export default function webjobs(
     },
 
     listTriggered: function listTriggered(): Promise<ApiResponse<WebJob[]>> {
-      var options = {
+      const options = {
         uri: "/api/triggeredwebjobs",
-        json: true
+        json: true,
       };
 
       return new Promise<ApiResponse<WebJob[]>>((resolve, reject) => {
@@ -125,9 +125,9 @@ export default function webjobs(
     listTriggeredAsSwagger: function listTriggeredAsSwagger(): Promise<
       ApiResponse<string[]>
     > {
-      var options = {
+      const options = {
         uri: "/api/triggeredwebjobsswagger",
-        json: true
+        json: true,
       };
 
       return new Promise<ApiResponse<string[]>>((resolve, reject) => {
@@ -145,11 +145,11 @@ export default function webjobs(
     getTriggered: function getTriggered(
       name: string
     ): Promise<ApiResponse<WebJob>> {
-      var options = {
+      const options = {
         uri: "/api/triggeredwebjobs/" + encodeURIComponent(name),
-        json: true
+        json: true,
       };
-      var action = "getting triggered webjob with name '" + name + "'";
+      const action = "getting triggered webjob with name '" + name + "'";
 
       return new Promise<ApiResponse<WebJob>>((resolve, reject) => {
         request(options, utils.createPromiseCallback(action, resolve, reject));
@@ -160,16 +160,16 @@ export default function webjobs(
       name: string,
       localPath: string
     ): Promise<ApiResponse<WebJob>> {
-      var options = {
+      const options = {
         uri: "/api/triggeredwebjobs/" + encodeURIComponent(name),
         json: true,
-        headers: createUploadHeaders(localPath)
+        headers: createUploadHeaders(localPath),
       };
-      var action = "uploading triggered webjob with name '" + name + "'";
+      const action = "uploading triggered webjob with name '" + name + "'";
 
       return new Promise<ApiResponse<WebJob>>((resolve, reject) => {
         fs.createReadStream(localPath)
-          .on("error", e => reject(e))
+          .on("error", (e) => reject(e))
           .pipe(
             request.put(
               options,
@@ -182,8 +182,8 @@ export default function webjobs(
     deleteTriggered: function deleteTriggered(
       name: string
     ): Promise<ApiResponse<void>> {
-      var url = "/api/triggeredwebjobs/" + encodeURIComponent(name);
-      var action = "deleting triggered webjob with name '" + name + "'";
+      const url = "/api/triggeredwebjobs/" + encodeURIComponent(name);
+      const action = "deleting triggered webjob with name '" + name + "'";
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.del(url, utils.createPromiseCallback(action, resolve, reject));
@@ -194,13 +194,13 @@ export default function webjobs(
       name: string,
       args: string = undefined
     ): Promise<ApiResponse<void>> {
-      var query = { arguments: args };
+      const query = { arguments: args };
 
-      var options = {
+      const options = {
         url: "/api/triggeredwebjobs/" + encodeURIComponent(name) + "/run",
-        qs: query
+        qs: query,
       };
-      var action = "running triggered webjob with name '" + name + "'";
+      const action = "running triggered webjob with name '" + name + "'";
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.post(
@@ -213,11 +213,11 @@ export default function webjobs(
     listTriggeredHistory: function listTriggeredHistory(
       name: string
     ): Promise<ApiResponse<TriggeredWebJobHistory>> {
-      var options = {
+      const options = {
         uri: "/api/triggeredwebjobs/" + encodeURIComponent(name) + "/history",
-        json: true
+        json: true,
       };
-      var action =
+      const action =
         "listing history for triggered webjob with name '" + name + "'";
 
       return new Promise<ApiResponse<TriggeredWebJobHistory>>(
@@ -234,15 +234,15 @@ export default function webjobs(
       name: string,
       id: string
     ): Promise<ApiResponse<TriggeredWebJobHistoryDetail>> {
-      var options = {
+      const options = {
         uri:
           "/api/triggeredwebjobs/" +
           encodeURIComponent(name) +
           "/history/" +
           encodeURIComponent(id),
-        json: true
+        json: true,
       };
-      var action =
+      const action =
         "getting history for triggered webjob with name '" +
         name +
         "' and run id '" +
@@ -260,9 +260,9 @@ export default function webjobs(
     },
 
     listContinuous: function listContinuous(): Promise<ApiResponse<WebJob[]>> {
-      var options = {
+      const options = {
         uri: "/api/continuouswebjobs",
-        json: true
+        json: true,
       };
 
       return new Promise<ApiResponse<WebJob[]>>((resolve, reject) => {
@@ -280,11 +280,11 @@ export default function webjobs(
     getContinuous: function getContinuous(
       name: string
     ): Promise<ApiResponse<WebJob>> {
-      var options = {
+      const options = {
         uri: "/api/continuouswebjobs/" + encodeURIComponent(name),
-        json: true
+        json: true,
       };
-      var action = "getting continuous webjob with name '" + name + "'";
+      const action = "getting continuous webjob with name '" + name + "'";
 
       return new Promise<ApiResponse<WebJob>>((resolve, reject) => {
         request(options, utils.createPromiseCallback(action, resolve, reject));
@@ -295,16 +295,16 @@ export default function webjobs(
       name: string,
       localPath: string
     ): Promise<ApiResponse<WebJob>> {
-      var options = {
+      const options = {
         uri: "/api/continuouswebjobs/" + encodeURIComponent(name),
         json: true,
-        headers: createUploadHeaders(localPath)
+        headers: createUploadHeaders(localPath),
       };
-      var action = "uploading continuous webjob with name '" + name + "'";
+      const action = "uploading continuous webjob with name '" + name + "'";
 
       return new Promise<ApiResponse<WebJob>>((resolve, reject) => {
         fs.createReadStream(localPath)
-          .on("error", err => reject(err))
+          .on("error", (err) => reject(err))
           .pipe(
             request.put(
               options,
@@ -317,8 +317,8 @@ export default function webjobs(
     deleteContinuous: function deleteContinuous(
       name: string
     ): Promise<ApiResponse<void>> {
-      var url = "/api/continuouswebjobs/" + encodeURIComponent(name);
-      var action = "deleting continuous webjob with name '" + name + "'";
+      const url = "/api/continuouswebjobs/" + encodeURIComponent(name);
+      const action = "deleting continuous webjob with name '" + name + "'";
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.del(url, utils.createPromiseCallback(action, resolve, reject));
@@ -328,8 +328,9 @@ export default function webjobs(
     startContinuous: function startContinuous(
       name: string
     ): Promise<ApiResponse<void>> {
-      var url = "/api/continuouswebjobs/" + encodeURIComponent(name) + "/start";
-      var action = "starting continuous webjob with name '" + name + "'";
+      const url =
+        "/api/continuouswebjobs/" + encodeURIComponent(name) + "/start";
+      const action = "starting continuous webjob with name '" + name + "'";
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.post(url, utils.createPromiseCallback(action, resolve, reject));
@@ -339,8 +340,9 @@ export default function webjobs(
     stopContinuous: function stopContinuous(
       name: string
     ): Promise<ApiResponse<void>> {
-      var url = "/api/continuouswebjobs/" + encodeURIComponent(name) + "/stop";
-      var action = "stopping continuous webjob with name '" + name + "'";
+      const url =
+        "/api/continuouswebjobs/" + encodeURIComponent(name) + "/stop";
+      const action = "stopping continuous webjob with name '" + name + "'";
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.post(url, utils.createPromiseCallback(action, resolve, reject));
@@ -350,11 +352,11 @@ export default function webjobs(
     getContinuousSettings: function getContinuousSettings(
       name: string
     ): Promise<ApiResponse<any>> {
-      var options = {
+      const options = {
         uri: "/api/continuouswebjobs/" + encodeURIComponent(name) + "/settings",
-        json: true
+        json: true,
       };
-      var action =
+      const action =
         "getting continuous webjob settings with name '" + name + "'";
 
       return new Promise<ApiResponse<{ [key: string]: string }>>(
@@ -371,11 +373,11 @@ export default function webjobs(
       name: string,
       settings: any
     ): Promise<ApiResponse<void>> {
-      var options = {
+      const options = {
         uri: "/api/continuouswebjobs/" + encodeURIComponent(name) + "/settings",
-        json: settings
+        json: settings,
       };
-      var action =
+      const action =
         "setting continuous webjob settings with name '" + name + "'";
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
@@ -384,6 +386,6 @@ export default function webjobs(
           utils.createPromiseCallback(action, resolve, reject)
         );
       });
-    }
+    },
   };
 }

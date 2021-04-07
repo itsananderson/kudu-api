@@ -11,16 +11,16 @@ export default function logs(
 ): Logs {
   return {
     recent: function recent(query = {}): Promise<ApiResponse<string[]>> {
-      var options = {
+      const options = {
         uri: "/api/logs/recent",
         qs: query,
-        json: true
+        json: true,
       };
-      var action = "retrieving application logs";
+      const action = "retrieving application logs";
 
       return new Promise<ApiResponse<string[]>>((resolve, reject) => {
         request(options, utils.createPromiseCallback(action, resolve, reject));
       });
-    }
+    },
   };
 }

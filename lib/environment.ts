@@ -15,9 +15,9 @@ export default function environment(
 ): EnvironmentApi {
   return {
     get: function get(): Promise<ApiResponse<KuduEnvironment>> {
-      var options = {
+      const options = {
         uri: "/api/environment",
-        json: true
+        json: true,
       };
 
       return new Promise<ApiResponse<KuduEnvironment>>((resolve, reject) => {
@@ -30,6 +30,6 @@ export default function environment(
           )
         );
       });
-    }
+    },
   };
 }

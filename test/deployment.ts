@@ -6,22 +6,22 @@ import { KuduApi } from "../index";
 
 let api: KuduApi;
 
-var gitUrl1 = "https://github.com/itsananderson/kudu-api-website.git";
-var gitUrl2 =
+const gitUrl1 = "https://github.com/itsananderson/kudu-api-website.git";
+const gitUrl2 =
   "https://github.com/itsananderson/kudu-api-website.git#1f19ea3b8e68397b6f7c290378526ef37975105d";
 
-describe("deployment", function(): void {
+describe("deployment", function (): void {
   this.timeout(10 * 1000);
 
-  var deploymentList: Deployment[];
+  let deploymentList: Deployment[];
 
   before(
-    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
+    testUtils.setupKudu(false, function (kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );
 
-  before(async function(): Promise<void> {
+  before(async function (): Promise<void> {
     this.timeout(30 * 1000);
 
     await api.deployment.deploy(gitUrl1);
@@ -30,12 +30,12 @@ describe("deployment", function(): void {
     deploymentList = response.payload;
   });
 
-  it("can list all deployments", async function(): Promise<void> {
+  it("can list all deployments", async function (): Promise<void> {
     const response = await api.deployment.list();
     assert(Array.isArray(response.payload), "Deployments should be an array");
   });
 
-  it("can get a single deployment", async function(): Promise<void> {
+  it("can get a single deployment", async function (): Promise<void> {
     const response = await api.deployment.get(deploymentList[0].id);
 
     assert.equal(
@@ -45,7 +45,7 @@ describe("deployment", function(): void {
     );
   });
 
-  it("can deploy a previous deployment", async function(): Promise<void> {
+  it("can deploy a previous deployment", async function (): Promise<void> {
     this.timeout(30 * 1000);
 
     await api.deployment.redeploy(deploymentList[0].id);
@@ -60,10 +60,10 @@ describe("deployment", function(): void {
     assert(deployment.active, "Deployment should be active");
   });
 
-  it("can delete a deployment", async function(): Promise<void> {
+  it("can delete a deployment", async function (): Promise<void> {
     const response = await api.deployment.list();
     const initialDeployments = response.payload;
-    const deploymentId = initialDeployments.filter(function(d): boolean {
+    const deploymentId = initialDeployments.filter(function (d): boolean {
       return !d.active;
     })[0].id;
 
@@ -77,7 +77,7 @@ describe("deployment", function(): void {
     );
   });
 
-  it("can get a deployment log", async function(): Promise<void> {
+  it("can get a deployment log", async function (): Promise<void> {
     const response = await api.deployment.log(deploymentList[0].id);
 
     assert(
@@ -86,12 +86,12 @@ describe("deployment", function(): void {
     );
   });
 
-  it("can get a deployment log entry", async function(): Promise<void> {
-    var deploymentId = deploymentList[0].id;
+  it("can get a deployment log entry", async function (): Promise<void> {
+    const deploymentId = deploymentList[0].id;
 
     const response = await api.deployment.log(deploymentId);
 
-    var entry = response.payload.filter(function(entry): boolean {
+    const entry = response.payload.filter(function (entry): boolean {
       return !!entry.details_url;
     })[0];
 

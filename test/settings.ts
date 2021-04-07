@@ -5,20 +5,20 @@ import { KuduApi } from "../index";
 
 let api: KuduApi;
 
-describe("settings", function(): void {
+describe("settings", function (): void {
   this.timeout(5000);
 
   before(
-    testUtils.setupKudu(false, function(kuduApi: KuduApi): void {
+    testUtils.setupKudu(false, function (kuduApi: KuduApi): void {
       api = kuduApi;
     })
   );
 
-  before(async function(): Promise<void> {
+  before(async function (): Promise<void> {
     await api.settings.set({ test_setting: "test" });
   });
 
-  it("can retrieve all settings", async function(): Promise<void> {
+  it("can retrieve all settings", async function (): Promise<void> {
     const response = await api.settings.list();
     assert.equal(
       response.payload.WEBSITE_SITE_NAME,
@@ -27,12 +27,12 @@ describe("settings", function(): void {
     );
   });
 
-  it("can retrieve a single setting", async function(): Promise<void> {
+  it("can retrieve a single setting", async function (): Promise<void> {
     const response = await api.settings.get("WEBSITE_SITE_NAME");
     assert.equal(response.payload, process.env.WEBSITE);
   });
 
-  it("can update settings", async function(): Promise<void> {
+  it("can update settings", async function (): Promise<void> {
     const response = await api.settings.get("test_setting");
     assert.equal(response.payload, "test");
 
@@ -42,7 +42,7 @@ describe("settings", function(): void {
     assert.equal(response2.payload, "test1");
   });
 
-  it("can delete a setting", async function(): Promise<void> {
+  it("can delete a setting", async function (): Promise<void> {
     this.timeout(10 * 1000);
 
     await api.settings.set({ test_setting: "test" });

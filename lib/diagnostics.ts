@@ -18,9 +18,9 @@ export default function diagnostics(
 ): DiagnosticsApi {
   return {
     list: function list(): Promise<ApiResponse<DiagnosticSettings>> {
-      var options = {
+      const options = {
         uri: "/api/diagnostics/settings",
-        json: true
+        json: true,
       };
 
       return new Promise<ApiResponse<DiagnosticSettings>>((resolve, reject) => {
@@ -36,9 +36,9 @@ export default function diagnostics(
     },
 
     get: function get(key: string): Promise<ApiResponse<string>> {
-      var options = {
+      const options = {
         uri: "/api/diagnostics/settings/" + encodeURIComponent(key),
-        json: true
+        json: true,
       };
 
       return new Promise<ApiResponse<string>>((resolve, reject) => {
@@ -54,8 +54,8 @@ export default function diagnostics(
     },
 
     del: function del(key): Promise<ApiResponse<void>> {
-      var url = "/api/diagnostics/settings/" + encodeURIComponent(key);
-      var action = "deleting diagnostic settiing with key " + key;
+      const url = "/api/diagnostics/settings/" + encodeURIComponent(key);
+      const action = "deleting diagnostic settiing with key " + key;
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.del(url, utils.createPromiseCallback(action, resolve, reject));
@@ -63,11 +63,11 @@ export default function diagnostics(
     },
 
     set: function set(settings): Promise<ApiResponse<void>> {
-      var options = {
+      const options = {
         uri: "/api/diagnostics/settings/",
-        json: settings
+        json: settings,
       };
-      var action = "setting diagnostic settings";
+      const action = "setting diagnostic settings";
 
       return new Promise<ApiResponse<void>>((resolve, reject) => {
         request.post(
@@ -75,6 +75,6 @@ export default function diagnostics(
           utils.createPromiseCallback(action, resolve, reject)
         );
       });
-    }
+    },
   };
 }

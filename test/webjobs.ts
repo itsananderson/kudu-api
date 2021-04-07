@@ -4,35 +4,32 @@ import * as fs from "fs";
 import * as testUtils from "./test-utils";
 import { KuduApi } from "../index";
 
-var api: KuduApi;
+let api: KuduApi;
 
-var triggeredFiles = {
-  "run.cmd": "echo hello world %*"
+const triggeredFiles = {
+  "run.cmd": "echo hello world %*",
 };
-var continuousFiles = {
+const continuousFiles = {
   "run.js":
-    "console.log(process.argv.join(' ')); setInterval(() => console.log('ping'), 30000);"
+    "console.log(process.argv.join(' ')); setInterval(() => console.log('ping'), 30000);",
 };
 
-describe("webjobs", function(): void {
+describe("webjobs", function (): void {
   this.timeout(10 * 1000);
 
   before(
-    testUtils.setupKudu(
-      false,
-      (kuduApi: KuduApi): void => {
-        api = kuduApi;
-      }
-    )
+    testUtils.setupKudu(false, (kuduApi: KuduApi): void => {
+      api = kuduApi;
+    })
   );
 
   before(testUtils.ensureArtifacts);
 
-  describe("triggered basic operations", function(): void {
-    var jobName = "triggered-job-1";
-    var localPath = testUtils.artifactPath(jobName + ".zip");
+  describe("triggered basic operations", function (): void {
+    const jobName = "triggered-job-1";
+    const localPath = testUtils.artifactPath(jobName + ".zip");
 
-    before(async function(): Promise<void> {
+    before(async function (): Promise<void> {
       await testUtils.createZipFileAsync(localPath, triggeredFiles);
 
       await api.webjobs.uploadTriggered(jobName, localPath);
@@ -44,7 +41,7 @@ describe("webjobs", function(): void {
           // found an uploaded webjob
           return;
         } else {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
 
@@ -53,12 +50,12 @@ describe("webjobs", function(): void {
       );
     });
 
-    after(async function(): Promise<void> {
+    after(async function (): Promise<void> {
       await api.webjobs.deleteTriggered(jobName);
       fs.unlinkSync(localPath);
     });
 
-    it("can list all webjobs", async function(): Promise<void> {
+    it("can list all webjobs", async function (): Promise<void> {
       const response = await api.webjobs.listAll();
 
       assert.strictEqual(
@@ -68,7 +65,7 @@ describe("webjobs", function(): void {
       );
     });
 
-    it("can list triggered webjobs", async function(): Promise<void> {
+    it("can list triggered webjobs", async function (): Promise<void> {
       const response = await api.webjobs.listTriggered();
 
       assert.strictEqual(
@@ -78,9 +75,7 @@ describe("webjobs", function(): void {
       );
     });
 
-    it("can list triggered webjobs as swagger", async function(): Promise<
-      void
-    > {
+    it("can list triggered webjobs as swagger", async function (): Promise<void> {
       const response = await api.webjobs.listTriggeredAsSwagger();
 
       assert.strictEqual(
@@ -90,7 +85,7 @@ describe("webjobs", function(): void {
       );
     });
 
-    it("can get triggered webjob by name", async function(): Promise<void> {
+    it("can get triggered webjob by name", async function (): Promise<void> {
       const response = await api.webjobs.getTriggered(jobName);
 
       assert.strictEqual(
@@ -100,9 +95,7 @@ describe("webjobs", function(): void {
       );
     });
 
-    it("should report error getting unknown triggered webjob", async function(): Promise<
-      void
-    > {
+    it("should report error getting unknown triggered webjob", async function (): Promise<void> {
       try {
         await api.webjobs.getTriggered("unknown-job");
         assert.fail("Requesting an unknown job should have failed");
@@ -115,14 +108,12 @@ describe("webjobs", function(): void {
       }
     });
 
-    it("can run triggered webjob", async function(): Promise<void> {
+    it("can run triggered webjob", async function (): Promise<void> {
       const response = await api.webjobs.runTriggered(jobName);
       assert.strictEqual(response.rawResponse.statusCode, 202);
     });
 
-    it("should report error running unknown triggered webjob", async function(): Promise<
-      void
-    > {
+    it("should report error running unknown triggered webjob", async function (): Promise<void> {
       try {
         const response = await api.webjobs.runTriggered("unknown-job");
         assert.fail("Expected error was not thrown.");
@@ -135,9 +126,7 @@ describe("webjobs", function(): void {
       }
     });
 
-    it("can run triggered webjob with arguments", async function(): Promise<
-      void
-    > {
+    it("can run triggered webjob with arguments", async function (): Promise<void> {
       const response = await api.webjobs.runTriggered(
         jobName,
         '--message "Kudu\'s API"'
@@ -146,7 +135,7 @@ describe("webjobs", function(): void {
       assert.strictEqual(response.rawResponse.statusCode, 202);
     });
 
-    it("can list triggered webjob history", async function(): Promise<void> {
+    it("can list triggered webjob history", async function (): Promise<void> {
       const response = await api.webjobs.listTriggeredHistory(jobName);
 
       assert(
@@ -155,9 +144,7 @@ describe("webjobs", function(): void {
       );
     });
 
-    it("can get triggered webjob history item by id", async function(): Promise<
-      void
-    > {
+    it("can get triggered webjob history item by id", async function (): Promise<void> {
       const response = await api.webjobs.listTriggeredHistory(jobName);
 
       const detailResponse = await api.webjobs.getTriggeredHistory(
@@ -172,23 +159,19 @@ describe("webjobs", function(): void {
     });
   });
 
-  describe("triggered upload", function(): void {
-    var jobName = "triggered-job-2";
-    var localPath = testUtils.artifactPath(jobName + ".zip");
+  describe("triggered upload", function (): void {
+    const jobName = "triggered-job-2";
+    const localPath = testUtils.artifactPath(jobName + ".zip");
 
-    before(
-      (done): void => {
-        testUtils.createZipFile(localPath, triggeredFiles, done);
-      }
-    );
+    before((done): void => {
+      testUtils.createZipFile(localPath, triggeredFiles, done);
+    });
 
-    after(
-      (done): void => {
-        fs.unlink(localPath, done);
-      }
-    );
+    after((done): void => {
+      fs.unlink(localPath, done);
+    });
 
-    afterEach(async function(): Promise<void> {
+    afterEach(async function (): Promise<void> {
       try {
         await api.webjobs.deleteTriggered(jobName);
       } catch (e) {
@@ -196,7 +179,7 @@ describe("webjobs", function(): void {
       }
     });
 
-    it("can upload triggered webjob", async function(): Promise<void> {
+    it("can upload triggered webjob", async function (): Promise<void> {
       const response = await api.webjobs.uploadTriggered(jobName, localPath);
 
       assert.strictEqual(
@@ -212,31 +195,27 @@ describe("webjobs", function(): void {
     });
   });
 
-  describe("triggered delete", function(): void {
-    var jobName = "triggered-job-3";
-    var localPath = testUtils.artifactPath(jobName + ".zip");
+  describe("triggered delete", function (): void {
+    const jobName = "triggered-job-3";
+    const localPath = testUtils.artifactPath(jobName + ".zip");
 
-    before(
-      (done): void => {
-        testUtils.createZipFile(localPath, triggeredFiles, done);
-      }
-    );
+    before((done): void => {
+      testUtils.createZipFile(localPath, triggeredFiles, done);
+    });
 
-    after(
-      (done): void => {
-        fs.unlink(localPath, done);
-      }
-    );
+    after((done): void => {
+      fs.unlink(localPath, done);
+    });
 
-    beforeEach(async function(): Promise<void> {
+    beforeEach(async function (): Promise<void> {
       await api.webjobs.uploadTriggered(jobName, localPath);
     });
 
-    afterEach(async function(): Promise<void> {
+    afterEach(async function (): Promise<void> {
       await api.webjobs.deleteTriggered(jobName);
     });
 
-    it("can delete triggered webjob", async function(): Promise<void> {
+    it("can delete triggered webjob", async function (): Promise<void> {
       const response = await api.webjobs.deleteTriggered(jobName);
 
       assert.strictEqual(
@@ -258,11 +237,11 @@ describe("webjobs", function(): void {
     });
   });
 
-  describe("continuous basic operations", function(): void {
-    var jobName = "continuous-job-1";
-    var localPath = testUtils.artifactPath(jobName + ".zip");
+  describe("continuous basic operations", function (): void {
+    const jobName = "continuous-job-1";
+    const localPath = testUtils.artifactPath(jobName + ".zip");
 
-    before(async function(): Promise<void> {
+    before(async function (): Promise<void> {
       await testUtils.createZipFileAsync(localPath, continuousFiles);
 
       await api.webjobs.uploadContinuous(jobName, localPath);
@@ -273,7 +252,7 @@ describe("webjobs", function(): void {
           // found an uploaded webjob
           return;
         } else {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
       assert.fail(
@@ -288,7 +267,7 @@ describe("webjobs", function(): void {
       }
     );
 
-    it("can list continuous webjobs", async function(): Promise<void> {
+    it("can list continuous webjobs", async function (): Promise<void> {
       const response = await api.webjobs.listContinuous();
 
       assert.strictEqual(
@@ -298,7 +277,7 @@ describe("webjobs", function(): void {
       );
     });
 
-    it("can get continuous webjob by name", async function(): Promise<void> {
+    it("can get continuous webjob by name", async function (): Promise<void> {
       const response = await api.webjobs.getContinuous(jobName);
 
       assert.strictEqual(
@@ -308,7 +287,7 @@ describe("webjobs", function(): void {
       );
     });
 
-    it("can stop continuous webjob by name", async function(): Promise<void> {
+    it("can stop continuous webjob by name", async function (): Promise<void> {
       const response = await api.webjobs.stopContinuous(jobName);
 
       assert.strictEqual(
@@ -318,7 +297,7 @@ describe("webjobs", function(): void {
       );
     });
 
-    it("can start continuous webjob by name", async function(): Promise<void> {
+    it("can start continuous webjob by name", async function (): Promise<void> {
       const response = await api.webjobs.startContinuous(jobName);
       assert.strictEqual(
         response.rawResponse.statusCode,
@@ -327,7 +306,7 @@ describe("webjobs", function(): void {
       );
     });
 
-    it("can get continuous webjob settings", async function(): Promise<void> {
+    it("can get continuous webjob settings", async function (): Promise<void> {
       const response = await api.webjobs.getContinuousSettings(jobName);
 
       assert(
@@ -336,9 +315,9 @@ describe("webjobs", function(): void {
       );
     });
 
-    it("can set continuous webjob settings", async function(): Promise<void> {
-      var settings = {
-        is_singleton: false
+    it("can set continuous webjob settings", async function (): Promise<void> {
+      const settings = {
+        is_singleton: false,
       };
 
       const response = await api.webjobs.setContinuousSettings(
@@ -354,19 +333,19 @@ describe("webjobs", function(): void {
     });
   });
 
-  describe("continuous upload", function(): void {
-    var jobName = "continuous-job-2";
-    var localPath = testUtils.artifactPath(jobName + ".zip");
+  describe("continuous upload", function (): void {
+    const jobName = "continuous-job-2";
+    const localPath = testUtils.artifactPath(jobName + ".zip");
 
-    before(function(done): void {
+    before(function (done): void {
       testUtils.createZipFile(localPath, continuousFiles, done);
     });
 
-    after(function(done): void {
+    after(function (done): void {
       fs.unlink(localPath, done);
     });
 
-    afterEach(async function(): Promise<void> {
+    afterEach(async function (): Promise<void> {
       try {
         await api.webjobs.deleteContinuous(jobName);
       } catch (err) {
@@ -374,7 +353,7 @@ describe("webjobs", function(): void {
       }
     });
 
-    it("can upload continuous webjob", async function(): Promise<void> {
+    it("can upload continuous webjob", async function (): Promise<void> {
       const response = await api.webjobs.uploadContinuous(jobName, localPath);
 
       assert.strictEqual(
@@ -390,27 +369,27 @@ describe("webjobs", function(): void {
     });
   });
 
-  describe("continuous delete", function(): void {
-    var jobName = "continuous-job-3";
-    var localPath = testUtils.artifactPath(jobName + ".zip");
+  describe("continuous delete", function (): void {
+    const jobName = "continuous-job-3";
+    const localPath = testUtils.artifactPath(jobName + ".zip");
 
-    before(function(done): void {
+    before(function (done): void {
       testUtils.createZipFile(localPath, continuousFiles, done);
     });
 
-    after(function(done): void {
+    after(function (done): void {
       fs.unlink(localPath, done);
     });
 
-    beforeEach(async function(): Promise<void> {
+    beforeEach(async function (): Promise<void> {
       await api.webjobs.uploadContinuous(jobName, localPath);
     });
 
-    afterEach(async function(): Promise<void> {
+    afterEach(async function (): Promise<void> {
       await api.webjobs.deleteContinuous(jobName);
     });
 
-    it("can delete continuous webjob", async function(): Promise<void> {
+    it("can delete continuous webjob", async function (): Promise<void> {
       const response = await api.webjobs.deleteContinuous(jobName);
       assert.strictEqual(
         response.rawResponse.statusCode,

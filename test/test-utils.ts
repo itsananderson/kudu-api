@@ -7,10 +7,10 @@ import * as JSZip from "jszip";
 import kuduApi from "../index";
 import { KuduApi, KuduOptions } from "../index";
 
-var artifactRoot = path.join(__dirname, "artifacts");
+const artifactRoot = path.join(__dirname, "artifacts");
 
 export function ensureArtifacts(done: (err?: any) => void): void {
-  fs.mkdir(artifactRoot, function(err): void {
+  fs.mkdir(artifactRoot, function (err): void {
     if (err && err.code !== "EEXIST") {
       return done(err);
     }
@@ -28,14 +28,14 @@ export function createZipFile(
   files: { [source: string]: string },
   cb: (err: any) => void
 ): void {
-  let generateOptions: JSZip.JSZipGeneratorOptions<"nodebuffer"> = {
+  const generateOptions: JSZip.JSZipGeneratorOptions<"nodebuffer"> = {
     type: "nodebuffer",
-    streamFiles: true
+    streamFiles: true,
   };
 
-  let zip = new JSZip();
+  const zip = new JSZip();
 
-  Object.keys(files).forEach(function(key): void {
+  Object.keys(files).forEach(function (key): void {
     zip.file(key, files[key]);
   });
 
@@ -51,18 +51,14 @@ export function createZipFileAsync(
   files: { [key: string]: string }
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    createZipFile(
-      localPath,
-      files,
-      (err): void => {
-        if (err) {
-          reject(err);
-          return;
-        }
-
-        resolve();
+    createZipFile(localPath, files, (err): void => {
+      if (err) {
+        reject(err);
+        return;
       }
-    );
+
+      resolve();
+    });
   });
 }
 
@@ -74,13 +70,13 @@ export function ensureCredentials(
     return credentials;
   }
 
-  var basicCredentials = new Buffer(
+  const basicCredentials = new Buffer(
     credentials.username + ":" + credentials.password
   ).toString("base64");
 
   return {
     website: credentials.website,
-    basic: basicCredentials
+    basic: basicCredentials,
   };
 }
 
@@ -93,8 +89,8 @@ export function setupKudu(
     basic = false;
   }
 
-  return function(done): void {
-    var env = process.env;
+  return function (done): void {
+    const env = process.env;
     let options: KuduOptions;
 
     if (env.WEBSITE && env.USERNAME && env.PASSWORD) {
@@ -102,7 +98,7 @@ export function setupKudu(
         website: env.WEBSITE,
         username: env.USERNAME,
         password: env.PASSWORD,
-        domain: env.DOMAIN
+        domain: env.DOMAIN,
       });
 
       cb(kuduApi(options));
@@ -110,9 +106,9 @@ export function setupKudu(
       return done();
     }
 
-    var settingsPath = path.join(__dirname, "test.PublishSettings");
+    const settingsPath = path.join(__dirname, "test.PublishSettings");
 
-    aps.read(settingsPath, function(err: any, settings): void {
+    aps.read(settingsPath, function (err: any, settings): void {
       if (err) {
         if (err.code === "ENOENT") {
           return done(
