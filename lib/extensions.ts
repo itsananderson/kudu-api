@@ -17,7 +17,10 @@ export interface ExtensionsBase {
 
 export interface SiteExtensions extends ExtensionsBase {
   del: (id: string) => Promise<ApiResponse<void>>;
-  set: (id: string, payload: Extension) => Promise<ApiResponse<SetExtensionResult>>;
+  set: (
+    id: string,
+    payload: Extension
+  ) => Promise<ApiResponse<SetExtensionResult>>;
 }
 
 export interface ExtensionsApi {
