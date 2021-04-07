@@ -9,7 +9,7 @@ import { KuduApi, KuduOptions } from "../index";
 
 const artifactRoot = path.join(__dirname, "artifacts");
 
-export function ensureArtifacts(done: (err?: any) => void): void {
+export function ensureArtifacts(done: (err?: unknown) => void): void {
   fs.mkdir(artifactRoot, function (err): void {
     if (err && err.code !== "EEXIST") {
       return done(err);
@@ -26,7 +26,7 @@ export function artifactPath(relativePath: string): string {
 export function createZipFile(
   localPath: string,
   files: { [source: string]: string },
-  cb: (err: any) => void
+  cb: (err: unknown) => void
 ): void {
   const generateOptions: JSZip.JSZipGeneratorOptions<"nodebuffer"> = {
     type: "nodebuffer",
@@ -83,7 +83,7 @@ export function ensureCredentials(
 export function setupKudu(
   basic: boolean,
   cb: (api: KuduApi) => void
-): (done: (err?: any) => void) => void {
+): (done: (err?: unknown) => void) => void {
   if (typeof basic === "function") {
     cb = basic;
     basic = false;
@@ -108,7 +108,7 @@ export function setupKudu(
 
     const settingsPath = path.join(__dirname, "test.PublishSettings");
 
-    aps.read(settingsPath, function (err: any, settings): void {
+    aps.read(settingsPath, function (err: unknown, settings): void {
       if (err) {
         if (err.code === "ENOENT") {
           return done(
