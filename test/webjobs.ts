@@ -115,7 +115,7 @@ describe("webjobs", function (): void {
 
     it("should report error running unknown triggered webjob", async function (): Promise<void> {
       try {
-        const response = await api.webjobs.runTriggered("unknown-job");
+        await api.webjobs.runTriggered("unknown-job");
         assert.fail("Expected error was not thrown.");
       } catch (err) {
         assert.strictEqual(
