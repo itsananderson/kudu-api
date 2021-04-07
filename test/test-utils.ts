@@ -6,6 +6,7 @@ import * as JSZip from "jszip";
 
 import kuduApi from "../index";
 import { KuduApi, KuduOptions } from "../index";
+import { Settings as AzurePublishSettings } from "../types/azure-publish-settings";
 
 const artifactRoot = path.join(__dirname, "artifacts");
 
@@ -108,26 +109,33 @@ export function setupKudu(
 
     const settingsPath = path.join(__dirname, "test.PublishSettings");
 
-    aps.read(settingsPath, function (err: unknown, settings): void {
-      if (err) {
-        if (err.code === "ENOENT") {
-          return done(
-            new Error(
-              'A "test.PublishSettings" file was not found in the test directory. Please provide one or add WEBSITE, USERNAME and PASSWORD environment variables to enable kudu-api testing.'
-            )
-          );
+    aps.read(
+      settingsPath,
+      function (err: unknown, settings: AzurePublishSettings): void {
+        if (err) {
+          console.log(err);
+          if (err instanceof Object) {
+            const typedError = err as { code?: string };
+            if (typedError.code && typedError.code === "ENOENT") {
+              return done(
+                new Error(
+                  'A "test.PublishSettings" file was not found in the test directory. Please provide one or add WEBSITE, USERNAME and PASSWORD environment variables to enable kudu-api testing.'
+                )
+              );
+            }
+          }
+
+          return done(err);
         }
 
-        return done(err);
+        // Put site name into an environment variable for the tests that need it
+        env.WEBSITE = settings.name;
+
+        options = ensureCredentials(basic, settings.kudu);
+        cb(kuduApi(options));
+
+        done();
       }
-
-      // Put site name into an environment variable for the tests that need it
-      env.WEBSITE = settings.name;
-
-      options = ensureCredentials(basic, settings.kudu);
-      cb(kuduApi(options));
-
-      done();
-    });
+    );
   };
 }
