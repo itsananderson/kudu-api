@@ -52,6 +52,10 @@ export interface TriggeredWebJobHistory {
   runs: TriggeredWebJobHistoryDetail[];
 }
 
+export interface ContinuousWebJobSettings {
+  is_singleton: boolean;
+}
+
 export interface WebJobsApi {
   listAll: () => Promise<ApiResponse<WebJob[]>>;
   listTriggered: () => Promise<ApiResponse<WebJob[]>>;
@@ -81,7 +85,9 @@ export interface WebJobsApi {
   deleteContinuous: (name: string) => Promise<ApiResponse<void>>;
   startContinuous: (name: string) => Promise<ApiResponse<void>>;
   stopContinuous: (name: string) => Promise<ApiResponse<void>>;
-  getContinuousSettings: (name: string) => Promise<ApiResponse<any>>;
+  getContinuousSettings: (
+    name: string
+  ) => Promise<ApiResponse<ContinuousWebJobSettings>>;
   setContinuousSettings: (
     name: string,
     settings: any
@@ -355,7 +361,7 @@ export default function webjobs(
 
     getContinuousSettings: function getContinuousSettings(
       name: string
-    ): Promise<ApiResponse<any>> {
+    ): Promise<ApiResponse<ContinuousWebJobSettings>> {
       const options = {
         uri: "/api/continuouswebjobs/" + encodeURIComponent(name) + "/settings",
         json: true,
@@ -363,7 +369,7 @@ export default function webjobs(
       const action =
         "getting continuous webjob settings with name '" + name + "'";
 
-      return new Promise<ApiResponse<{ [key: string]: string }>>(
+      return new Promise<ApiResponse<ContinuousWebJobSettings>>(
         (resolve, reject) => {
           request.get(
             options,
