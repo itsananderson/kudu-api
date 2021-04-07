@@ -26,7 +26,8 @@ export function createPromiseCallback<P>(
   action: string,
   resolve: (response: ApiResponse<P>) => void,
   reject: (err: unknown) => void,
-  transformPayload: (response: Response, payload: any) => P = (_, p) => p
+  transformPayload: (response: Response, payload: unknown) => P = (_, p) =>
+    p as P
 ): (err: Error, response: Response) => void {
   return function (err, response): void {
     err = err || resolveHttpError(response, "Error " + action + ".");
