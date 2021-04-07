@@ -12,7 +12,7 @@ export interface DeploymentApi {
     entryId: string
   ) => Promise<ApiResponse<DeploymentLogEntry>>;
   deploy: (repoUrl: string) => Promise<ApiResponse<void>>;
-  redeploy: (id: string, payload?: {}) => Promise<ApiResponse<void>>;
+  redeploy: (id: string, payload?: Record<string, unknown>) => Promise<ApiResponse<void>>;
 }
 
 export interface Deployment {
@@ -134,7 +134,7 @@ export default function deployment(
 
     redeploy: function redeploy(
       id: string,
-      payload: {}
+      payload: Record<string, unknown>
     ): Promise<ApiResponse<void>> {
       const options = {
         uri: "/api/deployments/" + encodeURIComponent(id),

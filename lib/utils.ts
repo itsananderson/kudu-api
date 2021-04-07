@@ -25,7 +25,7 @@ export function resolveHttpError(
 export function createPromiseCallback<P>(
   action: string,
   resolve: (response: ApiResponse<P>) => void,
-  reject: (err: {}) => void,
+  reject: (err: unknown) => void,
   transformPayload: (response: Response, payload: any) => P = (_, p) => p
 ): (err: Error, response: Response) => void {
   return function (err, response): void {

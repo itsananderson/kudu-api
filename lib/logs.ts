@@ -3,7 +3,7 @@ import { ApiResponse } from "./types";
 import { RequestAPI, Request, CoreOptions, RequiredUriUrl } from "request";
 
 interface Logs {
-  recent: (query?: {}) => Promise<ApiResponse<string[]>>;
+  recent: (query?: Record<string, unknown>) => Promise<ApiResponse<string[]>>;
 }
 
 export default function logs(

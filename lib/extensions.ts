@@ -17,7 +17,7 @@ export interface ExtensionsBase {
 
 export interface SiteExtensions extends ExtensionsBase {
   del: (id: string) => Promise<ApiResponse<void>>;
-  set: (id: string, payload: {}) => Promise<ApiResponse<SetExtensionResult>>;
+  set: (id: string, payload: Record<string, unknown>) => Promise<ApiResponse<SetExtensionResult>>;
 }
 
 export interface ExtensionsApi {
@@ -87,7 +87,7 @@ export default function extensions(
       },
       set: function set(
         id: string,
-        payload: {}
+        payload: Record<string, unknown>
       ): Promise<ApiResponse<SetExtensionResult>> {
         const options = {
           uri: "/api/siteextensions/" + encodeURIComponent(id),
