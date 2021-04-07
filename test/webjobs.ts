@@ -37,7 +37,7 @@ describe("webjobs", function(): void {
 
       await api.webjobs.uploadTriggered(jobName, localPath);
 
-      const retries = 5;
+      const retries = 10;
       for (let i = 0; i < retries; i++) {
         const response = await api.webjobs.listAll();
         if (response.payload.length > 0) {
@@ -266,8 +266,7 @@ describe("webjobs", function(): void {
       await testUtils.createZipFileAsync(localPath, continuousFiles);
 
       await api.webjobs.uploadContinuous(jobName, localPath);
-      // createPollingCallback(done)
-      const retries = 5;
+      const retries = 10;
       for (let i = 0; i < retries; i++) {
         const response = await api.webjobs.listAll();
         if (response.payload.length > 0) {
