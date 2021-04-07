@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/itsananderson/kudu-api#readme",
   "dependencies": {
-    "request": "^2.58.0"
+    "request": "2.88.2"
   },
   "devDependencies": {
     "@types/jszip": "^3.1.6",
