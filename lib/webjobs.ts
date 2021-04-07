@@ -55,7 +55,9 @@ export interface TriggeredWebJobHistory {
 export interface WebJobsApi {
   listAll: () => Promise<ApiResponse<WebJob[]>>;
   listTriggered: () => Promise<ApiResponse<WebJob[]>>;
-  listTriggeredAsSwagger: () => Promise<ApiResponse<{ [key: string]: any }>>;
+  listTriggeredAsSwagger: () => Promise<
+    ApiResponse<{ [key: string]: unknown }>
+  >;
   getTriggered: (name: string) => Promise<ApiResponse<WebJob>>;
   uploadTriggered: (
     name: string,
@@ -123,23 +125,25 @@ export default function webjobs(
     },
 
     listTriggeredAsSwagger: function listTriggeredAsSwagger(): Promise<
-      ApiResponse<string[]>
+      ApiResponse<{ [key: string]: unknown }>
     > {
       const options = {
         uri: "/api/triggeredwebjobsswagger",
         json: true,
       };
 
-      return new Promise<ApiResponse<string[]>>((resolve, reject) => {
-        request(
-          options,
-          utils.createPromiseCallback(
-            "listing triggered webjobs as swagger",
-            resolve,
-            reject
-          )
-        );
-      });
+      return new Promise<ApiResponse<{ [key: string]: unknown }>>(
+        (resolve, reject) => {
+          request(
+            options,
+            utils.createPromiseCallback(
+              "listing triggered webjobs as swagger",
+              resolve,
+              reject
+            )
+          );
+        }
+      );
     },
 
     getTriggered: function getTriggered(
