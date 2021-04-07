@@ -90,7 +90,7 @@ export interface WebJobsApi {
   ) => Promise<ApiResponse<ContinuousWebJobSettings>>;
   setContinuousSettings: (
     name: string,
-    settings: any
+    settings: ContinuousWebJobSettings
   ) => Promise<ApiResponse<void>>;
 }
 
@@ -381,7 +381,7 @@ export default function webjobs(
 
     setContinuousSettings: function setContinuousSettings(
       name: string,
-      settings: any
+      settings: ContinuousWebJobSettings
     ): Promise<ApiResponse<void>> {
       const options = {
         uri: "/api/continuouswebjobs/" + encodeURIComponent(name) + "/settings",
